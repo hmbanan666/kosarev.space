@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "title": "Nick Kosarev — Fullstack Developer",
+    "description": "Fullstack Developer specializing in Vue, Nuxt, TypeScript, and PostgreSQL. Building modern web applications."
+  },
+  "hero": {
+    "badge": "Open for collaboration",
+    "name": "Nick Kosarev",
+    "description": "Fullstack Developer building modern web applications with Vue, Nuxt, and TypeScript. Passionate about clean architecture, great UX, and open source.",
+    "projects": "Projects",
+    "contact": "Get in touch"
+  },
+  "projects": {
+    "title": "Projects",
+    "description": "A selection of things I've built and contributed to.",
+    "visit": "Visit",
+    "source": "Source",
+    "meloteka": {
+      "description": "Music catalog and streaming service. Includes web app, Telegram Mini App, admin panel, Subsonic API compatibility, and audio transcoding pipeline."
+    },
+    "startodel": {
+      "description": "Ready-made website platform for food delivery businesses. Zero commission, real-time menu management, loyalty programs, Telegram notifications, and multi-language support."
+    },
+    "chatgame": {
+      "description": "Interactive Twitch chat game with real-time gameplay. Viewers interact with the stream through chat commands."
+    }
+  },
+  "skills": {
+    "title": "Skills & Stack",
+    "description": "Technologies I work with on a daily basis.",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "tools": "Tools & DevOps"
+  },
+  "contacts": {
+    "title": "Contacts",
+    "description": "Open for collaboration and interesting projects."
+  }
+}

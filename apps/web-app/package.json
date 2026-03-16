@@ -1,0 +1,32 @@
+{
+  "name": "@kosarev/web-app",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "postinstall": "nuxt prepare",
+    "clean": "rm -rf .output",
+    "clean:modules": "rm -rf .nuxt .output node_modules"
+  },
+  "dependencies": {
+    "@nuxt/ui": "catalog:integrations",
+    "@nuxtjs/i18n": "catalog:integrations",
+    "@pinia/nuxt": "catalog:integrations",
+    "@vueuse/core": "catalog:integrations",
+    "@vueuse/nuxt": "catalog:integrations"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "catalog:dev",
+    "@iconify-json/simple-icons": "catalog:dev",
+    "@types/node": "catalog:types",
+    "nuxt": "catalog:dev",
+    "nuxt-auth-utils": "catalog:dev",
+    "tailwindcss": "catalog:dev",
+    "tailwindcss-motion": "catalog:dev"
+  }
+}

@@ -1,0 +1,59 @@
+<template>
+  <UPageHero
+    orientation="horizontal"
+    :links="[
+      { label: t('hero.projects'), to: '#projects', icon: 'i-lucide-folder-open', size: 'lg' as const },
+      { label: t('hero.contact'), to: '#contacts', icon: 'i-lucide-send', variant: 'outline' as const, size: 'lg' as const },
+    ]"
+    :ui="{ links: 'motion-preset-slide-up motion-delay-300' }"
+  >
+    <template #headline>
+      <UBadge
+        :label="t('hero.badge')"
+        variant="subtle"
+        size="md"
+        class="motion-preset-fade-in"
+      />
+    </template>
+
+    <template #title>
+      <span class="motion-preset-slide-up motion-delay-100">
+        {{ t('hero.name') }}
+      </span>
+    </template>
+
+    <template #description>
+      <span class="motion-preset-slide-up motion-delay-200">
+        {{ t('hero.description') }}
+      </span>
+    </template>
+
+    <template #default>
+      <div class="relative size-full min-h-64 flex items-center justify-center motion-preset-fade-in motion-delay-500">
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-500/20 via-primary-400/10 to-transparent blur-2xl motion-preset-expand motion-duration-1000" />
+        <div class="relative grid grid-cols-3 gap-5 p-8">
+          <UIcon
+            v-for="(icon, i) in heroIcons"
+            :key="icon"
+            :name="icon"
+            class="size-12 text-dimmed transition-all duration-300 hover:text-primary hover:scale-125 motion-preset-pop"
+            :class="`motion-delay-${(i + 3) * 100}`"
+          />
+        </div>
+      </div>
+    </template>
+  </UPageHero>
+</template>
+
+<script setup lang="ts">
+const { t } = useI18n()
+
+const heroIcons = [
+  'i-simple-icons-vuedotjs',
+  'i-simple-icons-nuxtdotjs',
+  'i-simple-icons-typescript',
+  'i-simple-icons-postgresql',
+  'i-simple-icons-tailwindcss',
+  'i-simple-icons-docker',
+]
+</script>
