@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: web-app
-          image: ghcr.io/hmbanan666/kosarev-web-app:latest
+          image: ghcr.io/hmbanan666/kosarev-web-app:nightly
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
