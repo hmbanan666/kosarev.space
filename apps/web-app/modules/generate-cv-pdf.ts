@@ -17,6 +17,23 @@ function getRandomPort() {
   return 10000 + Math.floor(Math.random() * 50000)
 }
 
+async function waitForServer(port: number, timeoutMs = 60000) {
+  const start = Date.now()
+  const url = `http://localhost:${port}/`
+
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const res = await fetch(url)
+      if (res.ok) {
+        return
+      }
+    } catch {}
+    await new Promise((r) => setTimeout(r, 500))
+  }
+
+  throw new Error(`Server did not start within ${timeoutMs / 1000}s`)
+}
+
 export default defineNuxtModule({
   meta: {
     name: 'generate-cv-pdf',
@@ -46,19 +63,10 @@ export default defineNuxtModule({
 
       const server = spawn('node', ['.output/server/index.mjs'], {
         env: { ...process.env, PORT: String(port), NODE_ENV: 'production' },
-        stdio: 'pipe',
+        stdio: 'ignore',
       })
 
-      await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error('Server start timeout')), 30000)
-        server.stdout?.on('data', (chunk) => {
-          if (chunk.toString().includes('Listening')) {
-            clearTimeout(timeout)
-            resolve()
-          }
-        })
-        server.on('error', reject)
-      })
+      await waitForServer(port)
 
       try {
         const browser = await chromium.launch()
