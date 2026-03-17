@@ -54,7 +54,9 @@ export default defineNuxtConfig({
         globInclude: ['app/**/*.{vue,ts}'],
         globExclude: ['node_modules', 'dist', 'build', 'coverage', 'test', 'tests', '.*'],
       },
+      includeCustomCollections: true,
     },
+    serverBundle: 'local',
   },
 
   app: {

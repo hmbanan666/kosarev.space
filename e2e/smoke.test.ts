@@ -5,7 +5,7 @@ test.describe('homepage', () => {
     await page.goto('/')
 
     await expect(page.locator('#projects')).toBeVisible()
-    await expect(page.locator('#skills')).toBeVisible()
+    await expect(page.locator('#experience')).toBeVisible()
     await expect(page.locator('#contacts')).toBeVisible()
   })
 
@@ -15,11 +15,10 @@ test.describe('homepage', () => {
     await expect(page).toHaveTitle(/Косарев|Kosarev/)
   })
 
-  test('navigation to projects works', async ({ page }) => {
-    await page.goto('/')
+  test('CV page is accessible', async ({ page }) => {
+    await page.goto('/cv')
 
-    await page.locator('a[href="#projects"]').first().click()
-    await expect(page.locator('#projects')).toBeInViewport()
+    await expect(page).toHaveTitle(/Резюме|CV/)
   })
 
   test('language switcher is visible', async ({ page }) => {
@@ -35,16 +34,14 @@ test.describe('English locale (/en)', () => {
 
     await expect(page).toHaveTitle(/Kosarev/)
     await expect(page.locator('#projects')).toBeVisible()
-    await expect(page.locator('#skills')).toBeVisible()
-    await expect(page.locator('#contacts')).toBeVisible()
+    await expect(page.locator('#experience')).toBeVisible()
   })
 
   test('has correct section headings', async ({ page }) => {
     await page.goto('/en')
 
     await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Skills & Stack' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Experience' })).toBeVisible()
   })
 
   test('shows English footer', async ({ page }) => {

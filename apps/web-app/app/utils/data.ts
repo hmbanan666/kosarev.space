@@ -1,7 +1,9 @@
 export interface Project {
   key: string
+  titleKey?: string
   title: string
   icon: string
+  image?: string
   stack: string[]
   link?: string
 }
@@ -22,15 +24,19 @@ export interface Contact {
 export const projects: Project[] = [
   {
     key: 'meloteka',
+    titleKey: 'projects.meloteka.title',
     title: 'Meloteka',
     icon: 'i-lucide-music',
+    image: '/projects/meloteka.webp',
     stack: ['Nuxt', 'TypeScript', 'PostgreSQL', 'Drizzle ORM', 'S3'],
     link: 'https://meloteka.ru',
   },
   {
     key: 'startodel',
+    titleKey: 'projects.startodel.title',
     title: 'Startodel',
     icon: 'i-lucide-utensils',
+    image: '/projects/startodel.webp',
     stack: ['Nuxt', 'TypeScript', 'PostgreSQL', 'Drizzle ORM', 'Tailwind CSS'],
     link: 'https://startodel.ru',
   },
@@ -38,8 +44,17 @@ export const projects: Project[] = [
     key: 'chatgame',
     title: 'ChatGame',
     icon: 'i-lucide-gamepad-2',
+    image: '/projects/chatgame.webp',
     stack: ['TypeScript', 'Canvas API', 'WebSocket'],
-    link: 'https://github.com/hmbanan666/chatgame',
+    link: 'https://chatgame.space',
+  },
+  {
+    key: 'nextorders',
+    title: 'NextOrders',
+    icon: 'i-lucide-rocket',
+    image: '/projects/nextorders.webp',
+    stack: ['Nuxt', 'Nuxt UI', 'Pinia', 'Tailwind CSS', 'VueUse', 'Zod'],
+    link: 'https://github.com/nextorders/food',
   },
 ]
 
@@ -76,6 +91,11 @@ export const contacts: Contact[] = [
     label: 'Email',
     icon: 'i-lucide-mail',
     to: 'mailto:nick@kosarev.space',
+  },
+  {
+    label: 'Twitch',
+    icon: 'i-simple-icons-twitch',
+    to: 'https://twitch.tv/hmbanan666',
   },
 ]
 
@@ -201,13 +221,4 @@ export const publicActivities: Experience[] = [
 export const languages: Language[] = [
   { key: 'russian', level: 'native' },
   { key: 'english', level: 'C1' },
-]
-
-export const heroIcons = [
-  'i-simple-icons-vuedotjs',
-  'i-simple-icons-nuxtdotjs',
-  'i-simple-icons-typescript',
-  'i-simple-icons-postgresql',
-  'i-simple-icons-tailwindcss',
-  'i-simple-icons-docker',
 ]

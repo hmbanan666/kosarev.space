@@ -2,21 +2,11 @@
   <UPageHero
     orientation="horizontal"
     :links="[
-      { label: t('hero.projects'), to: '#projects', icon: 'i-lucide-folder-open', size: 'lg' as const },
-      { label: t('cv.title'), to: localePath('/cv'), icon: 'i-lucide-file-text', variant: 'outline' as const, size: 'lg' as const },
+      { label: t('nav.cv'), to: localePath('/cv'), icon: 'i-lucide-file-text', size: 'lg' as const },
       { label: t('hero.contact'), to: '#contacts', icon: 'i-lucide-send', variant: 'outline' as const, size: 'lg' as const },
     ]"
     :ui="{ links: 'motion-preset-slide-up motion-delay-300' }"
   >
-    <template #headline>
-      <UBadge
-        :label="t('hero.badge')"
-        variant="subtle"
-        size="md"
-        class="motion-preset-fade-in"
-      />
-    </template>
-
     <template #title>
       <span class="motion-preset-slide-up motion-delay-100">
         {{ t('hero.name') }}
@@ -30,23 +20,27 @@
     </template>
 
     <template #default>
-      <div class="relative size-full min-h-64 flex items-center justify-center motion-preset-fade-in motion-delay-500">
-        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-500/20 via-primary-400/10 to-transparent blur-2xl motion-preset-expand motion-duration-1000" />
-        <div class="relative flex flex-col items-center gap-6">
+      <div class="flex flex-col items-center justify-center gap-6 motion-preset-fade-in motion-delay-500">
+        <div class="relative">
+          <div class="absolute -inset-8 rounded-3xl bg-primary/15 blur-3xl" />
           <img
             src="/photo.jpg"
             :alt="t('hero.name')"
-            class="size-40 rounded-2xl object-cover ring-2 ring-primary/20 motion-preset-pop"
+            class="relative size-48 rounded-2xl object-cover ring-2 ring-primary/30 motion-preset-pop"
           >
-          <div class="flex gap-4">
+        </div>
+        <div class="flex gap-3">
+          <UTooltip
+            v-for="(icon, i) in heroIcons"
+            :key="icon.name"
+            :text="icon.label"
+          >
             <UIcon
-              v-for="(icon, i) in heroIcons"
-              :key="icon"
-              :name="icon"
-              class="size-8 text-dimmed transition-all duration-300 hover:text-primary hover:scale-125 motion-preset-pop"
-              :style="{ animationDelay: `${500 + i * 100}ms` }"
+              :name="icon.name"
+              class="size-7 text-muted transition-all duration-300 hover:text-primary hover:scale-150 animate-float"
+              :style="{ animationDelay: `${i * 200}ms`, animationDuration: '2.5s' }"
             />
-          </div>
+          </UTooltip>
         </div>
       </div>
     </template>
@@ -56,4 +50,13 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const localePath = useLocalePath()
+
+const heroIcons = [
+  { name: 'i-simple-icons-vuedotjs', label: 'Vue.js' },
+  { name: 'i-simple-icons-nuxtdotjs', label: 'Nuxt' },
+  { name: 'i-simple-icons-typescript', label: 'TypeScript' },
+  { name: 'i-simple-icons-postgresql', label: 'PostgreSQL' },
+  { name: 'i-simple-icons-tailwindcss', label: 'Tailwind CSS' },
+  { name: 'i-simple-icons-docker', label: 'Docker' },
+]
 </script>

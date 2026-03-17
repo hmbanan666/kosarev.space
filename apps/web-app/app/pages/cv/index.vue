@@ -82,9 +82,6 @@
         </UCard>
       </div>
     </UPageSection>
-
-    <USeparator />
-    <ContactsSection />
   </UPage>
 </template>
 

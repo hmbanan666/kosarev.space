@@ -1,12 +1,8 @@
 <template>
   <UPage>
     <HeroSection />
-    <USeparator />
     <ProjectsSection />
-    <USeparator />
-    <SkillsSection />
-    <USeparator />
-    <ContactsSection />
+    <ExperienceSection />
   </UPage>
 </template>
 

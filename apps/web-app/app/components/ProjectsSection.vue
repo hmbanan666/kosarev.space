@@ -4,11 +4,11 @@
     :title="t('projects.title')"
     :description="t('projects.description')"
   >
-    <UPageGrid>
+    <UPageGrid class="sm:grid-cols-2 lg:grid-cols-2">
       <UPageCard
         v-for="(project, i) in projects"
         :key="project.key"
-        :title="project.title"
+        :title="project.titleKey ? t(project.titleKey) : project.title"
         :description="t(`projects.${project.key}.description`)"
         :icon="project.icon"
         :to="project.link"
@@ -18,6 +18,13 @@
         class="motion-preset-slide-up motion-duration-500"
         :style="{ animationDelay: `${i * 150}ms` }"
       >
+        <template v-if="project.image" #header>
+          <img
+            :src="project.image"
+            :alt="project.titleKey ? t(project.titleKey) : project.title"
+            class="aspect-video w-full rounded-t-[calc(var(--ui-radius)*2)] object-cover object-top"
+          >
+        </template>
         <template #footer>
           <div class="flex flex-wrap gap-1.5">
             <UBadge

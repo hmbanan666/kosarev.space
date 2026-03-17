@@ -12,17 +12,22 @@
   },
   "projects": {
     "title": "Projects",
-    "description": "A selection of things I've built and contributed to.",
+    "description": "Products and open-source projects I'm building.",
     "visit": "Visit",
     "source": "Source",
     "meloteka": {
+      "title": "Meloteka",
       "description": "Music catalog and streaming service. Includes web app, Telegram Mini App, admin panel, Subsonic API compatibility, and audio transcoding pipeline."
     },
     "startodel": {
+      "title": "Startodel",
       "description": "Ready-made website platform for food delivery businesses. Zero commission, real-time menu management, loyalty programs, Telegram notifications, and multi-language support."
     },
     "chatgame": {
       "description": "Interactive Twitch chat game with real-time gameplay. Viewers interact with the stream through chat commands."
+    },
+    "nextorders": {
+      "description": "Open-source food delivery automation platform. Responsive design, SSR, 11+ language support, and multi-regional capabilities."
     }
   },
   "skills": {
@@ -31,6 +36,19 @@
     "frontend": "Frontend",
     "backend": "Backend",
     "tools": "Tools & DevOps"
+  },
+  "experience": {
+    "title": "Experience",
+    "description": "From PHP freelancing to building my own SaaS products and open source.",
+    "years": "15+",
+    "yearsLabel": "years in development",
+    "products": "3",
+    "productsLabel": "own products",
+    "clients": "500+",
+    "clientsLabel": "business clients",
+    "opensource": "75",
+    "opensourceLabel": "GitHub stars",
+    "viewCv": "View full CV"
   },
   "contacts": {
     "title": "Contacts",
@@ -154,6 +172,10 @@
         "Implemented conversion features: 'Frequently bought together', product videos, ingredient details, persistent cart, instant search, guest checkout"
       ]
     }
+  },
+  "nav": {
+    "home": "Home",
+    "cv": "CV"
   },
   "footer": {
     "copyright": "© {year} Nick Kosarev"
