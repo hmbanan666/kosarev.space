@@ -6,7 +6,7 @@ metadata:
   labels:
     app: web-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: web-app
@@ -18,6 +18,7 @@ spec:
       containers:
         - name: web-app
           image: ghcr.io/hmbanan666/kosarev-web-app:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           envFrom:
