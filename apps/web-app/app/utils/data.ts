@@ -18,12 +18,13 @@ export interface Contact {
   to: string
 }
 
+// Projects on homepage reference the same keys as experiences for i18n descriptions
 export const projects: Project[] = [
   {
     key: 'meloteka',
     title: 'Meloteka',
     icon: 'i-lucide-music',
-    stack: ['Nuxt', 'TypeScript', 'PostgreSQL', 'Drizzle ORM', 'S3', 'Tailwind CSS'],
+    stack: ['Nuxt', 'TypeScript', 'PostgreSQL', 'Drizzle ORM', 'S3'],
     link: 'https://meloteka.ru',
   },
   {

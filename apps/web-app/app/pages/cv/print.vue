@@ -13,11 +13,10 @@
           <p>{{ formattedAge }}, {{ t('cv.birthDate') }}</p>
           <p>{{ t('cv.location') }}</p>
           <p>
-            <a href="mailto:nick@kosarev.space">nick@kosarev.space</a>
-            <span class="cv-sep">&bull;</span>
-            <a href="https://github.com/hmbanan666">github.com/hmbanan666</a>
-            <span class="cv-sep">&bull;</span>
-            <a href="https://t.me/hmbanan666">t.me/hmbanan666</a>
+            <template v-for="(contact, i) in contacts" :key="contact.label">
+              <span v-if="i > 0" class="cv-sep">&bull;</span>
+              <a :href="contact.to">{{ contact.label === 'Email' ? contact.to.replace('mailto:', '') : contact.to.replace('https://', '') }}</a>
+            </template>
             <span class="cv-sep">&bull;</span>
             <a href="https://kosarev.space">kosarev.space</a>
           </p>
@@ -223,11 +222,13 @@ definePageMeta({
   robots: false,
 })
 
-const { t, locale, tm, rt } = useI18n()
+const { t, tm, rt } = useI18n()
 const { getHighlights } = useHighlights()
+const { formatAge, getDuration, getTotalDuration } = useDuration()
 
 const BIRTH_DATE = new Date(1992, 4, 20)
-const CAREER_START = 2010
+const CAREER_START_YEAR = 2010
+const CAREER_START_MONTH = 5
 
 const age = computed(() => {
   const now = new Date()
@@ -240,28 +241,8 @@ const age = computed(() => {
   return years
 })
 
-function pluralRu(n: number, one: string, few: string, many: string) {
-  const lastTwo = n % 100
-  const lastOne = n % 10
-  if (lastTwo >= 11 && lastTwo <= 19) {
-    return `${n} ${many}`
-  }
-  if (lastOne === 1) {
-    return `${n} ${one}`
-  }
-  if (lastOne >= 2 && lastOne <= 4) {
-    return `${n} ${few}`
-  }
-  return `${n} ${many}`
-}
-
-const formattedAge = computed(() => {
-  const n = age.value
-  if (locale.value === 'ru') {
-    return pluralRu(n, 'год', 'года', 'лет')
-  }
-  return `${n} years old`
-})
+const formattedAge = computed(() => formatAge(age.value))
+const totalDuration = computed(() => getTotalDuration(CAREER_START_YEAR, CAREER_START_MONTH))
 
 function getCompanyName(entry: { company: string, nameKey?: string }) {
   return entry.nameKey ? t(entry.nameKey) : entry.company
@@ -279,49 +260,6 @@ function formatPeriod(exp: { startYear: number, startMonth: number, endYear?: nu
   }
   const end = `${getMonthName(exp.endMonth!)} ${exp.endYear}`
   return `${start} —\n${end}`
-}
-
-function calcMonths(startYear: number, startMonth: number, endYear: number, endMonth: number) {
-  return (endYear - startYear) * 12 + (endMonth - startMonth)
-}
-
-function formatDuration(totalMonths: number, lang: string) {
-  const years = Math.floor(totalMonths / 12)
-  const months = totalMonths % 12
-
-  const parts: string[] = []
-
-  if (lang === 'ru') {
-    if (years > 0) {
-      parts.push(pluralRu(years, 'год', 'года', 'лет'))
-    }
-    if (months > 0) {
-      parts.push(pluralRu(months, 'месяц', 'месяца', 'месяцев'))
-    }
-  } else {
-    if (years > 0) {
-      parts.push(`${years} yr${years > 1 ? 's' : ''}`)
-    }
-    if (months > 0) {
-      parts.push(`${months} mo`)
-    }
-  }
-
-  return parts.join(' ') || (lang === 'ru' ? '< 1 месяца' : '< 1 mo')
-}
-
-const totalDuration = computed(() => {
-  const now = new Date()
-  const months = calcMonths(CAREER_START, 5, now.getFullYear(), now.getMonth() + 1)
-  return formatDuration(months, locale.value)
-})
-
-function getDuration(exp: { startYear: number, startMonth: number, endYear?: number, endMonth?: number, present?: boolean }) {
-  const now = new Date()
-  const endYear = exp.present ? now.getFullYear() : (exp.endYear ?? exp.startYear)
-  const endMonth = exp.present ? now.getMonth() + 1 : (exp.endMonth ?? exp.startMonth)
-  const months = calcMonths(exp.startYear, exp.startMonth, endYear, endMonth)
-  return formatDuration(months, locale.value)
 }
 </script>
 

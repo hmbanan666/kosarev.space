@@ -13,6 +13,7 @@ RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY apps/web-app/ apps/web-app/
 
+RUN npx playwright install --with-deps chromium
 RUN pnpm --filter @kosarev/web-app build
 
 FROM node:24-slim

@@ -48,6 +48,10 @@
 
     <USeparator />
 
+    <CvPublicActivity />
+
+    <USeparator />
+
     <UPageSection :title="t('cv.education')">
       <UCard class="motion-preset-slide-up">
         <div class="flex items-start gap-3">

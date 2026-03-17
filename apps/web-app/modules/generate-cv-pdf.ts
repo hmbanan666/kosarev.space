@@ -13,7 +13,9 @@ const PDF_OPTIONS = {
   printBackground: true,
 }
 
-const PORT = 4173
+function getRandomPort() {
+  return 10000 + Math.floor(Math.random() * 50000)
+}
 
 export default defineNuxtModule({
   meta: {
@@ -30,22 +32,25 @@ export default defineNuxtModule({
       return
     }
 
-    nuxt.hook('close', async () => {
-      const { join } = await import('node:path')
-      const { copyFileSync } = await import('node:fs')
+    nuxt.hook('build:done', async () => {
+      const { join, resolve } = await import('node:path')
+      const { existsSync, copyFileSync } = await import('node:fs')
       const process = await import('node:process').then((m) => m.default)
       const { spawn } = await import('node:child_process')
       const { chromium } = await import('@playwright/test')
 
+      const port = getRandomPort()
+      const outputDir = resolve(nuxt.options.buildDir, '../.output/public')
+
       logger.info('Generating CV PDFs...')
 
       const server = spawn('node', ['.output/server/index.mjs'], {
-        env: { ...process.env, PORT: String(PORT), NODE_ENV: 'production' },
+        env: { ...process.env, PORT: String(port), NODE_ENV: 'production' },
         stdio: 'pipe',
       })
 
       await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error('Server start timeout')), 15000)
+        const timeout = setTimeout(() => reject(new Error('Server start timeout')), 30000)
         server.stdout?.on('data', (chunk) => {
           if (chunk.toString().includes('Listening')) {
             clearTimeout(timeout)
@@ -59,15 +64,24 @@ export default defineNuxtModule({
         const browser = await chromium.launch()
 
         for (const { url, file } of PDF_PAGES) {
-          const publicPath = join('public', file)
-          const outputPath = join('.output/public', file)
+          try {
+            const page = await browser.newPage()
+            await page.goto(`http://localhost:${port}${url}`, { waitUntil: 'networkidle' })
 
-          const page = await browser.newPage()
-          await page.goto(`http://localhost:${PORT}${url}`, { waitUntil: 'networkidle' })
-          await page.pdf({ path: publicPath, ...PDF_OPTIONS })
-          copyFileSync(publicPath, outputPath)
-          logger.success(file)
-          await page.close()
+            // Save to public/ for future builds
+            const publicPath = join('public', file)
+            await page.pdf({ path: publicPath, ...PDF_OPTIONS })
+
+            // Copy to build output if it exists
+            if (existsSync(outputDir)) {
+              copyFileSync(publicPath, join(outputDir, file))
+            }
+
+            await page.close()
+            logger.success(file)
+          } catch (err) {
+            logger.error(`Failed to generate ${file}:`, err)
+          }
         }
 
         await browser.close()
