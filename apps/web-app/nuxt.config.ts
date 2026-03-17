@@ -1,18 +1,21 @@
 export default defineNuxtConfig({
   modules: [
-    'nuxt-auth-utils',
     '@nuxt/ui',
-    '@pinia/nuxt',
     '@vueuse/nuxt',
     '@nuxtjs/i18n',
+    '@nuxtjs/sitemap',
   ],
+
+  site: {
+    url: 'https://kosarev.space',
+  },
 
   i18n: {
     locales: [
       { code: 'en', language: 'en', file: 'en.json', name: 'English' },
       { code: 'ru', language: 'ru', file: 'ru.json', name: 'Русский' },
     ],
-    defaultLocale: 'en',
+    defaultLocale: 'ru',
     langDir: 'locales',
     strategy: 'prefix_except_default',
   },
@@ -52,6 +55,16 @@ export default defineNuxtConfig({
       meta: [
         { name: 'description', content: 'Fullstack Developer specializing in Vue, Nuxt, TypeScript, and PostgreSQL' },
       ],
+    },
+  },
+
+  routeRules: {
+    '/**': {
+      headers: {
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
     },
   },
 

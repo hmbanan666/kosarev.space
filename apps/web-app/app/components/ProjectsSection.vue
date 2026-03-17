@@ -13,9 +13,10 @@
         :icon="project.icon"
         :to="project.link"
         target="_blank"
+        rel="noopener noreferrer"
         spotlight
         class="motion-preset-slide-up motion-duration-500"
-        :class="`motion-delay-${i * 150}`"
+        :class="['motion-delay-0', 'motion-delay-150', 'motion-delay-300'][i]"
       >
         <template #footer>
           <div class="flex flex-wrap gap-1.5">
@@ -43,36 +44,4 @@
 
 <script setup lang="ts">
 const { t } = useI18n()
-
-interface Project {
-  key: string
-  title: string
-  icon: string
-  stack: string[]
-  link?: string
-}
-
-const projects: Project[] = [
-  {
-    key: 'meloteka',
-    title: 'Meloteka',
-    icon: 'i-lucide-music',
-    stack: ['Nuxt', 'TypeScript', 'PostgreSQL', 'Drizzle ORM', 'S3', 'Tailwind CSS'],
-    link: 'https://meloteka.ru',
-  },
-  {
-    key: 'startodel',
-    title: 'Startodel',
-    icon: 'i-lucide-utensils',
-    stack: ['Nuxt', 'TypeScript', 'PostgreSQL', 'Drizzle ORM', 'Tailwind CSS'],
-    link: 'https://startodel.ru',
-  },
-  {
-    key: 'chatgame',
-    title: 'ChatGame',
-    icon: 'i-lucide-gamepad-2',
-    stack: ['TypeScript', 'Canvas API', 'WebSocket'],
-    link: 'https://github.com/hmbanan666/chatgame',
-  },
-]
 </script>

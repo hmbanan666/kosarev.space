@@ -13,13 +13,15 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "typecheck": "pnpm -r run typecheck",
-    "check:full": "pnpm run lint:fix && pnpm run typecheck && pnpm vitest run",
+    "test:e2e": "playwright test",
+    "check:full": "pnpm run lint:fix && pnpm run typecheck && pnpm run test:e2e",
     "prepare": "husky"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",
     "@commitlint/cli": "catalog:dev",
     "@commitlint/config-conventional": "catalog:dev",
+    "@playwright/test": "catalog:test",
     "@vitest/coverage-v8": "catalog:test",
     "bumpp": "catalog:dev",
     "eslint": "catalog:dev",

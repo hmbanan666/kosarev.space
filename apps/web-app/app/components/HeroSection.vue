@@ -37,7 +37,7 @@
             :key="icon"
             :name="icon"
             class="size-12 text-dimmed transition-all duration-300 hover:text-primary hover:scale-125 motion-preset-pop"
-            :class="`motion-delay-${(i + 3) * 100}`"
+            :class="['motion-delay-300', 'motion-delay-400', 'motion-delay-500', 'motion-delay-600', 'motion-delay-700', 'motion-delay-800'][i]"
           />
         </div>
       </div>
@@ -47,13 +47,4 @@
 
 <script setup lang="ts">
 const { t } = useI18n()
-
-const heroIcons = [
-  'i-simple-icons-vuedotjs',
-  'i-simple-icons-nuxtdotjs',
-  'i-simple-icons-typescript',
-  'i-simple-icons-postgresql',
-  'i-simple-icons-tailwindcss',
-  'i-simple-icons-docker',
-]
 </script>

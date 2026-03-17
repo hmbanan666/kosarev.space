@@ -12,6 +12,7 @@
         :icon="contact.icon"
         :label="contact.label"
         target="_blank"
+        rel="noopener noreferrer"
         size="lg"
         variant="soft"
         class="transition-transform duration-200 hover:-translate-y-1"
@@ -22,22 +23,4 @@
 
 <script setup lang="ts">
 const { t } = useI18n()
-
-const contacts = [
-  {
-    label: 'GitHub',
-    icon: 'i-simple-icons-github',
-    to: 'https://github.com/hmbanan666',
-  },
-  {
-    label: 'Telegram',
-    icon: 'i-simple-icons-telegram',
-    to: 'https://t.me/hmbanan666',
-  },
-  {
-    label: 'Email',
-    icon: 'i-lucide-mail',
-    to: 'mailto:hmbanan666@hotmail.com',
-  },
-]
 </script>

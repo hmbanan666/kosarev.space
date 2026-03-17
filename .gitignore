@@ -27,3 +27,7 @@ Thumbs.db
 *.log
 
 .eslintcache
+
+# Playwright
+test-results/
+playwright-report/

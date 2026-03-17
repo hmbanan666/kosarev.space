@@ -16,7 +16,7 @@
   "dependencies": {
     "@nuxt/ui": "catalog:integrations",
     "@nuxtjs/i18n": "catalog:integrations",
-    "@pinia/nuxt": "catalog:integrations",
+    "@nuxtjs/sitemap": "catalog:integrations",
     "@vueuse/core": "catalog:integrations",
     "@vueuse/nuxt": "catalog:integrations"
   },
@@ -25,7 +25,6 @@
     "@iconify-json/simple-icons": "catalog:dev",
     "@types/node": "catalog:types",
     "nuxt": "catalog:dev",
-    "nuxt-auth-utils": "catalog:dev",
     "tailwindcss": "catalog:dev",
     "tailwindcss-motion": "catalog:dev"
   }

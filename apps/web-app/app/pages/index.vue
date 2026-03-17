@@ -7,13 +7,6 @@
     <SkillsSection />
     <USeparator />
     <ContactsSection />
-
-    <USeparator />
-    <footer class="py-8 text-center text-sm text-dimmed">
-      <UContainer>
-        <p>&copy; {{ new Date().getFullYear() }} Nick Kosarev</p>
-      </UContainer>
-    </footer>
   </UPage>
 </template>
 
@@ -25,5 +18,33 @@ useSeoMeta({
   description: () => t('seo.description'),
   ogTitle: () => t('seo.title'),
   ogDescription: () => t('seo.description'),
+  ogType: 'website',
+  ogUrl: 'https://kosarev.space',
+  ogImage: 'https://kosarev.space/og-image.png',
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogSiteName: 'Nick Kosarev',
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://kosarev.space/og-image.png',
+})
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        'name': 'Nick Kosarev',
+        'url': 'https://kosarev.space',
+        'jobTitle': 'Fullstack Developer',
+        'knowsAbout': ['Vue.js', 'Nuxt', 'TypeScript', 'PostgreSQL', 'Node.js'],
+        'sameAs': [
+          'https://github.com/hmbanan666',
+          'https://t.me/hmbanan666',
+        ],
+      }),
+    },
+  ],
 })
 </script>

@@ -18,7 +18,10 @@ RUN pnpm --filter @kosarev/web-app build
 FROM node:24-slim
 WORKDIR /app
 
-COPY --from=build /app/apps/web-app/.output .output
+RUN chown node:node /app
+USER node
+
+COPY --from=build --chown=node:node /app/apps/web-app/.output .output
 
 ENV NODE_ENV=production
 ENV PORT=3000
