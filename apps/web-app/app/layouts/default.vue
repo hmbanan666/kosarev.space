@@ -6,7 +6,7 @@
           <NuxtLink :to="localePath('/')" class="text-sm font-semibold text-highlighted hover:text-primary transition-colors">
             {{ t('hero.name') }}
           </NuxtLink>
-          <nav class="flex items-center gap-4">
+          <nav aria-label="Main navigation" class="flex items-center gap-4">
             <NuxtLink
               :to="localePath('/cv')"
               class="text-sm text-muted hover:text-highlighted transition-colors"

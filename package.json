@@ -13,8 +13,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "typecheck": "pnpm -r run typecheck",
+    "test": "vitest run",
     "test:e2e": "playwright test",
-    "check:full": "pnpm run lint:fix && pnpm run typecheck && pnpm run test:e2e",
+    "check:full": "pnpm run lint:fix && pnpm run typecheck && pnpm run test && pnpm run test:e2e",
+    "release": "bumpp",
     "prepare": "husky"
   },
   "devDependencies": {

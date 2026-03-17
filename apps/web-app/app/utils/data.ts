@@ -8,12 +8,6 @@ export interface Project {
   link?: string
 }
 
-export interface SkillGroup {
-  key: string
-  icon: string
-  items: string[]
-}
-
 export interface Contact {
   label: string
   icon: string
@@ -55,24 +49,6 @@ export const projects: Project[] = [
     image: '/projects/nextorders.webp',
     stack: ['Nuxt', 'Nuxt UI', 'Pinia', 'Tailwind CSS', 'VueUse', 'Zod'],
     link: 'https://github.com/nextorders/food',
-  },
-]
-
-export const skillGroups: SkillGroup[] = [
-  {
-    key: 'frontend',
-    icon: 'i-lucide-layout-dashboard',
-    items: ['Vue 3', 'Nuxt', 'TypeScript', 'Tailwind CSS', 'Pinia', 'VueUse'],
-  },
-  {
-    key: 'backend',
-    icon: 'i-lucide-server',
-    items: ['Nitro', 'Node.js', 'PostgreSQL', 'Drizzle ORM', 'S3'],
-  },
-  {
-    key: 'tools',
-    icon: 'i-lucide-wrench',
-    items: ['Git', 'Docker', 'pnpm', 'Vitest', 'Playwright', 'GitHub Actions'],
   },
 ]
 

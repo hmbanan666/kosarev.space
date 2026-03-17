@@ -15,12 +15,6 @@ catalogs:
     '@commitlint/config-conventional':
       specifier: ^20.4.1
       version: 20.5.0
-    '@iconify-json/lucide':
-      specifier: ^1.2.88
-      version: 1.2.98
-    '@iconify-json/simple-icons':
-      specifier: ^1.0.0
-      version: 1.2.74
     bumpp:
       specifier: ^11.0.1
       version: 11.0.1
@@ -33,15 +27,6 @@ catalogs:
     nano-staged:
       specifier: ^0.9.0
       version: 0.9.0
-    nuxt:
-      specifier: ^4.4.2
-      version: 4.4.2
-    tailwindcss:
-      specifier: ^4.2.1
-      version: 4.2.1
-    tailwindcss-motion:
-      specifier: ^1.1.1
-      version: 1.1.1
     typescript:
       specifier: ^5.9.3
       version: 5.9.3
@@ -51,25 +36,6 @@ catalogs:
     vue-tsc:
       specifier: ^3.2.4
       version: 3.2.5
-  integrations:
-    '@nuxt/ui':
-      specifier: ^4.5.1
-      version: 4.5.1
-    '@nuxtjs/i18n':
-      specifier: ^10.2.3
-      version: 10.2.3
-    '@nuxtjs/robots':
-      specifier: ^5.7.1
-      version: 5.7.1
-    '@nuxtjs/sitemap':
-      specifier: ^7.2.8
-      version: 7.6.0
-    '@vueuse/core':
-      specifier: ^14.2.0
-      version: 14.2.1
-    '@vueuse/nuxt':
-      specifier: ^14.2.0
-      version: 14.2.1
   test:
     '@playwright/test':
       specifier: ^1.52.0
@@ -80,10 +46,6 @@ catalogs:
     vitest:
       specifier: ^4.1.0
       version: 4.1.0
-  types:
-    '@types/node':
-      specifier: ^25.5.0
-      version: 25.5.0
 
 importers:
 

@@ -15,7 +15,7 @@ export default defineAppConfig({
         },
       },
       slots: {
-        container: 'py-16 sm:py-20 lg:py-24 gap-8 sm:gap-y-12',
+        container: 'py-20 sm:py-28 lg:py-32 gap-8 sm:gap-y-12',
       },
     },
     pageSection: {
