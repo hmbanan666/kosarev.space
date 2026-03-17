@@ -16,7 +16,7 @@
         rel="noopener noreferrer"
         spotlight
         class="motion-preset-slide-up motion-duration-500"
-        :class="['motion-delay-0', 'motion-delay-150', 'motion-delay-300'][i]"
+        :style="{ animationDelay: `${i * 150}ms` }"
       >
         <template #footer>
           <div class="flex flex-wrap gap-1.5">
@@ -29,8 +29,8 @@
               class="motion-preset-fade-in motion-delay-500"
             />
           </div>
-          <div class="mt-4 flex items-center gap-1 text-sm text-primary transition-transform duration-200 hover:translate-x-1">
-            {{ project.link?.includes('github') ? t('projects.source') : t('projects.visit') }}
+          <div v-if="project.link" class="mt-4 flex items-center gap-1 text-sm text-primary transition-transform duration-200 hover:translate-x-1">
+            {{ project.link.includes('github') ? t('projects.source') : t('projects.visit') }}
             <UIcon
               name="i-lucide-arrow-up-right"
               class="size-4"

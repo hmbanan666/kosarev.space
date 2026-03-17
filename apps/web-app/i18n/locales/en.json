@@ -35,5 +35,13 @@
   "contacts": {
     "title": "Contacts",
     "description": "Open for collaboration and interesting projects."
+  },
+  "footer": {
+    "copyright": "© {year} Nick Kosarev"
+  },
+  "error": {
+    "notFound": "Page not found",
+    "serverError": "Something went wrong",
+    "goHome": "Go home"
   }
 }

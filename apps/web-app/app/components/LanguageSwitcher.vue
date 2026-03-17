@@ -1,6 +1,6 @@
 <template>
   <UButton
-    :label="otherLocale?.name"
+    :label="nextLocale.name"
     icon="i-lucide-languages"
     variant="ghost"
     size="sm"
@@ -12,15 +12,17 @@
 const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
-const otherLocale = computed(() => {
-  const available = locales.value as Array<{ code: string, name: string }>
-  return available.find((l) => l.code !== locale.value) ?? available[0]
+const availableLocales = computed(() => {
+  return locales.value as Array<{ code: string, name: string }>
+})
+
+const nextLocale = computed(() => {
+  const all = availableLocales.value
+  const currentIndex = all.findIndex((l) => l.code === locale.value)
+  return all[(currentIndex + 1) % all.length]!
 })
 
 function switchLocale() {
-  if (!otherLocale.value) {
-    return
-  }
-  navigateTo(switchLocalePath(otherLocale.value.code as 'en' | 'ru'))
+  navigateTo(switchLocalePath(nextLocale.value.code as 'en' | 'ru'))
 }
 </script>

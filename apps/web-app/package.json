@@ -16,6 +16,7 @@
   "dependencies": {
     "@nuxt/ui": "catalog:integrations",
     "@nuxtjs/i18n": "catalog:integrations",
+    "@nuxtjs/robots": "catalog:integrations",
     "@nuxtjs/sitemap": "catalog:integrations",
     "@vueuse/core": "catalog:integrations",
     "@vueuse/nuxt": "catalog:integrations"

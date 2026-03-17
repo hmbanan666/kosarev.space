@@ -3,12 +3,12 @@
     <UPage>
       <UPageHero
         :title="error?.statusCode === 404 ? '404' : String(error?.statusCode || 500)"
-        :description="error?.statusCode === 404 ? 'Page not found' : 'Something went wrong'"
+        :description="error?.statusCode === 404 ? t('error.notFound') : t('error.serverError')"
         orientation="horizontal"
       >
         <template #links>
           <UButton
-            label="Go home"
+            :label="t('error.goHome')"
             icon="i-lucide-home"
             size="lg"
             @click="handleError"
@@ -25,6 +25,8 @@ import type { NuxtError } from '#app'
 defineProps<{
   error: NuxtError
 }>()
+
+const { t } = useI18n()
 
 function handleError() {
   clearError({ redirect: '/' })

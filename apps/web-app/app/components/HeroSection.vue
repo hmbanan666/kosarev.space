@@ -37,7 +37,7 @@
             :key="icon"
             :name="icon"
             class="size-12 text-dimmed transition-all duration-300 hover:text-primary hover:scale-125 motion-preset-pop"
-            :class="['motion-delay-300', 'motion-delay-400', 'motion-delay-500', 'motion-delay-600', 'motion-delay-700', 'motion-delay-800'][i]"
+            :style="{ animationDelay: `${300 + i * 100}ms` }"
           />
         </div>
       </div>

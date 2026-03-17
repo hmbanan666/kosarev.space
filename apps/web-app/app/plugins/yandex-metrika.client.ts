@@ -1,15 +1,20 @@
-const METRIKA_ID = 62221951
-
 export default defineNuxtPlugin(() => {
+  const config = useRuntimeConfig()
+  const metrikaId = Number(config.public.metrikaId)
+
+  if (!metrikaId) {
+    return
+  }
+
   const router = useRouter()
 
   useHead({
     script: [{
-      src: `https://mc.yandex.ru/metrika/tag.js?id=${METRIKA_ID}`,
+      src: `https://mc.yandex.ru/metrika/tag.js?id=${metrikaId}`,
       async: true,
     }],
     noscript: [{
-      innerHTML: `<div><img src="https://mc.yandex.ru/watch/${METRIKA_ID}" style="position:absolute; left:-9999px;" alt="" /></div>`,
+      innerHTML: `<div><img src="https://mc.yandex.ru/watch/${metrikaId}" style="position:absolute; left:-9999px;" alt="" /></div>`,
     }],
   })
 
@@ -18,7 +23,7 @@ export default defineNuxtPlugin(() => {
   }
   window.ym.l = Date.now()
 
-  window.ym(METRIKA_ID, 'init', {
+  window.ym(metrikaId, 'init', {
     defer: true,
     webvisor: true,
     clickmap: true,
@@ -27,7 +32,7 @@ export default defineNuxtPlugin(() => {
   })
 
   router.afterEach((to) => {
-    window.ym(METRIKA_ID, 'hit', to.fullPath)
+    window.ym(metrikaId, 'hit', to.fullPath)
   })
 })
 

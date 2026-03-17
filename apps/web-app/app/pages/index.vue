@@ -11,7 +11,14 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const localePath = useLocalePath()
+
+const canonicalUrl = computed(() => {
+  const base = 'https://kosarev.space'
+  const path = localePath('/')
+  return path === '/' ? base : `${base}${path}`
+})
 
 useSeoMeta({
   title: () => t('seo.title'),
@@ -19,23 +26,30 @@ useSeoMeta({
   ogTitle: () => t('seo.title'),
   ogDescription: () => t('seo.description'),
   ogType: 'website',
-  ogUrl: 'https://kosarev.space',
+  ogUrl: canonicalUrl,
   ogImage: 'https://kosarev.space/og-image.png',
+  ogImageAlt: () => t('seo.title'),
   ogImageWidth: 1200,
   ogImageHeight: 630,
-  ogSiteName: 'Nick Kosarev',
+  ogSiteName: () => t('hero.name'),
   twitterCard: 'summary_large_image',
   twitterImage: 'https://kosarev.space/og-image.png',
 })
 
 useHead({
+  link: [
+    { rel: 'canonical', href: canonicalUrl },
+  ],
+  htmlAttrs: {
+    lang: locale,
+  },
   script: [
     {
       type: 'application/ld+json',
-      innerHTML: JSON.stringify({
+      innerHTML: computed(() => JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Person',
-        'name': 'Nick Kosarev',
+        'name': t('hero.name'),
         'url': 'https://kosarev.space',
         'jobTitle': 'Fullstack Developer',
         'knowsAbout': ['Vue.js', 'Nuxt', 'TypeScript', 'PostgreSQL', 'Node.js'],
@@ -43,7 +57,7 @@ useHead({
           'https://github.com/hmbanan666',
           'https://t.me/hmbanan666',
         ],
-      }),
+      })),
     },
   ],
 })

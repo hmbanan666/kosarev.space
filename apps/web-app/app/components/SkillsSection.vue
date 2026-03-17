@@ -12,7 +12,7 @@
         :icon="group.icon"
         variant="outline"
         class="motion-preset-slide-up motion-duration-500"
-        :class="['motion-delay-0', 'motion-delay-150', 'motion-delay-300'][i]"
+        :style="{ animationDelay: `${i * 150}ms` }"
       >
         <div class="flex flex-wrap gap-2">
           <UBadge

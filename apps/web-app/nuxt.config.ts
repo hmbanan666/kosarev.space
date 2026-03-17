@@ -4,7 +4,14 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@nuxtjs/i18n',
     '@nuxtjs/sitemap',
+    '@nuxtjs/robots',
   ],
+
+  runtimeConfig: {
+    public: {
+      metrikaId: '',
+    },
+  },
 
   site: {
     url: 'https://kosarev.space',
@@ -52,8 +59,8 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      meta: [
-        { name: 'description', content: 'Fullstack Developer specializing in Vue, Nuxt, TypeScript, and PostgreSQL' },
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
       ],
     },
   },
@@ -64,6 +71,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        'Content-Security-Policy': 'default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://mc.yandex.ru; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; font-src \'self\' https://fonts.gstatic.com; img-src \'self\' https://mc.yandex.ru data:; connect-src \'self\' https://mc.yandex.ru',
       },
     },
   },
