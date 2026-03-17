@@ -31,3 +31,7 @@ Thumbs.db
 # Playwright
 test-results/
 playwright-report/
+
+# Generated CV PDFs
+**/public/cv.pdf
+**/public/cv-en.pdf

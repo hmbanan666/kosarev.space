@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
+    '~~/modules/generate-cv-pdf',
   ],
 
   runtimeConfig: {

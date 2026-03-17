@@ -36,6 +36,125 @@
     "title": "Contacts",
     "description": "Open for collaboration and interesting projects."
   },
+  "cv": {
+    "title": "CV",
+    "seoTitle": "Nick Kosarev — CV",
+    "seoDescription": "Fullstack Developer with 15+ years of experience. Vue, Nuxt, TypeScript, PostgreSQL, Kubernetes.",
+    "subtitle": "Fullstack Developer",
+    "age": "{age}",
+    "birthDate": "born May 20, 1992",
+    "location": "Kaliningrad, Russia",
+    "remote": "Remote",
+    "downloadPdf": "Download PDF",
+    "present": "present",
+    "months": ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "totalExperience": "Work Experience — {duration}",
+    "kaliningrad": "Kaliningrad",
+    "syktyvkar": "Syktyvkar",
+    "courses": "Professional Development",
+    "hexletName": "Hexlet",
+    "hexletCourse": "PHP Developer",
+    "hexletYear": "2020",
+    "desiredPosition": "Desired Position",
+    "desiredRole": "Fullstack Developer",
+    "specializations": "Software Developer • DevOps Engineer • CTO",
+    "employment": "Full-time, part-time",
+    "workFormat": "Remote work",
+    "experience": "Work Experience",
+    "skills": "Skills",
+    "skillsList": ["Vue", "Nuxt", "TypeScript", "Node.js", "PostgreSQL", "Docker", "Kubernetes", "Tailwind CSS", "Pinia", "VueUse", "Drizzle ORM", "REST API", "WebSocket", "Git", "CI/CD", "Figma", "Nginx", "Redis"],
+    "about": "About Me",
+    "aboutText": "In development since 2010 — from PHP freelancing to SaaS products on Vue/Nuxt and Kubernetes. Founded three businesses, launched a food delivery platform with 500+ clients. Currently building Стартодел and Мелотека, focused on the Vue/Nuxt ecosystem and DevOps practices. Streaming live coding on Twitch and contributing to open source.",
+    "education": "Education",
+    "educationText": "Syktyvkar State University — Applied Mathematics and Computer Science",
+    "languages": "Languages",
+    "russian": "Russian",
+    "english": "English",
+    "native": "Native",
+    "publicActivity": "Public Activity",
+    "companyStartodel": "Startodel",
+    "companyMeloteka": "Meloteka",
+    "companyO5": "o5.Food",
+    "startodel": {
+      "industry": "SaaS platform for foodtech",
+      "role": "Founder & Developer",
+      "description": "Founded a commercial SaaS product for launching food delivery websites. Building the platform, acquiring first customers and shaping product strategy.",
+      "highlights": [
+        "Designed and built the platform from scratch: SEO optimization (individual product pages, Schema.org), responsive design, 60-second checkout",
+        "Implemented 3 pricing tiers with 0% order commission, Telegram notifications, no-code menu management",
+        "Integrated online payments, loyalty programs, and multi-channel support (up to 8 channels)"
+      ]
+    },
+    "meloteka": {
+      "industry": "Cloud music service",
+      "role": "Founder & Developer",
+      "description": "Built a cloud platform for managing personal music collections. No ads, no algorithms — full user control over their library.",
+      "highlights": [
+        "Developed full pipeline: FLAC/MP3/OGG upload, transcoding, browser streaming from any device, lossless playback",
+        "Integrated MusicBrainz catalog (127,000+ artists), ListenBrainz scrobbling, Telegram Mini App",
+        "Implemented S3 storage on Yandex Cloud, 3 subscription tiers"
+      ]
+    },
+    "sushilove": {
+      "industry": "Restaurant chain, food delivery",
+      "role": "Fullstack Developer",
+      "description": "Sole developer in the company. Covered the full cycle: from auditing existing websites to building internal services and team tools.",
+      "highlights": [
+        "Integrated PostgreSQL and RabbitMQ for async task processing — improved internal service reliability and speed",
+        "Audited Bitrix and Tilda websites: fixed 12 critical bugs, improved page load speed by 50%",
+        "Created Telegram Mini App for team task management: assignment, statuses, deadlines, KPI monitoring",
+        "Implemented reporting system: 5+ report types for plan execution, employee workload, and partner performance"
+      ]
+    },
+    "o5": {
+      "industry": "IT company, system integration",
+      "role": "Fullstack Developer & DevOps",
+      "description": "Key developer in the product team. Went from first commit to a scalable platform with hundreds of business clients in Russia's food delivery segment.",
+      "highlights": [
+        "Built and launched the o5.Food platform from scratch",
+        "Rewrote core system from PHP/jQuery to TypeScript/React/NestJS. Evaluated WebAssembly and Serverless for critical modules",
+        "Implemented scalable Kubernetes architecture — handling growing traffic without downtime, reducing hosting costs",
+        "Acquired 500+ business clients, earned thousands of positive user reviews"
+      ]
+    },
+    "berry": {
+      "industry": "Web development agency",
+      "role": "Co-founder",
+      "description": "Co-founded a web development agency with a partner over 2.5 years. Managed projects from sales and estimation to development and delivery.",
+      "highlights": [
+        "Delivered 20+ websites for businesses (retail, services)",
+        "Enhanced existing sites: fixed bugs, implemented lead forms, calculators, payment integrations",
+        "One-third of clients returned for new projects"
+      ]
+    },
+    "freelance": {
+      "industry": "Freelance web development",
+      "role": "PHP Developer",
+      "description": "The start of my web development career. Found clients independently, managed projects end-to-end and maintained server infrastructure.",
+      "highlights": [
+        "Launched 20+ websites on PHP+jQuery: corporate portals and e-commerce stores",
+        "Managed infrastructure: domains, DNS, hosting (Apache/Nginx), uptime > 99%"
+      ]
+    },
+    "twitch": {
+      "industry": "Streaming platform",
+      "role": "Software Development Streamer",
+      "description": "Regular weekday streams. Writing code live on camera, ~15 average viewers. Building interactive viewer apps.",
+      "highlights": [
+        "Built Twitch API integration: real-time viewer data, chat messages, and stream events processing",
+        "Developed ChatGame (24 ★ on GitHub) — Telegram Mini App with WebSockets: stream room sync, OAuth authentication, inventory and trophy system"
+      ]
+    },
+    "nextorders": {
+      "industry": "Open-source for foodtech",
+      "role": "Author & Maintainer",
+      "description": "Open-source food delivery automation platform. Exploring the full development cycle in foodtech and practicing modern technologies.",
+      "highlights": [
+        "Designed platform with responsive design, SSR rendering, 11+ language support and multi-regional capabilities",
+        "Implemented conversion features: 'Frequently bought together', product videos, ingredient details, persistent cart, instant search, guest checkout"
+      ]
+    }
+  },
   "footer": {
     "copyright": "© {year} Nick Kosarev"
   },

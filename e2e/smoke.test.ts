@@ -119,6 +119,34 @@ test.describe('robots.txt and sitemap', () => {
   })
 })
 
+test.describe('CV page', () => {
+  test('renders CV page with experience', async ({ page }) => {
+    await page.goto('/en/cv')
+
+    await expect(page).toHaveTitle(/CV/)
+    await expect(page.getByRole('heading', { name: 'Startodel' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Meloteka' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Sushi-Love' })).toBeVisible()
+  })
+
+  test('has download PDF link', async ({ page }) => {
+    await page.goto('/en/cv')
+
+    const pdfLink = page.locator('a[href="/cv-en.pdf"]')
+    await expect(pdfLink).toBeVisible()
+  })
+
+  test('print page renders for PDF generation', async ({ page }) => {
+    await page.goto('/en/cv/print')
+
+    await expect(page.getByText('Nick Kosarev')).toBeVisible()
+    await expect(page.getByText('Work Experience')).toBeVisible()
+    await expect(page.getByText('Public Activity')).toBeVisible()
+    await expect(page.getByText('Education')).toBeVisible()
+    await expect(page.getByText('Skills')).toBeVisible()
+  })
+})
+
 test.describe('security headers', () => {
   test('response includes security headers', async ({ request }) => {
     const response = await request.get('/en')
