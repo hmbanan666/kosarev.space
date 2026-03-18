@@ -8,6 +8,10 @@ export default defineNuxtConfig({
     'nuxt-live-cursors',
   ],
 
+  liveCursors: {
+    stripLocalePrefixes: ['en'],
+  },
+
   runtimeConfig: {
     public: {
       metrikaId: '',

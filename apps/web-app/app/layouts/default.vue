@@ -30,7 +30,7 @@
       <slot />
     </div>
 
-    <footer id="contacts" class="border-t border-default/50 py-10">
+    <footer id="contacts" class="border-t border-default/50 py-10 pb-16">
       <UContainer class="flex flex-col items-center gap-4">
         <p class="text-sm text-muted">
           {{ t('contacts.description') }}
