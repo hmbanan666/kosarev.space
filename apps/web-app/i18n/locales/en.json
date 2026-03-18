@@ -198,5 +198,9 @@
     "notFound": "Page not found",
     "serverError": "Something went wrong",
     "goHome": "Go home"
+  },
+  "liveCursors": {
+    "shuffle": "Shuffle",
+    "howItWorks": "How it works?"
   }
 }

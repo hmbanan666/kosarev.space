@@ -19,7 +19,8 @@
     "@nuxtjs/robots": "catalog:integrations",
     "@nuxtjs/sitemap": "catalog:integrations",
     "@vueuse/core": "catalog:integrations",
-    "@vueuse/nuxt": "catalog:integrations"
+    "@vueuse/nuxt": "catalog:integrations",
+    "nuxt-live-cursors": "catalog:integrations"
   },
   "devDependencies": {
     "@iconify-json/lucide": "catalog:dev",

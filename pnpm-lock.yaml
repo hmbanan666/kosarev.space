@@ -15,6 +15,12 @@ catalogs:
     '@commitlint/config-conventional':
       specifier: ^20.4.1
       version: 20.5.0
+    '@iconify-json/lucide':
+      specifier: ^1.2.88
+      version: 1.2.98
+    '@iconify-json/simple-icons':
+      specifier: ^1.0.0
+      version: 1.2.74
     bumpp:
       specifier: ^11.0.1
       version: 11.0.1
@@ -27,6 +33,15 @@ catalogs:
     nano-staged:
       specifier: ^0.9.0
       version: 0.9.0
+    nuxt:
+      specifier: ^4.4.2
+      version: 4.4.2
+    tailwindcss:
+      specifier: ^4.2.1
+      version: 4.2.1
+    tailwindcss-motion:
+      specifier: ^1.1.1
+      version: 1.1.1
     typescript:
       specifier: ^5.9.3
       version: 5.9.3
@@ -36,6 +51,28 @@ catalogs:
     vue-tsc:
       specifier: ^3.2.4
       version: 3.2.5
+  integrations:
+    '@nuxt/ui':
+      specifier: ^4.5.1
+      version: 4.5.1
+    '@nuxtjs/i18n':
+      specifier: ^10.2.3
+      version: 10.2.3
+    '@nuxtjs/robots':
+      specifier: ^5.7.1
+      version: 5.7.1
+    '@nuxtjs/sitemap':
+      specifier: ^7.2.8
+      version: 7.6.0
+    '@vueuse/core':
+      specifier: ^14.2.0
+      version: 14.2.1
+    '@vueuse/nuxt':
+      specifier: ^14.2.0
+      version: 14.2.1
+    nuxt-live-cursors:
+      specifier: ^0.0.5
+      version: 0.0.5
   test:
     '@playwright/test':
       specifier: ^1.52.0
@@ -46,6 +83,10 @@ catalogs:
     vitest:
       specifier: ^4.1.0
       version: 4.1.0
+  types:
+    '@types/node':
+      specifier: ^25.5.0
+      version: 25.5.0
 
 importers:
 
@@ -111,6 +152,9 @@ importers:
       '@vueuse/nuxt':
         specifier: catalog:integrations
         version: 14.2.1(magicast@0.5.2)(nuxt@4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.30)(cac@6.7.14)(db0@0.3.4)(eslint@9.39.4(jiti@2.6.1))(ioredis@5.10.0)(lightningcss@1.31.1)(magicast@0.5.2)(meow@13.2.0)(optionator@0.9.4)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(rollup-plugin-visualizer@6.0.11(rollup@4.59.0))(rollup@4.59.0)(terser@5.46.1)(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2))(vue-tsc@3.2.5(typescript@5.9.3))(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
+      nuxt-live-cursors:
+        specifier: catalog:integrations
+        version: 0.0.5(magicast@0.5.2)
     devDependencies:
       '@iconify-json/lucide':
         specifier: catalog:dev
@@ -1028,6 +1072,9 @@ packages:
 
   '@napi-rs/wasm-runtime@1.1.1':
     resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
+
+  '@nextorders/avatar@1.0.3':
+    resolution: {integrity: sha512-vI79VviORpIar5jvVvp3eu3vzbeZwUvZgml4xDz7Tl+EgW0t4Q7BRx9hZ//74z30ubLZb3HBLYSWGlW/36Uq7g==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -4821,6 +4868,9 @@ packages:
   nuxt-define@1.0.0:
     resolution: {integrity: sha512-CYZ2WjU+KCyCDVzjYUM4eEpMF0rkPmkpiFrybTqqQCRpUbPt2h3snswWIpFPXTi+osRCY6Og0W/XLAQgDL4FfQ==}
 
+  nuxt-live-cursors@0.0.5:
+    resolution: {integrity: sha512-Z65gKe2PHc31EbUNdCj5qc+Dc+ZQCl7TS59TEI8jLAA23Ipk+x5PA+vEHTLRAjst7JNFHzOLeCo+t4SBbEnelg==}
+
   nuxt-site-config-kit@3.2.21:
     resolution: {integrity: sha512-fvvAyv/mBUqnzsqro4iuXHypFtEUVIPYVW7e5j1/oP9JANfHFrGqosUhY8FAkI21HZgJ8H/8GdcQtnnN2xk+QA==}
 
@@ -7190,6 +7240,8 @@ snapshots:
       '@emnapi/runtime': 1.9.0
       '@tybys/wasm-util': 0.10.1
     optional: true
+
+  '@nextorders/avatar@1.0.3': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -11389,6 +11441,13 @@ snapshots:
       boolbase: 1.0.0
 
   nuxt-define@1.0.0: {}
+
+  nuxt-live-cursors@0.0.5(magicast@0.5.2):
+    dependencies:
+      '@nextorders/avatar': 1.0.3
+      '@nuxt/kit': 3.21.2(magicast@0.5.2)
+    transitivePeerDependencies:
+      - magicast
 
   nuxt-site-config-kit@3.2.21(magicast@0.5.2)(vue@3.5.30(typescript@5.9.3)):
     dependencies:

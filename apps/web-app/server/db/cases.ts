@@ -292,4 +292,27 @@ export const cases: CaseRecord[] = [
       },
     },
   },
+  {
+    key: 'kosarev-live-cursors',
+    project: 'kosarev.space',
+    tags: ['Nuxt', 'WebSocket', 'Nitro', 'TypeScript'],
+    icon: 'i-lucide-mouse-pointer-2',
+    image: '/cases/kosarev-live-cursors.webp',
+    content: {
+      ru: {
+        title: 'Живые курсоры посетителей в реальном времени',
+        description: 'Мультиплеерные курсоры на портфолио-сайте. WebSocket через Nitro, SVG-аватары через свой API, рандомные никнеймы и интерактивный онлайн-бар.',
+        task: 'Портфолио-сайт - это статичная страница, которую посетитель просматривает в одиночку. Нет ощущения что сайт живой, что на нем кто-то еще есть прямо сейчас. Хотелось добавить элемент присутствия - чтобы посетители видели друг друга и понимали что они не одни. При этом решение должно быть легковесным, без внешних сервисов и работать на том же стеке что и сам сайт.',
+        solution: 'Реализовал WebSocket-сервер прямо в Nitro через defineWebSocketHandler - никаких дополнительных серверов или сервисов. При подключении каждый посетитель получает рандомный никнейм (на русском и английском), уникальный цвет и SVG-аватарку. Аватары генерируются через библиотеку @nextorders/avatar на собственном API-эндпоинте /api/avatar/[seed] с вечным кешем. Позиции курсоров передаются через WebSocket с throttling 50мс на клиенте. Курсоры фильтруются по текущей странице - видишь только тех, кто на той же странице. Интерактивный онлайн-бар внизу экрана показывает аватарки всех посетителей, а при клике открывается карточка профиля с кнопкой "Перемешать" для смены образа. Все тексты локализованы на русский и английский.',
+        result: 'Сайт ощущается живым - посетители видят курсоры друг друга с аватарками и именами. Реконнект при обрыве соединения, плавные анимации появления и исчезновения курсоров. Решение полностью автономное - работает на встроенном в Nitro WebSocket без внешних зависимостей.',
+      },
+      en: {
+        title: 'Live visitor cursors in real time',
+        description: 'Multiplayer cursors on a portfolio site. WebSocket via Nitro, SVG avatars through own API, random nicknames and an interactive online bar.',
+        task: 'A portfolio site is a static page that visitors browse alone. There\'s no sense that the site is alive, that someone else is there right now. I wanted to add a presence element - so visitors could see each other and know they\'re not alone. The solution had to be lightweight, with no external services, running on the same stack as the site itself.',
+        solution: 'Implemented a WebSocket server directly in Nitro via defineWebSocketHandler - no additional servers or services needed. On connection, each visitor receives a random nickname (in Russian and English), a unique color, and an SVG avatar. Avatars are generated via the @nextorders/avatar library on a custom API endpoint /api/avatar/[seed] with immutable caching. Cursor positions are transmitted via WebSocket with 50ms client-side throttling. Cursors are filtered by current page - you only see those on the same page. An interactive online bar at the bottom shows all visitor avatars, and clicking it opens a profile card with a "Shuffle" button to change your look. All text is localized in Russian and English.',
+        result: 'The site feels alive - visitors see each other\'s cursors with avatars and names. Auto-reconnect on connection loss, smooth enter/leave animations for cursors. The solution is fully self-contained - runs on Nitro\'s built-in WebSocket with no external dependencies.',
+      },
+    },
+  },
 ]

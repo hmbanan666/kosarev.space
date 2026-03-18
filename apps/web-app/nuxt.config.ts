@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
+    'nuxt-live-cursors',
   ],
 
   runtimeConfig: {
@@ -78,7 +79,7 @@ export default defineNuxtConfig({
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-        'Content-Security-Policy': 'default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://mc.yandex.ru; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; font-src \'self\' https://fonts.gstatic.com; img-src \'self\' https://mc.yandex.ru data:; connect-src \'self\' https://mc.yandex.ru',
+        'Content-Security-Policy': 'default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://mc.yandex.ru https://mc.yandex.com; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; font-src \'self\' https://fonts.gstatic.com; img-src \'self\' https://mc.yandex.ru https://mc.yandex.com data:; connect-src \'self\' https://mc.yandex.ru https://mc.yandex.com wss: ws:',
       },
     },
   },

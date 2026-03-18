@@ -7,6 +7,14 @@
   --font-serif: 'Lora', serif;
 }
 
+:root {
+  --ui-primary: black;
+}
+
+.dark {
+  --ui-primary: white;
+}
+
 h1,
 h2,
 h3,
