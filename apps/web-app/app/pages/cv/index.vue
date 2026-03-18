@@ -35,12 +35,13 @@
           />
           <UButton
             :label="t('hero.contact')"
-            to="#contacts"
             icon="i-lucide-send"
             variant="outline"
             size="lg"
+            @click="contactOpen = true"
           />
         </div>
+        <ContactModal v-model:open="contactOpen" />
       </div>
     </UPageSection>
 
@@ -87,6 +88,7 @@
 
 <script setup lang="ts">
 const { t, locale } = useI18n()
+const contactOpen = ref(false)
 
 useSeoMeta({
   title: () => t('cv.seoTitle'),

@@ -17,6 +17,10 @@ export default defineNuxtConfig({
     url: 'https://kosarev.space',
   },
 
+  sitemap: {
+    sources: ['/__sitemap'],
+  },
+
   i18n: {
     locales: [
       { code: 'en', language: 'en', file: 'en.json', name: 'English' },

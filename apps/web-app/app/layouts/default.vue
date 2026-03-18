@@ -14,6 +14,12 @@
             >
               {{ t('nav.cv') }}
             </NuxtLink>
+            <NuxtLink
+              :to="`${localePath('/')}#skills`"
+              class="text-sm text-muted hover:text-highlighted transition-colors"
+            >
+              {{ t('nav.cases') }}
+            </NuxtLink>
           </nav>
         </div>
         <LanguageSwitcher />

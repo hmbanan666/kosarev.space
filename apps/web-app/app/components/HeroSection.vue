@@ -1,12 +1,26 @@
 <template>
   <UPageHero
     orientation="horizontal"
-    :links="[
-      { label: t('nav.cv'), to: localePath('/cv'), icon: 'i-lucide-file-text', size: 'lg' as const },
-      { label: t('hero.contact'), to: '#contacts', icon: 'i-lucide-send', variant: 'outline' as const, size: 'lg' as const },
-    ]"
     :ui="{ links: 'motion-preset-slide-up motion-delay-300' }"
   >
+    <template #links>
+      <div class="flex flex-wrap items-center gap-2 motion-preset-slide-up motion-delay-300">
+        <UButton
+          :label="t('nav.cv')"
+          :to="localePath('/cv')"
+          icon="i-lucide-file-text"
+          size="lg"
+        />
+        <UButton
+          :label="t('hero.contact')"
+          icon="i-lucide-send"
+          variant="outline"
+          size="lg"
+          @click="contactOpen = true"
+        />
+      </div>
+      <ContactModal v-model:open="contactOpen" />
+    </template>
     <template #title>
       <span class="motion-preset-slide-up motion-delay-100">
         {{ t('hero.name') }}
@@ -50,6 +64,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const localePath = useLocalePath()
+const contactOpen = ref(false)
 
 const heroIcons = [
   { name: 'i-simple-icons-vuedotjs', label: 'Vue.js' },

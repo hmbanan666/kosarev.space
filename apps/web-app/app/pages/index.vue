@@ -2,6 +2,7 @@
   <UPage>
     <HeroSection />
     <ProjectsSection />
+    <SkillsShowcaseSection />
     <ExperienceSection />
   </UPage>
 </template>
