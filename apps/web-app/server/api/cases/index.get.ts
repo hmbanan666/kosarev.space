@@ -1,17 +1,6 @@
-import { cases } from '../../db/cases'
-
-export default defineEventHandler((event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event)
-  const locale = (query.locale as string) || 'ru'
+  const locale = typeof query.locale === 'string' ? query.locale : 'ru'
 
-  return cases.map((c) => {
-    const content = c.content[locale] ?? c.content.ru!
-    return {
-      key: c.key,
-      tags: c.tags,
-      icon: c.icon,
-      title: content.title,
-      description: content.description,
-    }
-  })
-})
+  return repository.case.findAll(locale)
+}, { swr: true, maxAge: 60 })

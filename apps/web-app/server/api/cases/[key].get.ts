@@ -1,39 +1,21 @@
-import { cases } from '../../db/cases'
-
-export default defineEventHandler((event) => {
+export default defineCachedEventHandler(async (event) => {
   const key = getRouterParam(event, 'key')
-  const query = getQuery(event)
-  const locale = (query.locale as string) || 'ru'
+  if (!key) {
+    throw createError({ statusCode: 400, statusMessage: 'Missing case key' })
+  }
 
-  const found = cases.find((c) => c.key === key)
+  const query = getQuery(event)
+  const locale = typeof query.locale === 'string' ? query.locale : 'ru'
+
+  const found = await repository.case.findByKey(key, locale)
   if (!found) {
     throw createError({ statusCode: 404, statusMessage: 'Case not found' })
   }
 
-  const content = found.content[locale] ?? found.content.ru!
-
-  // Related cases: same tags, exclude current
-  const tags = new Set(found.tags)
-  const related = cases
-    .filter((c) => c.key !== found.key && c.tags.some((t) => tags.has(t)))
-    .slice(0, 4)
-    .map((c) => {
-      const relContent = c.content[locale] ?? c.content.ru!
-      return {
-        key: c.key,
-        tags: c.tags,
-        icon: c.icon,
-        title: relContent.title,
-        description: relContent.description,
-      }
-    })
+  const related = await repository.case.findRelated(key, found.tags, locale)
 
   return {
-    key: found.key,
-    tags: found.tags,
-    icon: found.icon,
-    image: found.image,
-    ...content,
+    ...found,
     related,
   }
-})
+}, { swr: true, maxAge: 60 })

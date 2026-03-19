@@ -1,0 +1,1 @@
+CREATE INDEX "case_translations_case_id_idx" ON "case_translations" USING btree ("case_id");

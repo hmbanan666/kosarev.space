@@ -14,6 +14,7 @@
     "clean:modules": "rm -rf .nuxt .output node_modules"
   },
   "dependencies": {
+    "@kosarev/database": "workspace:*",
     "@nuxt/ui": "catalog:integrations",
     "@nuxtjs/i18n": "catalog:integrations",
     "@nuxtjs/robots": "catalog:integrations",

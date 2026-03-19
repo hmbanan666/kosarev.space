@@ -7,11 +7,10 @@ LABEL org.opencontainers.image.licenses=MIT
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/web-app/package.json apps/web-app/
+COPY packages ./packages
+COPY apps/web-app ./apps/web-app
 
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
-
-COPY apps/web-app/ apps/web-app/
 
 RUN npx playwright install --with-deps chromium
 RUN pnpm --filter @kosarev/web-app build
@@ -23,6 +22,7 @@ RUN chown node:node /app
 USER node
 
 COPY --from=build --chown=node:node /app/apps/web-app/.output .output
+COPY --from=build --chown=node:node /app/packages/database/migrations ./migrations
 
 ENV NODE_ENV=production
 ENV PORT=3000

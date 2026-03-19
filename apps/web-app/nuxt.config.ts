@@ -13,6 +13,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    databaseUrl: '',
     public: {
       metrikaId: '',
     },

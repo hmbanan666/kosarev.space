@@ -1,14 +1,21 @@
 <template>
-  <div class="flex flex-col items-center gap-4">
-    <div class="relative">
+  <div class="flex w-full flex-col items-center gap-4 px-4 sm:px-0">
+    <div class="relative w-full max-w-64">
       <UIcon name="i-lucide-search" class="absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-muted pointer-events-none" />
       <input
         :value="searchQuery"
         :placeholder="searchPlaceholder"
         autocomplete="off"
-        class="h-10 w-64 rounded-full border border-default/50 bg-transparent pl-10 pr-4 text-base text-highlighted placeholder:text-muted/50 outline-none transition-all duration-200 focus:border-primary/50 focus:ring-1 focus:ring-primary/25"
+        class="h-10 w-full max-w-64 rounded-full border border-default/50 bg-transparent pl-10 pr-9 text-base text-highlighted placeholder:text-muted/50 outline-none transition-all duration-200 focus:border-primary/50 focus:ring-1 focus:ring-primary/25"
         @input="$emit('update:searchQuery', ($event.target as HTMLInputElement).value)"
       >
+      <button
+        v-if="searchQuery"
+        class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center text-muted hover:text-highlighted transition-colors"
+        @click="$emit('update:searchQuery', '')"
+      >
+        <UIcon name="i-lucide-x" class="size-5" />
+      </button>
     </div>
     <div class="flex flex-wrap items-center justify-center gap-2">
       <button

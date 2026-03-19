@@ -31,41 +31,71 @@
           v-if="data.image"
           :src="data.image"
           :alt="data.title"
-          class="my-8 max-h-[600px] rounded-lg ring-1 ring-default/50 mx-auto"
+          class="my-8 max-h-150 rounded-lg ring-1 ring-default/50 mx-auto"
         >
 
         <USeparator v-else class="my-8" />
 
         <div class="space-y-8 motion-preset-slide-up motion-delay-200">
           <section>
-            <h2 class="text-xl font-semibold text-highlighted mb-3">
+            <h2 class="inline-flex items-center gap-2 text-xl font-semibold text-highlighted mb-3">
               <UIcon name="i-lucide-target" class="size-5 text-primary" />
               {{ t('cases.taskTitle') }}
             </h2>
-            <p class="text-muted leading-relaxed">
-              {{ data.task }}
-            </p>
+            <p class="text-muted leading-relaxed case-text" v-html="renderText(data.task)" />
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold text-highlighted mb-3">
+            <h2 class="inline-flex items-center gap-2 text-xl font-semibold text-highlighted mb-3">
               <UIcon name="i-lucide-lightbulb" class="size-5 text-primary" />
               {{ t('cases.solutionTitle') }}
             </h2>
-            <p class="text-muted leading-relaxed">
-              {{ data.solution }}
-            </p>
+            <p class="text-muted leading-relaxed case-text" v-html="renderText(data.solution)" />
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold text-highlighted mb-3">
+            <h2 class="inline-flex items-center gap-2 text-xl font-semibold text-highlighted mb-3">
               <UIcon name="i-lucide-trophy" class="size-5 text-primary" />
               {{ t('cases.resultTitle') }}
             </h2>
-            <p class="text-muted leading-relaxed">
-              {{ data.result }}
-            </p>
+            <p class="text-muted leading-relaxed case-text" v-html="renderText(data.result)" />
           </section>
+        </div>
+
+        <div v-if="data.stats" class="my-8 flex flex-wrap items-center gap-3">
+          <button
+            v-for="(count, emoji) in visibleReactions"
+            :key="emoji"
+            class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all duration-200"
+            :class="userReaction === String(emoji)
+              ? 'border-primary bg-primary/15 text-highlighted'
+              : 'border-default/50 text-muted hover:border-primary/50 hover:text-highlighted'"
+            @click="setReaction(String(emoji))"
+          >
+            <span class="text-base">{{ emoji }}</span>
+            <span class="font-medium tabular-nums">{{ count }}</span>
+          </button>
+          <UPopover v-model:open="pickerOpen">
+            <button class="inline-flex items-center justify-center size-9 rounded-full border border-default/50 text-muted hover:border-primary/50 hover:text-highlighted transition-all duration-200">
+              <UIcon name="i-lucide-plus" class="size-4" />
+            </button>
+            <template #content>
+              <div class="grid grid-cols-5 gap-1.5 p-2.5">
+                <button
+                  v-for="emoji in CASE_ALLOWED_EMOJIS"
+                  :key="emoji"
+                  class="flex items-center justify-center size-11 cursor-pointer rounded-lg text-2xl hover:bg-linear-to-br hover:from-primary/20 hover:to-primary/5 hover:scale-110 active:scale-95 transition-all duration-150"
+                  @click="setReaction(emoji)"
+                >
+                  {{ emoji }}
+                </button>
+              </div>
+            </template>
+          </UPopover>
+          <div class="ml-auto flex items-center gap-1.5 text-sm text-muted">
+            <UIcon name="i-lucide-eye" class="size-4" />
+            <span class="tabular-nums">{{ data.stats.views }}</span>
+          </div>
         </div>
 
         <USeparator class="my-8" />
@@ -101,10 +131,84 @@
 </template>
 
 <script setup lang="ts">
+import { CASE_ALLOWED_EMOJIS } from '@kosarev/database/constants'
+
 const { t, locale } = useI18n()
 const route = useRoute()
 const localePath = useLocalePath()
 const contactOpen = ref(false)
+const pickerOpen = ref(false)
+const userReaction = ref<string | null>(null)
+const localReactions = ref<Record<string, number>>({})
+
+const STORAGE_KEY = 'case-reactions'
+
+function loadSavedReaction(caseKey: string) {
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+    return stored[caseKey] ?? null
+  } catch {
+    return null
+  }
+}
+
+function saveReaction(caseKey: string, emoji: string | null) {
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+    if (emoji) {
+      stored[caseKey] = emoji
+    } else {
+      delete stored[caseKey]
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stored))
+  } catch {}
+}
+
+const visibleReactions = computed(() => {
+  const base = data.value?.stats?.reactions ?? {}
+  const merged: Record<string, number> = { ...base }
+  for (const [emoji, count] of Object.entries(localReactions.value)) {
+    merged[emoji] = (merged[emoji] ?? 0) + count
+  }
+  return Object.fromEntries(Object.entries(merged).filter(([, v]) => v > 0))
+})
+
+function setReaction(emoji: string) {
+  const caseKey = String(route.params.key)
+  const current = userReaction.value
+
+  if (current === emoji) {
+    userReaction.value = null
+    localReactions.value[emoji] = (localReactions.value[emoji] ?? 0) - 1
+    saveReaction(caseKey, null)
+  } else {
+    if (current) {
+      localReactions.value[current] = (localReactions.value[current] ?? 0) - 1
+    }
+    userReaction.value = emoji
+    localReactions.value[emoji] = (localReactions.value[emoji] ?? 0) + 1
+    saveReaction(caseKey, emoji)
+  }
+  pickerOpen.value = false
+
+  $fetch(`/api/cases/${caseKey}/react`, {
+    method: 'POST',
+    body: userReaction.value ? { emoji: userReaction.value } : {},
+  }).catch(() => {})
+}
+
+const RE_AMP = /&/g
+const RE_LT = /</g
+const RE_GT = />/g
+const RE_BOLD = /\*\*(.*?)\*\*/g
+const RE_SENTENCE = /\. /g
+
+function renderText(text: string) {
+  const escaped = text.replace(RE_AMP, '&amp;').replace(RE_LT, '&lt;').replace(RE_GT, '&gt;')
+  return escaped
+    .replace(RE_BOLD, '<strong class="text-highlighted font-medium">$1</strong>')
+    .replace(RE_SENTENCE, '.\u00A0\u00A0')
+}
 
 const { data } = await useFetch(`/api/cases/${route.params.key}`, {
   query: { locale },
@@ -113,6 +217,12 @@ const { data } = await useFetch(`/api/cases/${route.params.key}`, {
 if (!data.value) {
   throw createError({ statusCode: 404, statusMessage: 'Case not found' })
 }
+
+onMounted(() => {
+  $fetch(`/api/cases/${route.params.key}/view`, { method: 'POST' }).catch(() => {})
+
+  userReaction.value = loadSavedReaction(String(route.params.key))
+})
 
 const canonicalUrl = computed(() => {
   const base = 'https://kosarev.space'
@@ -151,7 +261,6 @@ useHead({
         'headline': data.value?.title,
         'description': data.value?.description,
         'image': ogImage.value,
-        'datePublished': '2025-01-01',
         'author': {
           '@type': 'Person',
           'name': t('hero.name'),

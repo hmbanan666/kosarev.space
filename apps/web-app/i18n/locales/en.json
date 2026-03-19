@@ -6,7 +6,7 @@
   "hero": {
     "badge": "Open for collaboration",
     "name": "Nick Kosarev",
-    "description": "Fullstack Developer building modern web applications with Vue, Nuxt, and TypeScript. Passionate about clean architecture, great UX, and open source.",
+    "description": "Fullstack Developer with 15+ years of experience. Went from freelancing to building SaaS products with hundreds of clients. Stack: Vue, Nuxt, TypeScript, PostgreSQL.",
     "projects": "Projects",
     "contact": "Get in touch"
   },
@@ -109,21 +109,21 @@
     "startodel": {
       "industry": "SaaS platform for foodtech",
       "role": "Founder & Developer",
-      "description": "Founded a commercial SaaS product for launching food delivery websites. Building the platform, acquiring first customers and shaping product strategy.",
+      "description": "Launched a SaaS platform that gives food delivery businesses a ready-made website with online ordering. Doing everything myself: architecture, development, sales, and customer support.",
       "highlights": [
-        "Designed and built the platform from scratch: SEO optimization (individual product pages, Schema.org), responsive design, 60-second checkout",
-        "Implemented 3 pricing tiers with 0% order commission, Telegram notifications, no-code menu management",
-        "Integrated online payments, loyalty programs, and multi-channel support (up to 8 channels)"
+        "Built a multi-tenant platform on Nuxt + PostgreSQL: SSR, SEO with individual product pages and Schema.org, responsive design",
+        "Implemented pricing tiers with 0% commission, online payments, Telegram notifications, loyalty programs",
+        "Added multi-channel support (up to 8 sales channels per business) and a no-code menu management admin panel"
       ]
     },
     "meloteka": {
       "industry": "Cloud music service",
       "role": "Founder & Developer",
-      "description": "Built a cloud platform for managing personal music collections. No ads, no algorithms - full user control over their library.",
+      "description": "Built a service for storing your music in the cloud and listening from any device. A Google Play Music alternative - upload your files, listen anywhere.",
       "highlights": [
-        "Developed full pipeline: FLAC/MP3/OGG upload, transcoding, browser streaming from any device, lossless playback",
-        "Integrated MusicBrainz catalog (127,000+ artists), ListenBrainz scrobbling, Telegram Mini App",
-        "Implemented S3 storage on Yandex Cloud, 3 subscription tiers"
+        "Wrote an audio transcoding pipeline: FLAC/MP3/OGG upload, conversion, streaming with lossless playback in the browser",
+        "Integrated MusicBrainz catalog for automatic metadata enrichment, ListenBrainz scrobbling, Telegram Mini App",
+        "Set up S3 storage on Yandex Cloud, implemented 3 subscription tiers"
       ]
     },
     "sushilove": {

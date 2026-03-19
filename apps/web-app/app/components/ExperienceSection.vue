@@ -4,20 +4,17 @@
     :title="t('experience.title')"
     :description="t('experience.description')"
   >
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-      <UCard
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      <div
         v-for="(stat, i) in stats"
         :key="stat.key"
-        variant="subtle"
-        class="text-center motion-preset-slide-up"
+        class="flex flex-col items-center gap-1.5 rounded-lg border border-default/50 bg-elevated/50 py-5 text-center motion-preset-slide-up"
         :style="{ animationDelay: `${i * 100}ms` }"
       >
-        <div class="flex flex-col items-center gap-2">
-          <UIcon :name="stat.icon" class="size-6 text-primary" />
-          <span class="text-3xl font-bold text-highlighted">{{ t(`experience.${stat.key}`) }}</span>
-          <span class="text-sm text-muted">{{ t(`experience.${stat.key}Label`) }}</span>
-        </div>
-      </UCard>
+        <UIcon :name="stat.icon" class="size-5 sm:size-6 text-primary" />
+        <span class="text-2xl sm:text-3xl font-bold text-highlighted">{{ t(`experience.${stat.key}`) }}</span>
+        <span class="text-xs sm:text-sm text-muted">{{ t(`experience.${stat.key}Label`) }}</span>
+      </div>
     </div>
     <div class="mt-4 flex justify-center motion-preset-slide-up motion-delay-500">
       <UButton

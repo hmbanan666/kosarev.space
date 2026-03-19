@@ -2,11 +2,11 @@
   <div>
     <header class="fixed top-0 left-0 z-50 w-full border-b border-default/50 bg-default/80 backdrop-blur-sm">
       <UContainer class="flex h-12 items-center justify-between">
-        <div class="flex items-center gap-6">
-          <NuxtLink :to="localePath('/')" class="text-sm font-semibold text-highlighted hover:text-primary transition-colors">
+        <div class="flex items-center gap-3 sm:gap-6">
+          <NuxtLink :to="localePath('/')" class="text-sm font-semibold text-highlighted hover:text-primary transition-colors truncate">
             {{ t('hero.name') }}
           </NuxtLink>
-          <nav aria-label="Main navigation" class="flex items-center gap-4">
+          <nav aria-label="Main navigation" class="flex items-center gap-2 sm:gap-4">
             <NuxtLink
               :to="localePath('/cv')"
               class="text-sm text-muted hover:text-highlighted transition-colors"
@@ -30,7 +30,7 @@
       <slot />
     </div>
 
-    <footer id="contacts" class="border-t border-default/50 py-10 pb-16">
+    <footer id="contacts" class="border-t border-default/50 py-10 pb-24">
       <UContainer class="flex flex-col items-center gap-4">
         <p class="text-sm text-muted">
           {{ t('contacts.description') }}

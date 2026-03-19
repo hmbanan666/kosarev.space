@@ -8,6 +8,7 @@ Personal portfolio and CV website — [kosarev.space](https://kosarev.space)
 
 - **Nuxt 4** + **Vue 3** + **TypeScript**
 - **Nuxt UI v4** + **Tailwind CSS v4**
+- **PostgreSQL** + **Drizzle ORM**
 - **i18n** — Russian / English
 - **Playwright** — E2E tests + CV PDF generation
 - **Vitest** — unit tests
@@ -20,11 +21,23 @@ Personal portfolio and CV website — [kosarev.space](https://kosarev.space)
 pnpm install
 ```
 
-Copy env file and fill in values:
+Copy env files and fill in values:
 
 ```bash
 cp apps/web-app/.env.example apps/web-app/.env
+cp packages/database/.env.example packages/database/.env
 ```
+
+### Database
+
+```bash
+cd packages/database
+pnpm db:generate    # generate migrations
+pnpm db:push        # push schema directly (dev)
+pnpm db:studio      # open Drizzle Studio
+```
+
+Migrations run automatically on app startup.
 
 ## Development
 
@@ -46,17 +59,28 @@ pnpm --filter @kosarev/web-app dev
 ## Project structure
 
 ```
-apps/web-app/
+apps/web-app/             # Nuxt application
 ├── app/
-│   ├── components/    # Vue components
-│   ├── composables/   # Composables (useDuration, useHighlights)
-│   ├── layouts/       # Page layouts
-│   ├── pages/         # Routes (/, /cv, /cv/print)
-│   ├── plugins/       # Yandex Metrika
-│   └── utils/         # Data, duration helpers
-├── i18n/locales/      # Translation files
-├── server/routes/     # CV PDF serving
-└── scripts/           # PDF generation at build time
+│   ├── components/       # Vue components
+│   ├── composables/      # Composables
+│   ├── layouts/          # Page layouts
+│   ├── pages/            # Routes (/, /cases/[key], /cv, /cv/print)
+│   └── plugins/          # Yandex Metrika
+├── i18n/locales/         # Translation files
+├── server/
+│   ├── api/cases/        # Cases API (CRUD, views, reactions)
+│   ├── plugins/          # Database init + auto-migrate
+│   ├── routes/           # CV PDF serving, sitemap
+│   └── utils/            # Repository access
+└── scripts/              # PDF generation at build time
+
+packages/database/        # Shared database package
+├── src/
+│   ├── tables.ts         # Drizzle schema
+│   ├── database.ts       # Connection + migration
+│   ├── constants.ts      # Shared constants
+│   └── repository/       # Data access layer
+└── migrations/           # SQL migrations
 ```
 
 ## License
