@@ -37,7 +37,7 @@ catalogs:
     '@vueuse/core': ^14.2.0
     '@vueuse/nuxt': ^14.2.0
     drizzle-orm: ^0.45.1
-    nuxt-live-cursors: ^0.2.0
+    nuxt-live-cursors: ^0.3.0
     pg: ^8.20.0
   test:
     '@playwright/test': ^1.52.0
