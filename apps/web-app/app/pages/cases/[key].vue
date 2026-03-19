@@ -62,7 +62,7 @@
           </section>
         </div>
 
-        <div v-if="data.stats" class="my-8 flex flex-wrap items-center gap-3">
+        <div v-if="data.stats" class="my-8 flex flex-wrap items-center gap-2">
           <button
             v-for="(count, emoji) in visibleReactions"
             :key="emoji"
@@ -170,7 +170,19 @@ const visibleReactions = computed(() => {
   for (const [emoji, count] of Object.entries(localReactions.value)) {
     merged[emoji] = (merged[emoji] ?? 0) + count
   }
-  return Object.fromEntries(Object.entries(merged).filter(([, v]) => v > 0))
+
+  const sorted = Object.entries(merged)
+    .filter(([, v]) => v > 0)
+    .sort(([, a], [, b]) => b - a)
+
+  const top = sorted.slice(0, 3)
+  const topEmojis = new Set(top.map(([e]) => e))
+
+  if (userReaction.value && !topEmojis.has(userReaction.value) && merged[userReaction.value]) {
+    top.push([userReaction.value, merged[userReaction.value]!])
+  }
+
+  return Object.fromEntries(top)
 })
 
 function setReaction(emoji: string) {
