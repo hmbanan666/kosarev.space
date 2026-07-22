@@ -12,8 +12,8 @@ Personal portfolio and CV website — [kosarev.space](https://kosarev.space)
 - **i18n** — Russian / English
 - **Playwright** — E2E tests + CV PDF generation
 - **Vitest** — unit tests
-- **Docker** + **Kubernetes** — deployment
-- **GitHub Actions** — CI/CD
+- **Docker** + **Dokploy** — production deploy on VPS
+- **GitHub Actions** — CI (+ release on tags)
 
 ## Setup
 
@@ -82,6 +82,13 @@ packages/database/        # Shared database package
 │   └── repository/       # Data access layer
 └── migrations/           # SQL migrations
 ```
+
+## Deploy
+
+Production is on **Dokploy** (build on VPS from `docker/web-app/Dockerfile`, no
+GHCR/k8s). Details: [`docs/deploy.md`](docs/deploy.md).
+
+URL: [kosarev.space](https://kosarev.space)
 
 ## License
 
