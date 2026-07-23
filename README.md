@@ -1,6 +1,8 @@
 # kosarev.space
 
-Personal portfolio and CV website — [kosarev.space](https://kosarev.space)
+Personal site — [kosarev.space](https://kosarev.space)
+
+Brand / rework intent: [`docs/brand.md`](docs/brand.md). Full construction lives in private `hmbanan666/book` → `PLAN.md`.
 
 ![Preview](apps/web-app/public/preview.png)
 
