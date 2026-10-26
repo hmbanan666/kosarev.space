@@ -1,7 +1,7 @@
 minimumReleaseAgeExcludePrune: true
 
 trustPolicy: no-downgrade
-# Babel 7 requires semver 6; 6.3.1 is the latest 6.x and predates provenance on that line.
+# Babel 7 requires semver 6; 6.3.1 is the latest 6.x and has no provenance attestation.
 # Its registry tarball SHA-512 matches the baseline lockfile (3746853).
 # https://github.com/pnpm/pnpm/issues/10202
 trustPolicyExclude:

@@ -4,8 +4,7 @@
     // Use ESLint's --fix:
     { "code_action": "source.fixAll.eslint" }
   ],
-  // Enable eslint for all supported languages
-  // Defaults only include https://github.com/search?q=repo%3Azed-industries%2Fzed%20eslint_languages&type=code
+  // Enable ESLint for the additional languages listed below.
   "languages": {
     "HTML": {
       "language_servers": ["...", "eslint"]
@@ -30,7 +29,7 @@
   "lsp": {
     "eslint": {
       "settings": {
-        // Silent the stylistic rules in your IDE, but still auto fix them
+        // Suppress stylistic diagnostics in the editor while retaining automatic fixes.
         "rulesCustomizations": [
           { "rule": "style/*", "severity": "off", "fixable": true },
           { "rule": "format/*", "severity": "off", "fixable": true },
