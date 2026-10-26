@@ -24,7 +24,7 @@ test.describe('homepage', () => {
   test('language switcher is visible', async ({ page }) => {
     await page.goto('/')
 
-    await expect(page.locator('button', { hasText: /English|Русский/ })).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('link', { name: /^(English|Русский)$/, exact: true })).toBeVisible({ timeout: 10000 })
   })
 })
 
@@ -129,7 +129,7 @@ test.describe('CV page', () => {
   test('has download PDF link', async ({ page }) => {
     await page.goto('/en/cv')
 
-    const pdfLink = page.locator('a[href="/cv-en.pdf"]')
+    const pdfLink = page.locator('.cv-toolbar a[href="/cv-en.pdf"]')
     await expect(pdfLink).toBeVisible()
   })
 

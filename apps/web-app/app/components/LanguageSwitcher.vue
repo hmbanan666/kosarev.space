@@ -1,28 +1,17 @@
 <template>
-  <UButton
-    :label="nextLocale.name"
-    icon="i-lucide-languages"
-    variant="ghost"
-    size="sm"
-    @click="switchLocale"
-  />
+  <NuxtLink
+    :to="switchLocalePath(nextLocale.code)"
+    class="site-language"
+    :aria-label="nextLocale.name"
+    :hreflang="nextLocale.code"
+    :lang="nextLocale.code"
+  >
+    {{ nextLocale.code.toUpperCase() }}
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">
 const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
-
-const availableLocales = computed(() => {
-  return locales.value as Array<{ code: string, name: string }>
-})
-
-const nextLocale = computed(() => {
-  const all = availableLocales.value
-  const currentIndex = all.findIndex((l) => l.code === locale.value)
-  return all[(currentIndex + 1) % all.length]!
-})
-
-function switchLocale() {
-  navigateTo(switchLocalePath(nextLocale.value.code as 'en' | 'ru'))
-}
+const nextLocale = computed(() => locales.value.find((item) => item.code !== locale.value)!)
 </script>

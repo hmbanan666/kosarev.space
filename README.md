@@ -3,12 +3,13 @@
 Source for the bilingual personal site at [kosarev.space](https://kosarev.space).
 Russian is the default locale; English pages use the `/en` prefix.
 
-The application currently includes a portfolio, database-backed case studies,
-a CV with printable pages and downloadable PDFs, contact links, live cursors,
-and optional Yandex Metrika tracking. The [brand brief](docs/brand.md) describes
-planned positioning and features; it is not an inventory of implemented work.
-
-![Site preview asset](apps/web-app/public/preview.png)
+The application uses a dark-only black and amber interface with an original
+color portrait. It includes a portfolio, database-backed case studies,
+a CV with printable pages and downloadable PDFs, direct contact links,
+the native live-cursor module and bottom profile pill on desktop, and optional
+Yandex Metrika tracking. The
+[portfolio brief](docs/brand.md) describes the audiences, implemented design
+direction and boundaries for future work.
 
 ## Stack
 
@@ -142,8 +143,10 @@ under `/en`. Download routes are `/cv.pdf` and `/cv-en.pdf`.
 The public case API exposes list/detail reads (`GET /api/cases` and
 `GET /api/cases/[key]`), view recording (`POST /api/cases/[key]/view`) and
 reaction changes (`POST /api/cases/[key]/react`). Internal repository creation
-methods are not public CRUD endpoints. Contact currently opens a modal of
-external links; there is no contact-submission endpoint or `/book` page.
+methods are not public CRUD endpoints. Case search supports shareable `q`,
+`focus` and `tech` query parameters, with `all=1` exposing the full list. Contact
+links are directly visible, with email copy/manual-selection feedback; there
+is no contact-submission endpoint or `/book` page.
 
 ```text
 apps/web-app/

@@ -1,34 +1,11 @@
 @import "tailwindcss";
 @plugin "tailwindcss-motion";
 @import "@nuxt/ui";
+@import "./portfolio.css";
 
 @theme static {
   --font-sans: 'Noto Sans', sans-serif;
   --font-serif: 'Lora', serif;
 }
 
-:root {
-  --ui-primary: black;
-}
-
-.dark {
-  --ui-primary: white;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--font-serif);
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.animate-float {
-  animation: float ease-in-out infinite;
-}
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif); }

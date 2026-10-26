@@ -1,5 +1,5 @@
 <template>
-  <main class="cv-page">
+  <div class="cv-page">
     <a class="cv-skip" href="#cv-content">{{ t('cv.skip') }}</a>
     <nav class="cv-toolbar" :aria-label="t('cv.actions')">
       <NuxtLink
@@ -10,16 +10,6 @@
         {{ t('cv.printVersion') }}
       </NuxtLink>
       <div class="cv-toolbar-actions">
-        <ClientOnly>
-          <UButton
-            :aria-label="t('cv.theme')"
-            :aria-pressed="colorMode.value === 'dark'"
-            :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
-            variant="ghost"
-            color="neutral"
-            @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
-          />
-        </ClientOnly>
         <UButton
           external
           :to="pdfPath"
@@ -32,15 +22,14 @@
       </div>
     </nav>
     <CvDocument />
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ hideLiveCursors: true })
+definePageMeta({ hideLiveCursors: true, colorMode: 'dark' })
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
-const colorMode = useColorMode()
 const pdfPath = computed(() => locale.value === 'en' ? '/cv-en.pdf' : '/cv.pdf')
 const canonical = computed(() => `https://kosarev.space${localePath('/cv')}`)
 

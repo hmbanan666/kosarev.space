@@ -7,6 +7,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: false,
+  colorMode: 'light',
   robots: false,
   hideLiveCursors: true,
 })

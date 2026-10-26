@@ -1,13 +1,16 @@
 <template>
   <UPage>
     <HeroSection />
-    <ProjectsSection />
-    <SkillsShowcaseSection />
     <ExperienceSection />
+    <SkillsShowcaseSection />
+    <ProjectsSection />
+    <SitePresenceNote />
   </UPage>
 </template>
 
 <script setup lang="ts">
+definePageMeta({ key: 'portfolio', colorMode: 'dark' })
+
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
@@ -48,7 +51,7 @@ useHead({
         '@type': 'Person',
         'name': t('hero.name'),
         'url': 'https://kosarev.space',
-        'jobTitle': 'Fullstack Developer',
+        'jobTitle': 'Fullstack Developer / Tech Lead',
         'knowsAbout': ['Vue.js', 'Nuxt', 'TypeScript', 'PostgreSQL', 'Node.js'],
         'sameAs': [
           'https://github.com/hmbanan666',

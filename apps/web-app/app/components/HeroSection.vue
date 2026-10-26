@@ -1,71 +1,77 @@
 <template>
-  <section class="py-16 sm:py-24 lg:py-36">
-    <UContainer>
-      <div class="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:gap-24">
-        <div class="flex flex-1 flex-col items-center text-center lg:items-start lg:text-left">
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-highlighted motion-preset-slide-up motion-delay-100">
-            {{ t('hero.name') }}
-          </h1>
-          <p class="mt-4 max-w-lg text-lg lg:text-xl text-toned motion-preset-slide-up motion-delay-200">
-            {{ t('hero.description') }}
-          </p>
-          <div class="mt-8 flex flex-wrap items-center justify-center gap-2 lg:justify-start motion-preset-slide-up motion-delay-300">
-            <UButton
-              :label="t('nav.cv')"
-              :to="localePath('/cv')"
-              icon="i-lucide-file-text"
-              size="lg"
-            />
-            <UButton
-              :label="t('hero.contact')"
-              icon="i-lucide-send"
-              variant="outline"
-              size="lg"
-              @click="contactOpen = true"
-            />
-          </div>
-          <ContactModal v-model:open="contactOpen" />
-        </div>
-
-        <div class="flex shrink-0 flex-col items-center justify-center gap-6 lg:flex-1 motion-preset-fade-in motion-delay-500">
-          <div class="relative">
-            <div class="absolute -inset-8 rounded-3xl bg-primary/15 blur-3xl" />
-            <img
-              src="/photo.jpg"
-              :alt="t('hero.name')"
-              class="relative size-48 lg:size-60 rounded-2xl object-cover ring-2 ring-primary/30 motion-preset-pop"
-            >
-          </div>
-          <div class="flex flex-wrap justify-center gap-3">
-            <UTooltip
-              v-for="(icon, i) in heroIcons"
-              :key="icon.name"
-              :text="icon.label"
-            >
-              <UIcon
-                :name="icon.name"
-                class="size-7 text-muted transition-all duration-300 hover:text-primary hover:scale-150 animate-float"
-                :style="{ animationDelay: `${i * 200}ms`, animationDuration: '2.5s' }"
-              />
-            </UTooltip>
-          </div>
-        </div>
+  <section class="site-wrap portfolio-hero" aria-labelledby="home-name">
+    <div class="hero-copy">
+      <p class="hero-location">
+        <span>{{ t('cv.location') }}</span>
+        <span>{{ t('cv.since') }}</span>
+      </p>
+      <h1 id="home-name">
+        {{ t('hero.name') }}
+      </h1>
+      <p class="hero-role">
+        {{ t('cv.subtitle') }}
+      </p>
+      <p class="hero-description">
+        {{ t('hero.description') }}
+      </p>
+      <div class="hero-actions">
+        <NuxtLink class="site-button" :to="localePath('/cv')">
+          {{ t('site.viewCv') }}
+        </NuxtLink>
+        <NuxtLink class="site-button site-button-secondary" :to="`${localePath('/')}#skills`">
+          {{ t('site.exploreWork') }}
+        </NuxtLink>
       </div>
-    </UContainer>
+      <div class="hero-direct">
+        <a href="mailto:nick@kosarev.space">nick@kosarev.space</a>
+        <a :href="pdfPath" download>{{ t('cv.downloadPdf') }}</a>
+      </div>
+    </div>
+    <div class="hero-portrait">
+      <img
+        src="/photo.jpg"
+        :alt="t('hero.name')"
+        width="360"
+        height="400"
+        fetchpriority="high"
+      >
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
-const contactOpen = ref(false)
-
-const heroIcons = [
-  { name: 'i-simple-icons-vuedotjs', label: 'Vue.js' },
-  { name: 'i-simple-icons-nuxtdotjs', label: 'Nuxt' },
-  { name: 'i-simple-icons-typescript', label: 'TypeScript' },
-  { name: 'i-simple-icons-postgresql', label: 'PostgreSQL' },
-  { name: 'i-simple-icons-tailwindcss', label: 'Tailwind CSS' },
-  { name: 'i-simple-icons-docker', label: 'Docker' },
-]
+const pdfPath = computed(() => locale.value === 'en' ? '/cv-en.pdf' : '/cv.pdf')
 </script>
+
+<style scoped>
+.portfolio-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 22rem); align-items: center; gap: clamp(3rem,7vw,7rem); padding-block: 4.5rem 5rem; }
+.portfolio-hero > * { min-width: 0; }
+.hero-location { font-size: .8rem; color: var(--ui-text-muted); margin-bottom: 1.5rem !important; }
+.hero-location { display: flex; flex-wrap: wrap; gap: .3rem 1.5rem; }
+.hero-copy h1 { font: 500 clamp(2.75rem,4.6vw,4rem)/1.13 var(--font-serif); letter-spacing: -.045em; max-width: 15ch; }
+.hero-role { font-size: clamp(1.05rem,1.7vw,1.25rem); font-weight: 550; margin-top: 1rem !important; }
+.hero-description { color: var(--ui-text-toned); font-size: 1.025rem; line-height: 1.8; max-width: 55ch; margin-top: 1.25rem !important; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.hero-direct { display: flex; flex-wrap: wrap; gap: .65rem 1.5rem; font-size: .85rem; margin-top: 1.25rem; color: var(--ui-text-muted); }
+.hero-direct a { text-decoration: underline; }
+.hero-direct a:hover { color: var(--ui-primary); }
+.hero-portrait { position: relative; isolation: isolate; justify-self: end; width: 100%; max-width: 22rem; }
+.hero-portrait::before { content: ""; position: absolute; inset: .75rem -.75rem -.75rem .75rem; z-index: -1; border: 1px solid var(--ui-primary); border-radius: 1rem 4rem 1rem 1rem; opacity: .7; }
+.hero-portrait img { display: block; width: 100%; height: auto; aspect-ratio: 9/10; object-fit: cover; border-radius: 1rem 4rem 1rem 1rem; box-shadow: 0 16px 35px #0005; }
+@media (max-width: 1000px) {
+  .portfolio-hero { grid-template-columns: minmax(0,1fr) 15rem; gap: 2.5rem; padding-block: 3.5rem; }
+}
+@media (max-width: 650px) {
+  .portfolio-hero { grid-template-columns: minmax(0,1fr) 5rem; align-items: start; gap: 1rem; padding-block: 2.5rem 3rem; }
+  .hero-copy { grid-column: 1/-1; grid-row: 1; }
+  .hero-location { min-height: 5rem; max-width: calc(100% - 6rem); display: flex; flex-direction: column; justify-content: center; margin-bottom: 1.25rem !important; }
+  .hero-location { align-items: start; gap: .2rem; }
+  .hero-portrait { grid-column: 2; grid-row: 1; width: 5rem; }
+  .hero-portrait::before { inset: .35rem -.35rem -.35rem .35rem; border-radius: .5rem 1.5rem .5rem .5rem; }
+  .hero-portrait img { aspect-ratio: 1; border-radius: .5rem 1.5rem .5rem .5rem; }
+  .hero-copy h1 { max-width: none; font-size: clamp(2.2rem,8vw,3rem); }
+  .hero-description { font-size: .95rem; }
+}
+</style>
