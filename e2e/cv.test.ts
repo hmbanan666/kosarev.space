@@ -16,6 +16,8 @@ for (const locale of ['ru', 'en'] as const) {
     await expect(doc).toContainText(locale === 'en' ? 'Project closed in 2026' : 'Проект закрыт в 2026 году')
     await expect(doc.locator('a[href="mailto:nick@kosarev.space"]')).toBeVisible()
     await expect(page.locator(`a[href="${locale === 'en' ? '/cv-en.pdf' : '/cv.pdf'}"]`)).toHaveAttribute('download')
+    await expect(doc.locator('.cv-projects a:not([href])')).toHaveCount(0)
+    await expect(doc.locator('.cv-projects a')).toHaveAttribute('href', 'https://github.com/nextorders/food')
     const facts = await doc.locator('[data-cv-fact]').allTextContents()
     const summary = await doc.locator('[data-cv-summary]').textContent()
     await page.goto(`${prefix}/cv/print`)
@@ -23,6 +25,7 @@ for (const locale of ['ru', 'en'] as const) {
     expect(await page.locator('[data-cv-fact]').allTextContents()).toEqual(facts)
     expect(await page.locator('[data-cv-summary]').textContent()).toBe(summary)
     await expect(page.locator('[data-cv-document]')).toHaveAttribute('lang', locale)
+    await expect(page.locator('.cv-projects a:not([href])')).toHaveCount(0)
   })
 }
 

@@ -10,10 +10,14 @@
       <div v-for="project in projects" :key="project.key">
         <dt>
           <a
+            v-if="project.link"
             :href="project.link"
             target="_blank"
             rel="noopener noreferrer"
           >{{ project.title }}</a>
+          <template v-else>
+            {{ project.title }}
+          </template>
         </dt>
         <dd>
           <p v-if="project.closedYear" class="cv-project-status">
