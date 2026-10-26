@@ -27,29 +27,20 @@
             :placeholder="t('site.searchPlaceholder')"
           >
         </label>
-        <label>
-          {{ t('site.area') }}
-          <select v-model="form.focus" name="focus">
-            <option value="">{{ t('site.allWork') }}</option>
-            <option
-              v-for="area in caseAreas"
-              :key="area"
-              :value="area"
-            >{{ t(`site.layers.${area}.title`) }}</option>
-          </select>
-        </label>
-        <label>
-          {{ t('site.technology') }}
-          <select v-model="form.tech" name="tech">
-            <option value="">{{ t('site.allTechnologies') }}</option>
-            <option v-if="form.tech && !allTags.includes(form.tech)" :value="form.tech">{{ form.tech }}</option>
-            <option
-              v-for="tag in allTags"
-              :key="tag"
-              :value="tag"
-            >{{ tag }}</option>
-          </select>
-        </label>
+        <SiteCaseSelect
+          id="case-area"
+          v-model="form.focus"
+          name="focus"
+          :label="t('site.area')"
+          :items="areaItems"
+        />
+        <SiteCaseSelect
+          id="case-technology"
+          v-model="form.tech"
+          name="tech"
+          :label="t('site.technology')"
+          :items="technologyItems"
+        />
         <button class="site-button" type="submit">
           {{ t('site.apply') }}
         </button>
@@ -122,6 +113,14 @@ const form = reactive({ ...filters.value })
 watch(() => JSON.stringify(filters.value), () => Object.assign(form, filters.value))
 const { data, error, status, refresh } = await useFetch('/api/cases', { query: { locale } })
 const allTags = computed(() => [...new Set((data.value ?? []).flatMap((item) => item.tags))].sort())
+const areaItems = computed(() => [
+  { label: t('site.allWork'), value: '' },
+  ...caseAreas.map((area) => ({ label: t(`site.layers.${area}.title`), value: area })),
+])
+const technologyItems = computed(() => [
+  { label: t('site.allTechnologies'), value: '' },
+  ...[...new Set([...(form.tech ? [form.tech] : []), ...allTags.value])].map((tag) => ({ label: tag, value: tag })),
+])
 const matchingCases = computed(() => filterCases(data.value ?? [], filters.value))
 const hasFilters = computed(() => Boolean(filters.value.q || filters.value.tech || filters.value.focus))
 const visibleCases = computed(() => hasFilters.value || filters.value.all ? matchingCases.value : matchingCases.value.slice(0, 6))
@@ -132,13 +131,21 @@ function applyFilters() {
 </script>
 
 <style scoped>
-.case-filters { display: grid; grid-template-columns: 1.5fr 1fr 1fr auto; gap: 1rem; align-items: end; padding: 1.5rem; background: var(--ui-bg-elevated); border-radius: .5rem; }
-.case-filters label { display: grid; gap: .5rem; font-size: .8rem; font-weight: 550; min-width: 0; }
-.case-filters :is(input,select) { min-height: 2.9rem; width: 100%; min-width: 0; padding: .6rem .75rem; background: var(--ui-bg); color: var(--ui-text); border: 1px solid var(--ui-border-accented); border-radius: .3rem; font-size: .875rem; font-weight: 400; }
+.case-filters { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) auto; gap: 1rem; align-items: end; padding: 1.5rem; background: var(--ui-bg-elevated); border: 1px solid var(--ui-border); border-radius: .75rem; }
+.case-search { display: grid; gap: .5rem; font-size: .8rem; font-weight: 550; min-width: 0; }
+.case-search input { height: 3rem; width: 100%; min-width: 0; padding: .7rem .875rem; background: var(--ui-bg); color: var(--ui-text); border: 1px solid var(--ui-border-accented); border-radius: .375rem; font-size: .875rem; font-weight: 400; }
+.case-search input:hover { border-color: var(--ui-text-muted); }
+.case-search input:focus-visible { outline-offset: -2px; border-color: transparent; }
 .case-result-meta { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-block: 1.5rem 1rem; color: var(--ui-text-muted); font-size: .8rem; }
 .case-results { display: grid; grid-template-columns: 1fr 1fr; column-gap: 3rem; }
 .case-empty { padding-block: 2rem; display: grid; justify-items: start; gap: 1rem; }
 .case-show-all { margin-top: 2rem; }
-@media (max-width: 1050px) { .case-filters { grid-template-columns: 1fr 1fr; } .case-search { grid-column: 1/-1; } }
-@media (max-width: 650px) { .case-filters { grid-template-columns: 1fr; padding: 1rem; } .case-results { grid-template-columns: 1fr; } }
+@media (max-width: 1100px) {
+  .case-filters { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .case-search, .case-filters > button { grid-column: 1/-1; }
+}
+@media (max-width: 650px) {
+  .case-filters { grid-template-columns: minmax(0,1fr); padding: 1rem; }
+  .case-results { grid-template-columns: 1fr; }
+}
 </style>

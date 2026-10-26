@@ -15,7 +15,7 @@ async function openCatalog(page: import('@playwright/test').Page) {
   })
   await page.route(/\/api\/cases\/qa-[^/]+\/view/, (route) => route.fulfill({ status: 204 }))
   await page.goto('/en/cv')
-  await expect(page.getByRole('button', { name: 'Switch color theme', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Copy email address', exact: true })).toBeEnabled()
   await page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Cases', exact: true }).click()
   await expect(page.locator('.case-preview')).toHaveCount(6)
   await expect(page.getByRole('heading', { name: 'Invoice reconciliation reference', exact: true })).toBeVisible()
@@ -39,45 +39,37 @@ test('case discovery exposes all work and keeps a shareable search context throu
   await expect(page.locator('.case-preview')).toHaveCount(1)
 })
 
-test('ownership links show a contrasting keyboard focus indicator in both themes', async ({ page }) => {
-  await page.goto('/en')
-  const theme = page.getByRole('button', { name: 'Switch color theme', exact: true })
-  const links = page.getByRole('navigation', { name: 'Explore work by responsibility' }).getByRole('link')
-  for (const dark of [false, true]) {
-    await expect(theme).toBeVisible()
-    if ((await theme.getAttribute('aria-pressed')) !== String(dark)) {
-      await theme.click()
-    }
-    await links.first().focus()
-    await page.keyboard.press('Shift+Tab')
-    await page.keyboard.press('Tab')
-    for (let index = 0; index < 3; index++) {
-      const link = links.nth(index)
-      await expect(link).toBeFocused()
-      const indicator = await link.evaluate((element) => {
-        const style = getComputedStyle(element)
-        const luminance = (color: string) => {
-          const rgb = color.match(/[\d.]+/g)!.slice(0, 3).map(Number).map((channel) => {
-            const value = channel / 255
-            return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
-          })
-          return rgb[0]! * 0.2126 + rgb[1]! * 0.7152 + rgb[2]! * 0.0722
-        }
-        const background = getComputedStyle(element.closest('.ownership-map')!).backgroundColor
-        const values = [luminance(style.outlineColor), luminance(background)].sort((a, b) => a - b)
-        return { width: Number.parseFloat(style.outlineWidth), style: style.outlineStyle, contrast: (values[1]! + 0.05) / (values[0]! + 0.05) }
-      })
-      expect(indicator.style).toBe('solid')
-      expect(indicator.width).toBeGreaterThanOrEqual(2)
-      expect(indicator.contrast).toBeGreaterThanOrEqual(3)
-      await page.keyboard.press('Tab')
-    }
-  }
+test('case selects support keyboard selection, dismissal and a visible focus indicator', async ({ page }) => {
+  await openCatalog(page)
+  const area = page.getByRole('combobox', { name: 'Area of work', exact: true })
+  await area.focus()
+  await page.keyboard.press('Space')
+  await expect(page.getByRole('option', { name: 'All work', exact: true })).toBeFocused()
+  await page.keyboard.press('End')
+  await expect(page.getByRole('option', { name: 'Infrastructure', exact: true })).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(area).toContainText('Infrastructure')
+  await expect(area).toBeFocused()
+  await area.press('Space')
+  await expect(page.getByRole('option', { name: 'Infrastructure', exact: true })).toHaveAttribute('aria-selected', 'true')
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('listbox')).toHaveCount(0)
+  await expect(area).toBeFocused()
+  const focus = await area.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return { width: Number.parseFloat(style.outlineWidth), color: style.outlineColor, background: style.backgroundColor }
+  })
+  expect(focus.width).toBeGreaterThanOrEqual(2)
+  expect(focus.color).not.toBe(focus.background)
+  await page.getByRole('button', { name: 'Find cases', exact: true }).click()
+  await expect(page).toHaveURL(/focus=delivery/)
+  await expect(page.locator('.case-preview')).toContainText('Build infrastructure reference')
 })
 
 test('area and technology filters combine, explain no results, and can reset', async ({ page }) => {
   await openCatalog(page)
-  await page.getByRole('combobox', { name: 'Area of work', exact: true }).selectOption('delivery')
+  await page.getByRole('combobox', { name: 'Area of work', exact: true }).click()
+  await page.getByRole('option', { name: 'Infrastructure', exact: true }).click()
   await page.getByRole('button', { name: 'Find cases', exact: true }).click()
   await expect(page.locator('.case-preview')).toHaveCount(1)
   await expect(page.locator('.case-preview')).toContainText('Build infrastructure reference')
@@ -85,7 +77,8 @@ test('area and technology filters combine, explain no results, and can reset', a
   expect(new URL(page.url()).searchParams.get('focus')).toBe('delivery')
   await page.getByRole('link', { name: 'English', exact: true }).click()
   expect(new URL(page.url()).searchParams.get('focus')).toBe('delivery')
-  await page.getByRole('combobox', { name: 'Technology', exact: true }).selectOption('Nuxt')
+  await page.getByRole('combobox', { name: 'Technology', exact: true }).click()
+  await page.getByRole('option', { name: 'Nuxt', exact: true }).click()
   await page.getByRole('button', { name: 'Find cases', exact: true }).click()
   await expect(page.getByText('No matching cases. Try a broader search or reset the filters.')).toBeVisible()
   await page.locator('.case-empty').getByRole('link', { name: 'Reset filters' }).click()
@@ -114,7 +107,7 @@ test('clipboard failure offers a focused manually selectable address', async ({ 
 test('mobile navigation supports keyboard and keeps native contact and locale links', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 })
   await page.goto('/en')
-  await expect(page.getByRole('button', { name: 'Switch color theme', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Copy email address', exact: true })).toBeEnabled()
   await page.keyboard.press('Tab')
   await expect(page.getByRole('link', { name: 'Skip to content', exact: true })).toBeFocused()
   await page.keyboard.press('Enter')
@@ -134,7 +127,7 @@ test('mobile navigation supports keyboard and keeps native contact and locale li
 test('mobile menu remains open when same-page hash navigation settles', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 })
   await page.goto('/en')
-  await expect(page.getByRole('button', { name: 'Switch color theme', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Copy email address', exact: true })).toBeEnabled()
   const menu = page.getByRole('button', { name: 'Open navigation', exact: true })
   await menu.focus()
   await page.keyboard.press('Enter')

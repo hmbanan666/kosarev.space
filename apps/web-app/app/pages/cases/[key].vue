@@ -141,6 +141,8 @@
 import { CASE_ALLOWED_EMOJIS } from '@kosarev/database/constants'
 import { caseContextQuery } from '~/utils/case-finder'
 
+definePageMeta({ colorMode: 'dark' })
+
 const { t, locale } = useI18n()
 const route = useRoute()
 const mounted = useMounted()

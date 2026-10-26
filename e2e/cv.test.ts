@@ -29,20 +29,27 @@ for (const locale of ['ru', 'en'] as const) {
   })
 }
 
-test('CV remains readable on mobile, supports keyboard focus and both color themes', async ({ page }) => {
+test('website stays dark with a saved light preference while print stays white', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.goto('/en/cv')
-  const theme = page.getByRole('button', { name: 'Switch color theme' })
-  await theme.focus()
-  await expect(theme).toBeFocused()
-  const before = await theme.getAttribute('aria-pressed')
-  await page.keyboard.press('Enter')
-  await expect(theme).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true')
-  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
-  await page.keyboard.press('Enter')
-  await expect(theme).toHaveAttribute('aria-pressed', before!)
+  await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'light' })
+  await page.addInitScript(() => localStorage.setItem('nuxt-color-mode', 'light'))
+  for (const path of ['/en', '/en/cv']) {
+    await page.goto(path)
+    await expect(page.getByRole('button', { name: 'Copy email address', exact: true })).toBeEnabled()
+    await expect(page.locator('html')).toHaveClass(/dark/)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(8, 8, 8)')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await expect(page.getByRole('button', { name: 'Switch color theme' })).toHaveCount(0)
+  }
+  const pdf = page.locator('.cv-toolbar a[download]')
+  await pdf.focus()
+  await expect(pdf).toBeFocused()
+  await page.goto('/en/cv/print')
+  await expect(page.locator('[data-cv-document]')).toHaveAttribute('data-cv-ready', 'en')
+  expect(await page.locator('.cv-print-page').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)')
+  await page.emulateMedia({ media: 'print' })
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)')
 })
 
 test('homepage archives closed projects without advertising their old live services', async ({ page }) => {

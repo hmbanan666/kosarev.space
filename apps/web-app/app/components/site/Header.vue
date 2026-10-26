@@ -17,7 +17,6 @@
       </nav>
       <div class="site-header-controls">
         <LanguageSwitcher />
-        <SiteThemeToggle />
         <details
           ref="menu"
           class="site-mobile-menu"

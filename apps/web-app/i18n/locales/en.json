@@ -83,7 +83,6 @@
     "printVersion": "Print version",
     "actions": "CV actions",
     "skip": "Skip to CV content",
-    "theme": "Switch color theme",
     "experience": "Work experience",
     "earlierExperience": "Earlier experience",
     "skills": "Core stack",
@@ -192,9 +191,6 @@
     "viewCv": "Read CV",
     "exploreWork": "Explore work",
     "fullExperience": "Full experience and responsibilities",
-    "mapLabel": "Explore work by responsibility",
-    "mapTitle": "Interfaces, services and infrastructure",
-    "mapCaption": "Three parts of the same product. Explore the work behind each.",
     "layers": {
       "interface": {
         "title": "Interfaces",

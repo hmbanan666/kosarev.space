@@ -3,7 +3,8 @@
 Source for the bilingual personal site at [kosarev.space](https://kosarev.space).
 Russian is the default locale; English pages use the `/en` prefix.
 
-The application currently includes a portfolio, database-backed case studies,
+The application uses a dark-only black and amber interface with an original
+color portrait. It includes a portfolio, database-backed case studies,
 a CV with printable pages and downloadable PDFs, direct contact links, an
 opt-in live-cursor miniature demo, and optional Yandex Metrika tracking. The
 [portfolio brief](docs/brand.md) describes the audiences, implemented design

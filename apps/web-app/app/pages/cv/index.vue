@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ hideLiveCursors: true })
+definePageMeta({ hideLiveCursors: true, colorMode: 'dark' })
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()

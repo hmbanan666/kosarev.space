@@ -17,8 +17,6 @@ the earlier direction that explicitly deprioritized employment.
 ## Implemented structure
 
 - A compact introduction with role, location, CV, PDF, work and email links.
-- A responsibility map linking interfaces, services/data and delivery to case
-  filters. It is navigation, not a diagram of an undocumented client system.
 - Recent EXPI responsibility sourced from the same localized facts as the CV.
 - A case finder with shareable URL filters, search, a visible path to all cases,
   and technical context available through native disclosure controls.
@@ -35,17 +33,24 @@ the earlier direction that explicitly deprioritized employment.
 
 ## Visual principles
 
-Use calm, readable surfaces and spend the strongest visual emphasis on the
-responsibility map. Retain Noto Sans for interface/body text and Lora for
-selective display typography, with genuine Cyrillic and Latin coverage.
+The website uses a dark-only black and restrained amber system: Carbon
+`#080808`, Surface `#151515`, Border `#353535`, Paper `#F3F1EB`, Muted
+`#AAA8A2` and Amber `#D9AD67`. Saved light-mode preferences do not change the
+website. Print pages remain white.
 
-The palette uses Porcelain `#F6F8FC`, Paper `#FFFFFF`, Graphite `#17283B`,
-Harbor `#315D88`, Mist `#DCE7EF` and Blueglass `#B6D2E4`. Light and dark modes
-reuse these roles. Align reading content left, keep body lines below 80
-characters, use visible focus, and avoid motion-dependent content, arbitrary
-numbering, technology tag walls, vanity counters and repeated decorative cards.
-Print CV styling remains separate: two A4 pages per language, selectable text
-and clickable contact/source links.
+The original color portrait and deliberate typography carry the introduction;
+do not desaturate the portrait or replace it with a decorative diagram. Noto
+Sans serves interface and body text, while Lora distinguishes the name, with
+Cyrillic and Latin coverage. Align content to shared left edges, keep body
+lines below 80 characters and resolve control heights, labels and spacing as
+one system. The case finder enhances native GET controls with accessible
+select menus; native controls remain available without JavaScript.
+
+Avoid decorative responsibility maps, technology tag walls, vanity counters,
+repeated identical cards, motion-dependent content and unnecessary overlays.
+Use visible focus and deliberate responsive layouts, including balanced filter
+actions at intermediate widths. Print CV styling remains separate: two A4
+pages per language, selectable text and clickable contact/source links.
 
 ## Accuracy and boundaries
 
