@@ -30,11 +30,6 @@
   "lsp": {
     "eslint": {
       "settings": {
-        // Remove after https://github.com/zed-industries/zed/issues/49387
-        "experimental": {
-          "useFlatConfig": false
-        },
-
         // Silent the stylistic rules in your IDE, but still auto fix them
         "rulesCustomizations": [
           { "rule": "style/*", "severity": "off", "fixable": true },

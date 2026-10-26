@@ -32,17 +32,19 @@ hmbanan666/kosarev.space ─clone/build─▶ web-app ──NUXT_DATABASE_URL─
 | `NODE_ENV` | yes | `production` |
 | `NUXT_DATABASE_URL` | yes | `postgresql://…@192.168.0.7:5432/kosarev_space` |
 | `NUXT_PUBLIC_METRIKA_ID` | yes | Yandex Metrika counter id |
-| `NUXT_SESSION_PASSWORD` | yes | Session cookie encryption |
 
 Migrations run on container boot (`server/plugins/01.database.ts`).
 
 ## Watch paths (Dokploy auto-deploy)
 
-Redeploy on push when any of these change:
+Configure Dokploy to redeploy on push when any of these change (editing this
+list does not update the server settings):
 
 - `apps/web-app/**`
 - `packages/**`
 - `docker/web-app/**`
+- `package.json`
+- `.node-version`
 - `pnpm-lock.yaml`
 - `pnpm-workspace.yaml`
 
@@ -57,14 +59,11 @@ docker/web-app/Dockerfile
 ```
 
 Context is the monorepo root. Build stage installs Playwright Chromium to
-generate CV PDFs at build time.
-
-## Cutover checklist (reference)
-
-1. Deploy app on Dokploy with env + domain `kosarev.space` (LE).
-2. Smoke via VPS public IP with `Host: kosarev.space` (while DNS still on k8s).
-3. Point DNS A for `kosarev.space` → `185.178.47.234`.
-4. Confirm HTTPS + LE cert, then stop k8s `deployment/web-app` in `kosarev-space`.
+generate CV PDFs at build time. Node is pinned to 24.21.0; pnpm is installed
+through npm using the exact `packageManager` pin (Corepack 0.36 does not
+support pnpm 12's native executable). Dependency installation uses the frozen
+lockfile. Application database credentials are runtime-only; never supply
+production database access to local verification.
 
 ## What GitHub Actions does now
 

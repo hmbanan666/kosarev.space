@@ -8,6 +8,7 @@ export default antfu(
       'style/arrow-parens': ['error', 'always'],
       'curly': ['error', 'all'],
       'antfu/consistent-list-newline': 'off',
+      'antfu/reasonable-newline': 'off',
       'ts/consistent-type-definitions': 'off',
       'no-undef': 'off',
       'ts/no-use-before-define': 'off',
