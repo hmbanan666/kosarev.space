@@ -3,7 +3,7 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <LiveCursors :locale="locale">
+    <LiveCursors v-if="!route.meta.hideLiveCursors" :locale="locale">
       <template #profile-actions="{ shuffle, cursorsHidden, toggleCursors, labels }">
         <div :style="{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }">
           <button class="live-cursor-btn" @click="shuffle">
@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 const { locale, t } = useI18n()
+const route = useRoute()
 const localePath = useLocalePath()
 </script>
 

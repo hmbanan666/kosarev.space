@@ -1,91 +1,85 @@
 {
   "$schema": "https://kumekai.github.io/spec/schema/pro/v1.json",
   "version": "1.0",
-  "updated_at": "2026-03-19",
+  "updated_at": "2026-10-26",
   "name": "Николай Косарев",
-  "title": "Fullstack-разработчик",
+  "title": "Fullstack-разработчик / Tech Lead",
   "photo": "/photo.jpg",
-  "bio": "Fullstack-разработчик с 15+ годами опыта. Прошел путь от фриланса до собственных SaaS-продуктов с сотнями клиентов. Vue, Nuxt, TypeScript, PostgreSQL.",
+  "bio": "Создавал платформы онлайн-заказов, внутренние сервисы и финтех-продукты. Пишу интерфейсы и серверный код; отвечаю за модель данных, проверку изменений и выпуск. В разработке с 2010 года. Английский — C1.",
   "status": "active",
   "location": "Калининград, Россия",
   "remote": true,
-  "relocate": true,
-  "specialization": ["fullstack", "frontend", "devops"],
+  "specialization": [
+    "fullstack",
+    "frontend",
+    "devops"
+  ],
   "skills": [
+    "TypeScript",
     "Vue",
     "Nuxt",
-    "TypeScript",
+    "Nitro",
     "Node.js",
     "PostgreSQL",
-    "Docker",
-    "Kubernetes",
-    "Tailwind CSS",
     "Drizzle ORM",
+    "Redis",
+    "BullMQ",
+    "Docker",
+    "CI/CD",
     "REST API",
     "WebSocket",
-    "Git",
-    "CI/CD",
-    "Nginx",
-    "Redis",
+    "Telegram / grammY",
+    "MCP",
     "React",
     "NestJS",
+    "Kubernetes",
     "RabbitMQ"
   ],
-  "experience_years": 15,
-  "employment": ["full-time", "contract"],
-  "salary": {
-    "min": 150000,
-    "max": 420000,
-    "currency": "RUB",
-    "period": "month"
-  },
+  "employment": [
+    "full-time",
+    "contract"
+  ],
   "experience": [
     {
-      "company": "Стартодел",
-      "role": "Основатель и разработчик",
-      "start": "2025-01",
-      "description": "SaaS-платформа для доставки еды. Мультитенантная архитектура на Nuxt + PostgreSQL, онлайн-оплата, Telegram-уведомления."
-    },
-    {
-      "company": "Мелотека",
-      "role": "Основатель и разработчик",
-      "start": "2024-06",
-      "description": "Облачный музыкальный сервис. Пайплайн транскодирования аудио, интеграция MusicBrainz, S3-хранилище, Telegram Mini App."
+      "company": "EXPI · ИП Петров И.И.",
+      "role": "Tech Lead / Fullstack-разработчик / DevOps",
+      "start": "2026-04",
+      "end": "2026-10",
+      "description": "27.04.2026–27.10.2026 (6 месяцев). Единственный инженер финтех-платформы: архитектура, код, инфраструктура и релизы."
     },
     {
       "company": "Sushi-Love",
       "role": "Fullstack-разработчик",
-      "start": "2023-08",
-      "end": "2024-10",
-      "description": "Единственный разработчик в сети ресторанов. Асинхронная обработка задач на RabbitMQ, Telegram Mini App для управления командой."
+      "start": "2025-05",
+      "end": "2026-02",
+      "description": "Разрабатывал внутренние сервисы сети ресторанов и дорабатывал сайты."
     },
     {
-      "company": "o5.Еда",
-      "role": "Fullstack-разработчик и DevOps",
-      "start": "2019-03",
-      "end": "2023-07",
-      "description": "Ключевой разработчик. Миграция с PHP/jQuery на React/NestJS. Kubernetes-инфраструктура. 500+ бизнес-клиентов."
+      "company": "ООО «О5» · o5.Еда",
+      "role": "Fullstack-разработчик / DevOps",
+      "start": "2017-06",
+      "end": "2024-02",
+      "description": "Разработал платформу онлайн-заказов для доставки еды, которой пользовались 500+ бизнес-клиентов."
     },
     {
-      "company": "Berry Web Studio",
-      "role": "Сооснователь",
-      "start": "2016-09",
-      "end": "2019-02",
-      "description": "Веб-студия. 20+ сайтов для ритейла и услуг."
+      "company": "Berry Design",
+      "role": "Сооснователь / разработчик",
+      "start": "2015-01",
+      "end": "2017-05",
+      "description": "Совместно с партнёром открыл веб-студию; вёл оценку, разработку и сдачу клиентских проектов."
     },
     {
       "company": "Фриланс",
       "role": "PHP-разработчик",
-      "start": "2010-01",
-      "end": "2016-08",
-      "description": "20+ сайтов на PHP/jQuery. Корпоративные порталы и интернет-магазины. Администрирование серверов."
+      "start": "2010-05",
+      "end": "2015-01",
+      "description": "Начал с заказной веб-разработки: корпоративные сайты и интернет-магазины на PHP/jQuery."
     }
   ],
   "education": [
     {
       "institution": "Сыктывкарский государственный университет",
-      "degree": "Прикладная математика и информатика",
-      "year": 2015
+      "degree": "Прикладная математика и информатика. Неоконченное высшее образование, 2015."
     }
   ],
   "contacts": {
@@ -101,56 +95,95 @@
   "cases": [
     {
       "title": "Миграция платформы на React и NestJS",
-      "role": "Ведущий разработчик",
+      "role": "Fullstack-разработчик",
       "url": "https://kosarev.space/cases/o5-rewrite",
-      "description": "Переписал ядро o5.Еда с PHP/jQuery на TypeScript/React/NestJS. 500+ клиентов без простоя при переходе.",
-      "tags": ["React", "TypeScript", "NestJS", "Node.js"]
+      "description": "Переписал ядро o5.Еда с PHP/jQuery на TypeScript, React и NestJS. Платформой пользовались 500+ бизнес-клиентов.",
+      "tags": [
+        "React",
+        "TypeScript",
+        "NestJS",
+        "Node.js"
+      ]
     },
     {
       "title": "Kubernetes-инфраструктура",
-      "role": "DevOps-инженер",
+      "role": "Fullstack-разработчик / DevOps",
       "url": "https://kosarev.space/cases/o5-kubernetes",
-      "description": "Развернул платформу в Kubernetes: автоскейлинг, CI/CD пайплайны, zero-downtime деплой.",
-      "tags": ["Kubernetes", "Docker", "CI/CD", "Nginx"]
+      "description": "Перевёл развёртывание платформы на Kubernetes и занимался инфраструктурой продукта.",
+      "tags": [
+        "Kubernetes",
+        "Docker",
+        "CI/CD",
+        "Nginx"
+      ]
     },
     {
       "title": "Пайплайн транскодирования аудио",
-      "role": "Создатель",
+      "role": "Разработчик",
       "url": "https://kosarev.space/cases/meloteka-transcoding",
-      "description": "Загрузка FLAC/MP3/OGG, транскодирование, стриминг через S3 с lossless-воспроизведением в браузере.",
-      "tags": ["Nuxt", "TypeScript", "S3", "Node.js"]
+      "description": "Архив проекта Мелотека, закрытого в 2026 году. Загрузка и транскодирование аудио, хранение в S3, метаданные MusicBrainz.",
+      "tags": [
+        "Nuxt",
+        "TypeScript",
+        "S3",
+        "Node.js"
+      ]
     },
     {
-      "title": "SEO-архитектура для сайтов доставки",
-      "role": "Создатель",
+      "title": "SSR и страницы товаров для сайтов доставки",
+      "role": "Разработчик",
       "url": "https://kosarev.space/cases/startodel-seo",
-      "description": "SSR, Schema.org разметка, отдельные страницы товаров. Клиентские сайты в топ-5 Google по локальным запросам.",
-      "tags": ["Nuxt", "TypeScript", "Tailwind CSS"]
+      "description": "Архив проекта Стартодел, закрытого в 2026 году. SSR, мультиязычное меню и отдельные страницы товаров на Nuxt.",
+      "tags": [
+        "Nuxt",
+        "TypeScript",
+        "Tailwind CSS"
+      ]
     },
     {
-      "title": "Онлайн-оплата без комиссии",
-      "role": "Создатель",
+      "title": "Интеграция онлайн-оплаты",
+      "role": "Разработчик",
       "url": "https://kosarev.space/cases/startodel-payments",
-      "description": "Прямой эквайринг для ресторанов. Каждый подключает свой банк, 0% комиссии платформы.",
-      "tags": ["Nuxt", "TypeScript", "Node.js"]
+      "description": "Архив проекта Стартодел, закрытого в 2026 году. Приём заказов и интеграция онлайн-оплаты на сайтах доставки еды.",
+      "tags": [
+        "Nuxt",
+        "TypeScript",
+        "Node.js"
+      ]
     },
     {
       "title": "Интерактивная игра в Twitch-чате",
-      "role": "Создатель",
+      "role": "Разработчик",
       "url": "https://kosarev.space/cases/chatgame-websocket",
-      "description": "Мультиплеерная игра через команды в чате. Canvas API, WebSocket, OAuth, система инвентаря.",
-      "tags": ["WebSocket", "Canvas API", "TypeScript", "Twitch API"]
+      "description": "Архив проекта ChatGame, закрытого в 2026 году. Игра через команды Twitch-чата, Telegram Mini App, WebSocket-синхронизация и OAuth.",
+      "tags": [
+        "WebSocket",
+        "Canvas API",
+        "TypeScript",
+        "Twitch API"
+      ]
     },
     {
       "title": "Живые курсоры посетителей",
-      "role": "Создатель",
+      "role": "Разработчик",
       "url": "https://kosarev.space/cases/kosarev-live-cursors",
-      "description": "Мультиплеерные курсоры на портфолио-сайте. WebSocket через Nitro, SVG-аватары, авто-реконнект.",
-      "tags": ["Nuxt", "WebSocket", "Nitro", "TypeScript"]
+      "description": "Интегрировал живые курсоры посетителей на сайте-портфолио с помощью модуля nuxt-live-cursors.",
+      "tags": [
+        "Nuxt",
+        "WebSocket",
+        "Nitro",
+        "TypeScript"
+      ]
     }
   ],
   "languages": [
-    { "language": "ru", "level": "native" },
-    { "language": "en", "level": "intermediate" }
+    {
+      "language": "ru",
+      "level": "native"
+    },
+    {
+      "language": "en",
+      "level": "advanced"
+    }
   ]
 }

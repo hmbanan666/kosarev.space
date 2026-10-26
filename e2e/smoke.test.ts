@@ -121,8 +121,8 @@ test.describe('CV page', () => {
     await page.goto('/en/cv')
 
     await expect(page).toHaveTitle(/CV/)
-    await expect(page.getByRole('heading', { name: 'Startodel' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Meloteka' })).toBeVisible()
+    await expect(page.getByText('Startodel', { exact: true })).toBeVisible()
+    await expect(page.getByText('Meloteka', { exact: true })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Sushi-Love' })).toBeVisible()
   })
 
@@ -136,11 +136,11 @@ test.describe('CV page', () => {
   test('print page renders for PDF generation', async ({ page }) => {
     await page.goto('/en/cv/print')
 
-    await expect(page.getByText('Nick Kosarev')).toBeVisible()
-    await expect(page.getByText('Work Experience')).toBeVisible()
-    await expect(page.getByText('Public Activity')).toBeVisible()
-    await expect(page.getByText('Education')).toBeVisible()
-    await expect(page.getByText('Skills')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Nick Kosarev', exact: true })).toBeVisible()
+    await expect(page.getByText('Work experience', { exact: true })).toBeVisible()
+    await expect(page.getByText('Public work', { exact: false })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Education', exact: true })).toBeVisible()
+    await expect(page.getByText('Core stack', { exact: true })).toBeVisible()
   })
 })
 

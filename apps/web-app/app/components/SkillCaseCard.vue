@@ -7,6 +7,9 @@
     spotlight
   >
     <template #footer>
+      <p v-if="closedYear" class="mb-3 text-sm text-muted">
+        {{ t('projects.closed', { year: closedYear }) }}
+      </p>
       <div class="flex flex-wrap gap-1.5">
         <UBadge
           v-for="tag in skillCase.tags"
@@ -21,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   skillCase: {
     key: string
     tags: string[]
@@ -32,4 +35,6 @@ defineProps<{
 }>()
 
 const localePath = useLocalePath()
+const { t } = useI18n()
+const closedYear = computed(() => closedProjectYearForCase(props.skillCase.key))
 </script>

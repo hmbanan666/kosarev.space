@@ -26,6 +26,13 @@
           >
         </template>
         <template #footer>
+          <p
+            v-if="closedProjectYears[project.key]"
+            :data-project-archive="project.key"
+            class="mb-3 text-sm text-muted"
+          >
+            {{ t('projects.closed', { year: closedProjectYears[project.key] }) }}
+          </p>
           <div class="flex flex-wrap gap-1.5">
             <UBadge
               v-for="tech in project.stack"
