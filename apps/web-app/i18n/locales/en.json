@@ -6,29 +6,30 @@
   "hero": {
     "badge": "Open for collaboration",
     "name": "Nick Kosarev",
-    "description": "Fullstack Developer with 15+ years of experience. Went from freelancing to building SaaS products with hundreds of clients. Stack: Vue, Nuxt, TypeScript, PostgreSQL.",
+    "description": "I build TypeScript and Nuxt products: interfaces, backend services and infrastructure. In software development since 2010, with foodtech and fintech experience.",
     "projects": "Projects",
     "contact": "Get in touch"
   },
   "projects": {
     "title": "Projects",
-    "description": "Products and open-source projects I'm building.",
+    "description": "Selected products and open-source work.",
     "visit": "Visit",
     "source": "Source",
     "meloteka": {
       "title": "Meloteka",
-      "description": "Music catalog and streaming service. Includes web app, Telegram Mini App, admin panel, Subsonic API compatibility, and audio transcoding pipeline."
+      "description": "Built a music catalog with a web app, Telegram Mini App, Subsonic API compatibility and audio transcoding."
     },
     "startodel": {
       "title": "Startodel",
-      "description": "Ready-made website platform for food delivery businesses. Zero commission, real-time menu management, loyalty programs, Telegram notifications, and multi-language support."
+      "description": "Built a food-delivery website platform with menus, online orders, payments, notifications and multiple languages."
     },
     "chatgame": {
-      "description": "Interactive Twitch chat game with real-time gameplay. Viewers interact with the stream through chat commands."
+      "description": "Built an interactive Twitch game with chat commands, real-time synchronization and a Telegram Mini App."
     },
     "nextorders": {
       "description": "Open-source food delivery automation platform. Responsive design, SSR, 11+ language support, and multi-regional capabilities."
-    }
+    },
+    "closed": "Project closed in {year}"
   },
   "skills": {
     "title": "Skills & Stack",
@@ -39,15 +40,15 @@
   },
   "experience": {
     "title": "Experience",
-    "description": "From PHP freelancing to building my own SaaS products and open source.",
-    "years": "15+",
-    "yearsLabel": "years in development",
-    "products": "3",
-    "productsLabel": "own products",
-    "clients": "500+",
-    "clientsLabel": "business clients",
-    "opensource": "75",
-    "opensourceLabel": "GitHub stars",
+    "description": "Web products, backend systems and infrastructure — from PHP to TypeScript and Nuxt.",
+    "years": "2010",
+    "yearsLabel": "career started",
+    "products": "TypeScript",
+    "productsLabel": "primary language",
+    "clients": "Fullstack",
+    "clientsLabel": "from interface to release",
+    "opensource": "Open source",
+    "opensourceLabel": "projects and public work",
     "viewCv": "View full CV"
   },
   "cases": {
@@ -61,7 +62,8 @@
     "solutionTitle": "Solution",
     "resultTitle": "Result",
     "relatedTitle": "Related cases",
-    "ctaText": "Need to solve a similar challenge?"
+    "ctaText": "Need to solve a similar challenge?",
+    "archiveNote": "Historical case study. The project closed in {year}; this description covers its development period."
   },
   "contacts": {
     "title": "Let's work together",
@@ -69,122 +71,102 @@
   },
   "cv": {
     "title": "CV",
-    "seoTitle": "Nick Kosarev - CV",
-    "seoDescription": "Fullstack Developer with 15+ years of experience. Vue, Nuxt, TypeScript, PostgreSQL, Kubernetes.",
-    "subtitle": "Fullstack Developer",
-    "age": "{age}",
-    "birthDate": "born May 20, 1992",
+    "seoTitle": "Nick Kosarev - Fullstack Developer / Tech Lead CV",
+    "seoDescription": "TypeScript, Vue/Nuxt and backend systems. EXPI platform, billing, trading workers and infrastructure. Building software since 2010.",
+    "subtitle": "Fullstack Developer / Tech Lead",
     "location": "Kaliningrad, Russia",
-    "remote": "Remote",
+    "remote": "Remote work",
+    "eyebrow": "Curriculum vitae",
+    "since": "Building software since 2010",
+    "summary": "Built food-ordering platforms, internal tools and fintech products. I work across interfaces, backend code, data models and releases.",
     "downloadPdf": "Download PDF",
-    "present": "present",
-    "months": ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-    "totalExperience": "Work Experience - {duration}",
-    "kaliningrad": "Kaliningrad",
-    "syktyvkar": "Syktyvkar",
-    "courses": "Professional Development",
-    "hexletName": "Hexlet",
-    "hexletCourse": "PHP Developer",
-    "hexletYear": "2020",
-    "desiredPosition": "Desired Position",
-    "desiredRole": "Fullstack Developer",
-    "specializations": "Software Developer • DevOps Engineer • CTO",
-    "employment": "Full-time, part-time",
-    "workFormat": "Remote work",
-    "experience": "Work Experience",
-    "skills": "Skills",
-    "skillsList": ["Vue", "Nuxt", "TypeScript", "Node.js", "PostgreSQL", "Docker", "Kubernetes", "Tailwind CSS", "Pinia", "VueUse", "Drizzle ORM", "REST API", "WebSocket", "Git", "CI/CD", "Figma", "Nginx", "Redis"],
-    "about": "About Me",
-    "aboutText": "In development since 2010 - from PHP freelancing to SaaS products on Vue/Nuxt and Kubernetes. Founded three businesses, launched a food delivery platform with 500+ clients. Currently building Стартодел and Мелотека, focused on the Vue/Nuxt ecosystem and DevOps practices. Streaming live coding on Twitch and contributing to open source.",
+    "printVersion": "Print version",
+    "actions": "CV actions",
+    "skip": "Skip to CV content",
+    "theme": "Switch color theme",
+    "experience": "Work experience",
+    "earlierExperience": "Earlier experience",
+    "skills": "Core stack",
+    "web": "Web development",
+    "systems": "Data and infrastructure",
+    "integrations": "Integrations and tools",
+    "independent": "Independent projects",
+    "independentIntro": "Independent development since 2019. Selected work, listed separately from employment.",
+    "publicActivity": "Public work",
+    "publicTitle": "Twitch / live coding",
+    "publicDescription": "Wrote code live and built ChatGame with the Twitch API, a Telegram Mini App, WebSocket synchronization and OAuth.",
     "education": "Education",
-    "educationText": "Syktyvkar State University - Applied Mathematics and Computer Science",
+    "educationTitle": "Syktyvkar State University",
+    "educationText": "Applied Mathematics and Computer Science. Incomplete higher education, 2015.",
+    "course": "Hexlet - PHP development, 2020",
     "languages": "Languages",
-    "russian": "Russian",
-    "english": "English",
-    "native": "Native",
-    "publicActivity": "Public Activity",
-    "companyStartodel": "Startodel",
-    "companyMeloteka": "Meloteka",
-    "companyO5": "o5.Food",
-    "startodel": {
-      "industry": "SaaS platform for foodtech",
-      "role": "Founder & Developer",
-      "description": "Launched a SaaS platform that gives food delivery businesses a ready-made website with online ordering. Doing everything myself: architecture, development, sales, and customer support.",
-      "highlights": [
-        "Built a multi-tenant platform on Nuxt + PostgreSQL: SSR, SEO with individual product pages and Schema.org, responsive design",
-        "Implemented pricing tiers with 0% commission, online payments, Telegram notifications, loyalty programs",
-        "Added multi-channel support (up to 8 sales channels per business) and a no-code menu management admin panel"
-      ]
+    "languageText": "Russian - native. English - C1.",
+    "entries": {
+      "expi": {
+        "company": "EXPI · ИП Петров И.И.",
+        "role": "Tech Lead / Fullstack Developer / DevOps",
+        "summary": "Sole engineer for a fintech platform: architecture, implementation, infrastructure and releases.",
+        "highlights": [
+          "Built a TypeScript, Nuxt and Nitro platform with service management, a customer portal, a product catalog and Telegram integrations.",
+          "Migrated PHP data and services in stages using ETL, parallel reads and reconciliation. Decoupled copy-trading workers from PHP; portal migration remained in progress.",
+          "Brought payments, recurring subscriptions, refunds and access provisioning into one billing flow, with payment-to-access reconciliation.",
+          "Rewrote copy-trading workers for Binance, Bybit and Finam with shadow runs, tests and a trading gate for database schema readiness.",
+          "Moved Matrix from the browser to a cloud worker: idempotent commands, broker reconciliation, leases and pausing on uncertain state.",
+          "Organized AI-assisted implementation around architectural decisions, specifications, review and CI before merge. Set up self-hosted Forgejo and builds."
+        ]
+      },
+      "sushilove": {
+        "company": "Sushi-Love",
+        "role": "Fullstack Developer",
+        "summary": "Built internal services for a restaurant chain and improved its websites.",
+        "highlights": [
+          "Connected PostgreSQL and RabbitMQ for background task processing.",
+          "Built a web application and Telegram Mini App for task assignment, statuses, deadlines and team/partner reporting.",
+          "Audited Bitrix and Tilda sites, fixed defects and improved page loading."
+        ]
+      },
+      "o5": {
+        "company": "O5 LLC · o5.Food",
+        "role": "Fullstack Developer / DevOps",
+        "summary": "Built an online food-ordering platform used by 500+ business clients.",
+        "highlights": [
+          "Rewrote the PHP/jQuery core in TypeScript, React and NestJS.",
+          "Moved deployments to Kubernetes and maintained product infrastructure."
+        ]
+      },
+      "berry": {
+        "company": "Berry Design",
+        "role": "Co-founder / Developer",
+        "summary": "Co-founded a web studio with a partner, handling estimates, development and client delivery.",
+        "highlights": [
+          "Delivered 20+ retail and service websites, including forms, calculators and payment integrations."
+        ]
+      },
+      "freelance": {
+        "company": "Freelance",
+        "role": "PHP Developer",
+        "summary": "Started in custom web development, building corporate websites and online stores with PHP/jQuery.",
+        "highlights": [
+          "Configured domains, DNS, MySQL and Apache/Nginx hosting, and maintained the delivered sites."
+        ]
+      }
     },
-    "meloteka": {
-      "industry": "Cloud music service",
-      "role": "Founder & Developer",
-      "description": "Built a service for storing your music in the cloud and listening from any device. A Google Play Music alternative - upload your files, listen anywhere.",
-      "highlights": [
-        "Wrote an audio transcoding pipeline: FLAC/MP3/OGG upload, conversion, streaming with lossless playback in the browser",
-        "Integrated MusicBrainz catalog for automatic metadata enrichment, ListenBrainz scrobbling, Telegram Mini App",
-        "Set up S3 storage on Yandex Cloud, implemented 3 subscription tiers"
-      ]
+    "projects": {
+      "startodel": {
+        "title": "Startodel",
+        "description": "Nuxt food-delivery websites with SSR, multilingual menus, ordering, payments and guest checkout."
+      },
+      "meloteka": {
+        "title": "Meloteka",
+        "description": "A music catalog with audio upload and transcoding, S3 storage, MusicBrainz metadata and a Telegram Mini App."
+      },
+      "nextorders": {
+        "title": "NextOrders",
+        "description": "An open-source food-ordering platform with SSR, multiple languages, a persistent cart and guest checkout."
+      }
     },
-    "sushilove": {
-      "industry": "Restaurant chain, food delivery",
-      "role": "Fullstack Developer",
-      "description": "Sole developer in the company. Covered the full cycle: from auditing existing websites to building internal services and team tools.",
-      "highlights": [
-        "Integrated PostgreSQL and RabbitMQ for async task processing - improved internal service reliability and speed",
-        "Audited Bitrix and Tilda websites: fixed 12 critical bugs, improved page load speed by 50%",
-        "Created Telegram Mini App for team task management: assignment, statuses, deadlines, KPI monitoring",
-        "Implemented reporting system: 5+ report types for plan execution, employee workload, and partner performance"
-      ]
-    },
-    "o5": {
-      "industry": "IT company, system integration",
-      "role": "Fullstack Developer & DevOps",
-      "description": "Key developer in the product team. Went from first commit to a scalable platform with hundreds of business clients in Russia's food delivery segment.",
-      "highlights": [
-        "Built and launched the o5.Food platform from scratch",
-        "Rewrote core system from PHP/jQuery to TypeScript/React/NestJS. Evaluated WebAssembly and Serverless for critical modules",
-        "Implemented scalable Kubernetes architecture - handling growing traffic without downtime, reducing hosting costs",
-        "Acquired 500+ business clients, earned thousands of positive user reviews"
-      ]
-    },
-    "berry": {
-      "industry": "Web development agency",
-      "role": "Co-founder",
-      "description": "Co-founded a web development agency with a partner over 2.5 years. Managed projects from sales and estimation to development and delivery.",
-      "highlights": [
-        "Delivered 20+ websites for businesses (retail, services)",
-        "Enhanced existing sites: fixed bugs, implemented lead forms, calculators, payment integrations",
-        "One-third of clients returned for new projects"
-      ]
-    },
-    "freelance": {
-      "industry": "Freelance web development",
-      "role": "PHP Developer",
-      "description": "The start of my web development career. Found clients independently, managed projects end-to-end and maintained server infrastructure.",
-      "highlights": [
-        "Launched 20+ websites on PHP+jQuery: corporate portals and e-commerce stores",
-        "Managed infrastructure: domains, DNS, hosting (Apache/Nginx), uptime > 99%"
-      ]
-    },
-    "twitch": {
-      "industry": "Streaming platform",
-      "role": "Software Development Streamer",
-      "description": "Regular weekday streams. Writing code live on camera, ~15 average viewers. Building interactive viewer apps.",
-      "highlights": [
-        "Built Twitch API integration: real-time viewer data, chat messages, and stream events processing",
-        "Developed ChatGame (24 ★ on GitHub) - Telegram Mini App with WebSockets: stream room sync, OAuth authentication, inventory and trophy system"
-      ]
-    },
-    "nextorders": {
-      "industry": "Open-source for foodtech",
-      "role": "Author & Maintainer",
-      "description": "Open-source food delivery automation platform. Exploring the full development cycle in foodtech and practicing modern technologies.",
-      "highlights": [
-        "Designed platform with responsive design, SSR rendering, 11+ language support and multi-regional capabilities",
-        "Implemented conversion features: 'Frequently bought together', product videos, ingredient details, persistent cart, instant search, guest checkout"
-      ]
-    }
+    "contactLinks": "Contact links",
+    "projectStarted": "Started: {date}"
   },
   "nav": {
     "home": "Home",

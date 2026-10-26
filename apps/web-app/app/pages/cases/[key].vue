@@ -12,6 +12,13 @@
             {{ data.title }}
           </h1>
 
+          <p
+            v-if="closedYear"
+            class="mt-4 text-sm font-medium text-muted"
+            data-project-archive
+          >
+            {{ t('cases.archiveNote', { year: closedYear }) }}
+          </p>
           <p class="mt-4 text-lg text-muted leading-relaxed">
             {{ data.description }}
           </p>
@@ -136,6 +143,7 @@ import { CASE_ALLOWED_EMOJIS } from '@kosarev/database/constants'
 const { t, locale } = useI18n()
 const route = useRoute()
 const localePath = useLocalePath()
+const closedYear = computed(() => closedProjectYearForCase(String(route.params.key)))
 const contactOpen = ref(false)
 const pickerOpen = ref(false)
 const userReaction = ref<string | null>(null)
@@ -248,11 +256,15 @@ const ogImage = computed(() => {
     : 'https://kosarev.space/og-image.png'
 })
 
+const caseDescription = computed(() => closedYear.value
+  ? `${t('cases.archiveNote', { year: closedYear.value })} ${data.value?.description ?? ''}`
+  : data.value?.description)
+
 useSeoMeta({
   title: () => data.value?.title,
-  description: () => data.value?.description,
+  description: caseDescription,
   ogTitle: () => data.value?.title,
-  ogDescription: () => data.value?.description,
+  ogDescription: caseDescription,
   ogType: 'article',
   ogUrl: canonicalUrl,
   ogImage,
@@ -271,7 +283,7 @@ useHead({
         '@context': 'https://schema.org',
         '@type': 'Article',
         'headline': data.value?.title,
-        'description': data.value?.description,
+        'description': caseDescription.value,
         'image': ogImage.value,
         'author': {
           '@type': 'Person',
