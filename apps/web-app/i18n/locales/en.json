@@ -244,13 +244,7 @@
     "addReaction": "Add a reaction",
     "views": "{count} views",
     "closeMenu": "Close navigation",
-    "cursors": "Live cursors",
-    "cursorsOff": "Turn off live cursors",
-    "cursorsOn": "Turn on live cursors",
-    "cursorsDisabled": "Switched off",
-    "cursorsConnected": "Connected: {count}",
-    "cursorsConnecting": "Connecting",
     "presenceTitle": "A page you can explore together",
-    "presenceDescription": "On desktop, live cursors show where other readers point. Open a second window or send the page to a colleague. The cursor button in the header switches them off."
+    "presenceDescription": "On desktop, live cursors show where other readers point. Open a second window or send the page to a colleague. The pill at the bottom opens your profile, where you can hide or show cursors."
   }
 }

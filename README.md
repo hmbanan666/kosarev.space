@@ -6,7 +6,8 @@ Russian is the default locale; English pages use the `/en` prefix.
 The application uses a dark-only black and amber interface with an original
 color portrait. It includes a portfolio, database-backed case studies,
 a CV with printable pages and downloadable PDFs, direct contact links,
-default-on live peer cursors on desktop, and optional Yandex Metrika tracking. The
+the native live-cursor module and bottom profile pill on desktop, and optional
+Yandex Metrika tracking. The
 [portfolio brief](docs/brand.md) describes the audiences, implemented design
 direction and boundaries for future work.
 

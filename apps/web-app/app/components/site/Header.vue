@@ -16,7 +16,6 @@
         </NuxtLink>
       </nav>
       <div class="site-header-controls">
-        <SitePresenceControl />
         <LanguageSwitcher />
         <details
           ref="menu"
