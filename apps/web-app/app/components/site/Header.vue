@@ -75,6 +75,6 @@ function closeMenu(restoreFocus = false) {
     }
   }
 }
-watch(() => route.fullPath, () => closeMenu())
+watch(() => route.path, () => closeMenu())
 onClickOutside(menu, () => closeMenu())
 </script>

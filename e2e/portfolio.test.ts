@@ -131,6 +131,21 @@ test('mobile navigation supports keyboard and keeps native contact and locale li
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })
 
+test('mobile menu remains open when same-page hash navigation settles', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 })
+  await page.goto('/en')
+  await expect(page.getByRole('button', { name: 'Switch color theme', exact: true })).toBeVisible()
+  const menu = page.getByRole('button', { name: 'Open navigation', exact: true })
+  await menu.focus()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('.site-mobile-menu nav')).toBeVisible()
+  await page.evaluate(() => {
+    window.location.hash = 'main-content'
+  })
+  await expect(page.getByRole('link', { name: 'Русский', exact: true })).toHaveAttribute('href', '/#main-content')
+  await expect(page.locator('.site-mobile-menu nav')).toBeVisible()
+})
+
 test('case filters and critical content work without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false })
   const page = await context.newPage()
