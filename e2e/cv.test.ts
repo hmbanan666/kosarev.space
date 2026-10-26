@@ -15,7 +15,7 @@ for (const locale of ['ru', 'en'] as const) {
     await expect(doc).toContainText(locale === 'en' ? 'Incomplete higher education' : 'Неоконченное высшее')
     await expect(doc).toContainText(locale === 'en' ? 'Project closed in 2026' : 'Проект закрыт в 2026 году')
     await expect(doc.locator('a[href="mailto:nick@kosarev.space"]')).toBeVisible()
-    await expect(page.locator(`a[href="${locale === 'en' ? '/cv-en.pdf' : '/cv.pdf'}"]`)).toHaveAttribute('download')
+    await expect(page.locator(`.cv-toolbar a[href="${locale === 'en' ? '/cv-en.pdf' : '/cv.pdf'}"]`)).toHaveAttribute('download')
     await expect(doc.locator('.cv-projects a:not([href])')).toHaveCount(0)
     await expect(doc.locator('.cv-projects a')).toHaveAttribute('href', 'https://github.com/nextorders/food')
     const facts = await doc.locator('[data-cv-fact]').allTextContents()

@@ -1,18 +1,18 @@
 {
   "seo": {
-    "title": "Nick Kosarev - Fullstack Developer",
-    "description": "Fullstack Developer specializing in Vue, Nuxt, TypeScript, and PostgreSQL. Building modern web applications."
+    "title": "Nick Kosarev - Fullstack Developer / Tech Lead",
+    "description": "Fullstack Developer / Tech Lead. Interfaces, backend systems and infrastructure since 2010. Selected case studies, experience, CV and direct contact."
   },
   "hero": {
     "badge": "Open for collaboration",
     "name": "Nick Kosarev",
-    "description": "I build TypeScript and Nuxt products: interfaces, backend services and infrastructure. In software development since 2010, with foodtech and fintech experience.",
+    "description": "I build web products across interfaces, backend services and infrastructure. Foodtech and fintech experience; hands-on responsibility from data models to release.",
     "projects": "Projects",
     "contact": "Get in touch"
   },
   "projects": {
     "title": "Projects",
-    "description": "Selected products and open-source work.",
+    "description": "Past independent products and public source. Closed projects are labelled; the engineering work remains available.",
     "visit": "Visit",
     "source": "Source",
     "meloteka": {
@@ -27,7 +27,7 @@
       "description": "Built an interactive Twitch game with chat commands, real-time synchronization and a Telegram Mini App."
     },
     "nextorders": {
-      "description": "Open-source food delivery automation platform. Responsive design, SSR, 11+ language support, and multi-regional capabilities."
+      "description": "An open-source food-ordering platform with SSR, multiple languages, a persistent cart and guest checkout."
     },
     "closed": "Project closed in {year}"
   },
@@ -52,10 +52,10 @@
     "viewCv": "View full CV"
   },
   "cases": {
-    "title": "What interests you?",
-    "description": "Pick a technology - I'll show you real problems I solved with it.",
+    "title": "Case studies",
+    "description": "Find a relevant problem, then explore the implementation. Filter by area, technology or project.",
     "searchPlaceholder": "Search technologies...",
-    "noResults": "No cases found. Try another technology.",
+    "noResults": "No matching cases. Try a broader search or reset the filters.",
     "clearFilters": "Clear filters",
     "backToAll": "All cases",
     "taskTitle": "Challenge",
@@ -183,5 +183,79 @@
   },
   "liveCursors": {
     "howItWorks": "How it works?"
+  },
+  "site": {
+    "skip": "Skip to content",
+    "navigation": "Main navigation",
+    "menu": "Open navigation",
+    "experience": "Experience",
+    "viewCv": "Read CV",
+    "exploreWork": "Explore work",
+    "fullExperience": "Full experience and responsibilities",
+    "mapLabel": "Explore work by responsibility",
+    "mapTitle": "Interfaces, services and infrastructure",
+    "mapCaption": "Three parts of the same product. Explore the work behind each.",
+    "layers": {
+      "interface": {
+        "title": "Interfaces",
+        "text": "Vue, Nuxt, React"
+      },
+      "systems": {
+        "title": "Services & data",
+        "text": "Integrations, queues, databases"
+      },
+      "delivery": {
+        "title": "Infrastructure",
+        "text": "Docker, Kubernetes, CI/CD"
+      }
+    },
+    "copyEmail": "Copy email address",
+    "emailCopied": "Email address copied.",
+    "copyManually": "Copy unavailable. Select the address below or use the email link.",
+    "emailAddress": "Email address",
+    "contactTitle": "Have a role or a product in mind?",
+    "contactDescription": "Write about the team, the product or the problem you need to solve. Email and Telegram both reach me directly.",
+    "contactPrompt": "A short outline and a link are enough to start.",
+    "liveCodingArchive": "Past live coding",
+    "techDetails": "Technical context",
+    "workCount": "{count} cases",
+    "showAll": "Show all {count} cases",
+    "search": "Search work",
+    "searchPlaceholder": "Try billing, Nuxt or a project name",
+    "area": "Area of work",
+    "technology": "Technology",
+    "allTechnologies": "All technologies",
+    "allWork": "All work",
+    "apply": "Find cases",
+    "reset": "Reset filters",
+    "results": "Case search results",
+    "loading": "Loading case studies…",
+    "loadError": "Case studies could not be loaded.",
+    "retry": "Try again",
+    "summary": "At a glance",
+    "detail": "Technical details",
+    "caseNavigation": "In this case",
+    "shareCase": "Copy case link",
+    "linkCopied": "Case link copied.",
+    "linkManual": "Copy the URL from your browser address bar.",
+    "backContext": "Back to these results",
+    "readCase": "Read case",
+    "projectCases": "Explore project cases",
+    "source": "Source code",
+    "archiveIntro": "Past independent products and public source. Closed projects are labelled; the engineering work remains available.",
+    "demoTitle": "A small piece of this site",
+    "demoDescription": "An optional live demo of my Nuxt cursor module. Pointer positions stay inside this miniature view, away from the content.",
+    "demoStart": "Start live demo",
+    "demoStop": "Stop live demo",
+    "demoRestricted": "The demo stays off for touch input or reduced motion. The case study is available to everyone.",
+    "demoCase": "How live cursors work",
+    "demoConnecting": "Connecting to the live demo…",
+    "demoConnected": "{count} connected to the demo",
+    "demoWaiting": "Other participants appear here when they join. Open this page in a second window to try it.",
+    "demoMap": "Pointer positions on this page, shown in miniature",
+    "reaction": "Reaction",
+    "addReaction": "Add a reaction",
+    "views": "{count} views",
+    "closeMenu": "Close navigation"
   }
 }

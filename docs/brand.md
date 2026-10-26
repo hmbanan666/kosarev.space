@@ -1,56 +1,63 @@
-# Brand and planned rework
+# Portfolio direction
 
-This is the design brief for a future site rework. It records intended
-positioning and scope, not completed features or a dated delivery commitment.
-The current implementation is described in the [README](../README.md).
+The site presents Nikolai Kosarev as a hands-on Fullstack Developer / Tech Lead
+who has built products, backend systems and infrastructure since 2010. It
+supports both hiring and product or contract discussions. This brief replaces
+the earlier direction that explicitly deprioritized employment.
 
-## Positioning
+## Audiences and tasks
 
-**I will design and build your system** — with AI, structure and hands-on
-experience.
+- Recruiters and hiring teams need the role, recent experience, a readable CV,
+  downloadable PDFs and direct contact without a mandatory persona selector.
+- Technical leaders need concrete responsibilities, implementation decisions,
+  case studies and enough technical context to assess relevant experience.
+- Founders need to understand product delivery and ownership, explore relevant
+  prior work and start a conversation without a sales funnel or pricing claims.
 
-The site should express the work of a system builder. It should not primarily
-present a fullstack employment CV or a showcase of inactive SaaS products.
+## Implemented structure
 
-## Intended site structure
+- A compact introduction with role, location, CV, PDF, work and email links.
+- A responsibility map linking interfaces, services/data and delivery to case
+  filters. It is navigation, not a diagram of an undocumented client system.
+- Recent EXPI responsibility sourced from the same localized facts as the CV.
+- A case finder with shareable URL filters, search, a visible path to all cases,
+  and technical context available through native disclosure controls.
+- Case pages with challenge/result summaries, expandable implementation details,
+  context-preserving navigation and direct contact through the shared footer.
+- A project archive retaining real visuals and source links. Startodel, Meloteka
+  and ChatGame closed in 2026; individual closure months are not established.
+  NextOrders has not been declared closed.
+- Email and Telegram are directly visible. Email copying confirms success or
+  offers manual selection if clipboard access fails. No contact backend exists.
+- The live cursor module is an explicit, optional miniature demonstration.
+  It opens a connection only while enabled, never draws over site content, and
+  remains off for coarse pointers or reduced motion. It is absent from CV/print.
 
-- Hero: the promise of designing and building systems, without a full-time
-  employment pitch.
-- Cases and archive: show what was built before, including Meloteka, Startodel,
-  ChatGame and NextOrders.
-- Book: publish finished chapters at `/book` when they are ready.
-- Contact: a “write to me” form leading to Telegram `@hmbanan666`, without prices.
-- Open source and tools: feature actively maintained work that supports the
-  central positioning.
+## Visual principles
 
-These are planned changes. The current site already has portfolio/CV routes,
-a database-backed case section and contact links. It does not have a `/book`
-route or contact-submission form. The existing contact modal links directly
-to Telegram and other contact channels.
+Use calm, readable surfaces and spend the strongest visual emphasis on the
+responsibility map. Retain Noto Sans for interface/body text and Lora for
+selective display typography, with genuine Cyrillic and Latin coverage.
 
-## Outside the initial scope
+The palette uses Porcelain `#F6F8FC`, Paper `#FFFFFF`, Graphite `#17283B`,
+Harbor `#315D88`, Mist `#DCE7EF` and Blueglass `#B6D2E4`. Light and dark modes
+reuse these roles. Align reading content left, keep body lines below 80
+characters, use visible focus, and avoid motion-dependent content, arbitrary
+numbering, technology tag walls, vanity counters and repeated decorative cards.
+Print CV styling remains separate: two A4 pages per language, selectable text
+and clickable contact/source links.
 
-- Membership, user accounts or a subscription product.
-- Aggressive sales offers or pricing.
-- Speculative subdomains reserved for future products.
-- Streaming as a distribution channel.
+## Accuracy and boundaries
 
-## Relationship to the book and open source
+Career chronology and approved CV copy are canonical for career claims.
+Distinguish partial migrations from completed work and launch preparation from
+public availability. Do not imply paying Matrix customers or compare a warm
+repeat build with an unrelated ordinary build. Never publish private client
+records, operational identifiers, private ADRs or source attachments.
 
-The manuscript is drafted in a separate private repository. Access to it is
-not required to set up or maintain this site, and this document does not assume
-access to any private plan. Only finished material intended for publication
-belongs here.
-
-| Layer | Intended home |
-|---|---|
-| Book draft | Separate private manuscript repository |
-| Published chapters | A future `kosarev.space/book` section |
-| Maintained tools | The `hmbanan666` account or organization, with subdomains only when justified |
-
-## Initial rework focus
-
-Align the public positioning and contact experience with this brief. Book
-writing remains separate; this repository is for publishing finished chapters.
-The original brief used a 90-day planning horizon without a start date. Treat
-that as an initial focus, not an active deadline or a scheduled release.
+There is no book route, account system, subscription product, contact-submission
+service or pricing offer on this site. A manuscript in a separate private
+repository is not a setup prerequisite. Publishing finished chapters can be
+considered later with its own scope; no release date is established. Hosting
+configuration and deployment triggers are external facts, described separately
+in the [deployment guide](deploy.md).
