@@ -3,6 +3,7 @@ import { completedCvMonths, cvContactLinks, cvProjectLinks, cvPublicWork, cvRole
 import { closedProjectYearForCase, closedProjectYears, projects } from '../app/utils/data'
 import en from '../i18n/locales/en.json'
 import ru from '../i18n/locales/ru.json'
+import profile from '../public/pro.json'
 
 describe('cV facts and chronology', () => {
   it('keeps the supplied EXPI dates and counts six elapsed months, not seven calendar labels', () => {
@@ -47,5 +48,43 @@ describe('cV facts and chronology', () => {
     expect(en.cv.educationText).toContain('Incomplete higher education')
     expect(ru.cv.entries.berry.role).toContain('Сооснователь')
     expect(en.cv.entries.berry.role).toContain('Co-founder')
+  })
+})
+
+describe('machine-readable CV parity', () => {
+  it('publishes the same paid roles, titles and schema-compatible month dates', () => {
+    expect(profile.experience).toEqual(cvRoles.map((entry) => ({
+      company: ru.cv.entries[entry.key as keyof typeof ru.cv.entries].company,
+      role: ru.cv.entries[entry.key as keyof typeof ru.cv.entries].role,
+      start: entry.period.start.slice(0, 7),
+      end: entry.period.end.slice(0, 7),
+      description: expect.stringContaining(ru.cv.entries[entry.key as keyof typeof ru.cv.entries].summary),
+    })))
+    expect(profile.experience[0]?.description).toContain('27.04.2026–27.10.2026 (6 месяцев)')
+    expect(profile.title).toBe(ru.cv.subtitle)
+    expect(profile.bio).toContain(ru.cv.summary)
+    expect(profile).not.toHaveProperty('experience_years')
+    expect(profile).not.toHaveProperty('salary')
+    expect(profile).not.toHaveProperty('relocate')
+  })
+
+  it('preserves education, public contacts and C1 using the profile schema vocabulary', () => {
+    expect(profile.education[0]).toEqual({ institution: ru.cv.educationTitle, degree: ru.cv.educationText })
+    expect(profile.contacts.email).toBe(cvContactLinks[0]?.href.replace('mailto:', ''))
+    expect(cvContactLinks).toContainEqual({ label: 't.me/hmbanan666', href: `https://t.me/${profile.contacts.telegram.slice(1)}` })
+    expect(profile.links.github).toBe(cvContactLinks[2]?.href)
+    expect(profile.languages).toContainEqual({ language: 'en', level: 'advanced' })
+    expect(profile.bio).toContain('C1')
+  })
+
+  it('labels closed-project case descriptions with canonical archive years', () => {
+    for (const item of profile.cases) {
+      const key = item.url.split('/').at(-1)!
+      const year = closedProjectYearForCase(key)
+      if (year) {
+        expect(item.description).toContain(`закрытого в ${year} году`)
+      }
+      expect(item.description.length).toBeLessThanOrEqual(200)
+    }
   })
 })
