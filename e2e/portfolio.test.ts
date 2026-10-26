@@ -39,6 +39,42 @@ test('case discovery exposes all work and keeps a shareable search context throu
   await expect(page.locator('.case-preview')).toHaveCount(1)
 })
 
+test('ownership links show a contrasting keyboard focus indicator in both themes', async ({ page }) => {
+  await page.goto('/en')
+  const theme = page.getByRole('button', { name: 'Switch color theme', exact: true })
+  const links = page.getByRole('navigation', { name: 'Explore work by responsibility' }).getByRole('link')
+  for (const dark of [false, true]) {
+    await expect(theme).toBeVisible()
+    if ((await theme.getAttribute('aria-pressed')) !== String(dark)) {
+      await theme.click()
+    }
+    await links.first().focus()
+    await page.keyboard.press('Shift+Tab')
+    await page.keyboard.press('Tab')
+    for (let index = 0; index < 3; index++) {
+      const link = links.nth(index)
+      await expect(link).toBeFocused()
+      const indicator = await link.evaluate((element) => {
+        const style = getComputedStyle(element)
+        const luminance = (color: string) => {
+          const rgb = color.match(/[\d.]+/g)!.slice(0, 3).map(Number).map((channel) => {
+            const value = channel / 255
+            return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+          })
+          return rgb[0]! * 0.2126 + rgb[1]! * 0.7152 + rgb[2]! * 0.0722
+        }
+        const background = getComputedStyle(element.closest('.ownership-map')!).backgroundColor
+        const values = [luminance(style.outlineColor), luminance(background)].sort((a, b) => a - b)
+        return { width: Number.parseFloat(style.outlineWidth), style: style.outlineStyle, contrast: (values[1]! + 0.05) / (values[0]! + 0.05) }
+      })
+      expect(indicator.style).toBe('solid')
+      expect(indicator.width).toBeGreaterThanOrEqual(2)
+      expect(indicator.contrast).toBeGreaterThanOrEqual(3)
+      await page.keyboard.press('Tab')
+    }
+  }
+})
+
 test('area and technology filters combine, explain no results, and can reset', async ({ page }) => {
   await openCatalog(page)
   await page.getByRole('combobox', { name: 'Area of work', exact: true }).selectOption('delivery')

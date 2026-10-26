@@ -44,6 +44,7 @@ const layers = [
 .ownership-layer > .iconify { flex-shrink: 0; }
 .ownership-layer > .iconify:last-child { margin-left: auto; }
 .ownership-layer:hover { background: color-mix(in srgb, var(--site-paper) 8%, var(--site-blue)); }
+.ownership-map .ownership-layer:focus-visible { outline: 3px solid var(--site-paper); outline-offset: 4px; }
 .ownership-caption { font-size: .8rem; max-width: 45ch; color: var(--site-line); }
 @media (max-width: 600px) {
   .ownership-map { padding: 1.5rem; }
