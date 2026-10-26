@@ -111,8 +111,8 @@
           "Migrated PHP data and services in stages using ETL, parallel reads and reconciliation. Decoupled copy-trading workers from PHP; portal migration remained in progress.",
           "Brought payments, recurring subscriptions, refunds and access provisioning into one billing flow, with payment-to-access reconciliation.",
           "Rewrote copy-trading workers for Binance, Bybit and Finam with shadow runs, tests and a trading gate for database schema readiness.",
-          "Moved Matrix from the browser to a cloud worker: idempotent commands, broker reconciliation, leases and pausing on uncertain state.",
-          "Organized AI-assisted implementation around architectural decisions, specifications, review and CI before merge. Set up self-hosted Forgejo and builds."
+          "Moved Matrix to a cloud worker with idempotent commands, broker reconciliation, leases and pausing on uncertain state. Prepared a paid subscription and public offer for launch; Matrix remained in production testing.",
+          "Established AI-assisted work through specifications, architectural decisions, review and CI; set up Forgejo. Enabled Docker build caching; a measured repeat build with a warm cache took 3 min 30 s."
         ]
       },
       "sushilove": {
