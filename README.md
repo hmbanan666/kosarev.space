@@ -27,7 +27,7 @@ npm install --global --prefix "$PWD/.cache/tooling" --allow-scripts=pnpm "$(node
 export PATH="$PWD/.cache/tooling/bin:$PATH"
 pnpm --version # 12.15.0
 pnpm install --frozen-lockfile
-pnpm exec playwright install chromium
+pnpm exec playwright install --with-deps chromium
 ```
 
 Run the PATH export from the repository root in each new shell. Corepack 0.36
