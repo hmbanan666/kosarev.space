@@ -17,13 +17,15 @@
           :key="project.key"
           class="project-entry"
         >
-          <img
-            :src="project.image"
-            :alt="project.titleKey ? t(project.titleKey) : project.title"
-            width="480"
-            height="270"
-            loading="lazy"
-          >
+          <div class="project-visual">
+            <img
+              :src="project.image"
+              :alt="project.titleKey ? t(project.titleKey) : project.title"
+              width="480"
+              height="270"
+              loading="lazy"
+            >
+          </div>
           <div class="project-copy">
             <h3>{{ project.titleKey ? t(project.titleKey) : project.title }}</h3>
             <p
@@ -64,9 +66,12 @@ const orderedProjects = computed(() => [...projects].sort((a, b) => Number(b.key
 .project-section { border-top: 1px solid var(--ui-border); }
 .project-list { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0 3rem; }
 .project-entry { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; padding-block: 1.25rem; border-bottom: 1px solid var(--ui-border); }
+.project-visual { min-width: 0; }
 .project-entry img { width: 100%; aspect-ratio: 16/10; object-fit: cover; object-position: top; border: 1px solid var(--ui-border); border-radius: .3rem; }
 .project-entry:first-child { grid-row: span 3; display: block; padding: 0; border: none; background: var(--ui-bg-elevated); border-radius: .5rem; overflow: hidden; align-self: start; }
-.project-entry:first-child img { border: none; border-radius: 0; aspect-ratio: 16/9; }
+.project-entry:first-child .project-visual { padding: 1.5rem 1.5rem 0; overflow: hidden; background: #242019; border-bottom: 1px solid #51432C; }
+.project-entry:first-child img { border: 1px solid #625641; border-radius: .5rem .5rem 0 0; aspect-ratio: 16/10; transform: rotate(-2deg) translateY(.5rem); transform-origin: bottom left; box-shadow: 0 14px 28px #0007; transition: transform 180ms ease; }
+.project-entry:first-child:focus-within img, .project-entry:first-child:hover img { transform: rotate(0) translateY(.25rem); }
 .project-entry:first-child .project-copy { padding: 1.75rem; }
 .project-status { font-size: .75rem; color: var(--ui-text-muted); margin-top: .35rem !important; }
 .project-description { font-size: .85rem; max-width: 65ch; margin-top: .5rem !important; }

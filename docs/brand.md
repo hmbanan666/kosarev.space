@@ -27,9 +27,12 @@ the earlier direction that explicitly deprioritized employment.
   NextOrders has not been declared closed.
 - Email and Telegram are directly visible. Email copying confirms success or
   offers manual selection if clipboard access fails. No contact backend exists.
-- The live cursor module is an explicit, optional miniature demonstration.
-  It opens a connection only while enabled, never draws over site content, and
-  remains off for coarse pointers or reduced motion. It is absent from CV/print.
+- Genuine live peer cursors start automatically on fine-pointer portfolio and
+  case pages. A compact header control disables them and remembers the choice.
+  Only real peer pointers and connection counts are shown, with no avatar bar,
+  local cursor replacement or fabricated presence. Pointers do not intercept
+  input and sit below navigation. Coarse pointers, reduced motion and CV/print
+  keep the connection off; leaving eligible pages disposes of it.
 
 ## Visual principles
 
@@ -39,7 +42,10 @@ The website uses a dark-only black and restrained amber system: Carbon
 website. Print pages remain white.
 
 The original color portrait and deliberate typography carry the introduction;
-do not desaturate the portrait or replace it with a decorative diagram. Noto
+do not desaturate the portrait or replace it with a decorative diagram. A fine
+amber offset frame gives the portrait depth, while real project screenshots
+use a warm matte presentation. Short action/reading responses support the
+same visual language without entrance animations across every section. Noto
 Sans serves interface and body text, while Lora distinguishes the name, with
 Cyrillic and Latin coverage. Align content to shared left edges, keep body
 lines below 80 characters and resolve control heights, labels and spacing as

@@ -4,7 +4,7 @@
     <ExperienceSection />
     <SkillsShowcaseSection />
     <ProjectsSection />
-    <SiteCursorDemo />
+    <SitePresenceNote />
   </UPage>
 </template>
 

@@ -57,8 +57,9 @@ const pdfPath = computed(() => locale.value === 'en' ? '/cv-en.pdf' : '/cv.pdf')
 .hero-direct { display: flex; flex-wrap: wrap; gap: .65rem 1.5rem; font-size: .85rem; margin-top: 1.25rem; color: var(--ui-text-muted); }
 .hero-direct a { text-decoration: underline; }
 .hero-direct a:hover { color: var(--ui-primary); }
-.hero-portrait { justify-self: end; width: 100%; max-width: 22rem; }
-.hero-portrait img { display: block; width: 100%; height: auto; aspect-ratio: 9/10; object-fit: cover; border-radius: .75rem; }
+.hero-portrait { position: relative; isolation: isolate; justify-self: end; width: 100%; max-width: 22rem; }
+.hero-portrait::before { content: ""; position: absolute; inset: .75rem -.75rem -.75rem .75rem; z-index: -1; border: 1px solid var(--ui-primary); border-radius: 1rem 4rem 1rem 1rem; opacity: .7; }
+.hero-portrait img { display: block; width: 100%; height: auto; aspect-ratio: 9/10; object-fit: cover; border-radius: 1rem 4rem 1rem 1rem; box-shadow: 0 16px 35px #0005; }
 @media (max-width: 1000px) {
   .portfolio-hero { grid-template-columns: minmax(0,1fr) 15rem; gap: 2.5rem; padding-block: 3.5rem; }
 }
@@ -68,7 +69,8 @@ const pdfPath = computed(() => locale.value === 'en' ? '/cv-en.pdf' : '/cv.pdf')
   .hero-location { min-height: 5rem; max-width: calc(100% - 6rem); display: flex; flex-direction: column; justify-content: center; margin-bottom: 1.25rem !important; }
   .hero-location { align-items: start; gap: .2rem; }
   .hero-portrait { grid-column: 2; grid-row: 1; width: 5rem; }
-  .hero-portrait img { aspect-ratio: 1; border-radius: .5rem; }
+  .hero-portrait::before { inset: .35rem -.35rem -.35rem .35rem; border-radius: .5rem 1.5rem .5rem .5rem; }
+  .hero-portrait img { aspect-ratio: 1; border-radius: .5rem 1.5rem .5rem .5rem; }
   .hero-copy h1 { max-width: none; font-size: clamp(2.2rem,8vw,3rem); }
   .hero-description { font-size: .95rem; }
 }

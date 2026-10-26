@@ -153,7 +153,7 @@ test('case filters and critical content work without JavaScript', async ({ brows
   await context.close()
 })
 
-test('live demonstration opens only on request, stays confined and closes its connection on stop', async ({ page }) => {
+test('live peer cursors start by default, respect saved off and clean up on CV navigation', async ({ page, browser }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   const sockets: { closed: boolean }[] = []
   page.on('websocket', (socket) => {
@@ -165,19 +165,106 @@ test('live demonstration opens only on request, stays confined and closes its co
       })
     }
   })
-  await page.goto('/en')
-  await expect(page.getByRole('button', { name: 'Start live demo', exact: true })).toBeEnabled()
-  expect(sockets).toHaveLength(0)
-  await page.getByRole('button', { name: 'Start live demo', exact: true }).click()
-  await expect(page.locator('[data-live-demo]')).toBeVisible()
+  await openCatalog(page)
+  await page.evaluate(() => scrollTo(0, 0))
+  const control = page.getByRole('button', { name: /^Live cursors\./ })
+  await expect(control).toHaveAttribute('aria-pressed', 'true')
+  await expect(control).toHaveAccessibleName(/Connected: [1-9]\d*/)
   await expect.poll(() => sockets.length).toBe(1)
+  const peerContext = await browser.newContext()
+  try {
+    const peer = await peerContext.newPage()
+    await peer.goto('/en')
+    await expect(peer.locator('[data-live-cursors]')).toBeVisible()
+    await peer.mouse.move(320, 300)
+    await expect(page.locator('[data-peer-cursor]').first()).toBeVisible()
+    await expect(page.locator('[data-live-cursors]')).toHaveCSS('pointer-events', 'none')
+    await expect(page.locator('[data-live-cursors-bar]')).toHaveCount(0)
+  } finally {
+    await peerContext.close()
+  }
+  await page.getByRole('link', { name: 'Read case: Build infrastructure reference', exact: true }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Build infrastructure reference')
+  await expect(control).toHaveAccessibleName(/Connected: [1-9]\d*/)
+  await expect(page.locator('[data-live-cursors]')).toBeVisible()
+  expect(sockets).toHaveLength(1)
+  await page.getByRole('link', { name: 'Nick Kosarev', exact: true }).click()
+  await control.click()
+  await expect(control).toHaveAttribute('aria-pressed', 'false')
   await expect(page.locator('[data-live-cursors]')).toHaveCount(0)
-  await page.getByRole('button', { name: 'Stop live demo', exact: true }).click()
-  await expect(page.locator('[data-live-demo]')).toHaveCount(0)
   await expect.poll(() => sockets[0]?.closed).toBe(true)
-  await page.getByRole('button', { name: 'Start live demo', exact: true }).click()
+  await page.reload()
+  await expect(control).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.getByRole('button', { name: 'Copy email address', exact: true })).toBeEnabled()
+  expect(sockets).toHaveLength(1)
+  await control.click()
+  await expect(control).toHaveAccessibleName(/Connected: [1-9]\d*/)
   await expect.poll(() => sockets.length).toBe(2)
-  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'CV', exact: true }).click()
+  await expect(page.locator('[data-cv-document]')).toBeVisible()
+  await expect(page.locator('[data-live-cursors]')).toHaveCount(0)
+  await expect(control).toHaveCount(0)
   await expect.poll(() => sockets[1]?.closed).toBe(true)
-  await expect(page.getByRole('button', { name: 'Start live demo', exact: true })).toBeDisabled()
+  await page.getByRole('link', { name: 'Nick Kosarev', exact: true }).click()
+  await expect(control).toHaveAccessibleName(/Connected: [1-9]\d*/)
+  await expect.poll(() => sockets.length).toBe(3)
+})
+
+test('live presence reconnects and disposes when reduced motion becomes active', async ({ page }) => {
+  await page.clock.install()
+  await page.addInitScript(() => {
+    const NativeSocket = window.WebSocket
+    const connections: WebSocket[] = []
+    window.WebSocket = class extends NativeSocket {
+      constructor(url: string | URL, protocols?: string | string[]) {
+        super(url, protocols)
+        if (String(url).includes('/_live-cursors-ws')) {
+          connections.push(this)
+        }
+      }
+    }
+    ;(window as Window & { closePresence?: () => void }).closePresence = () => connections.at(-1)?.close()
+  })
+  const sockets: { closed: boolean }[] = []
+  page.on('websocket', (socket) => {
+    if (socket.url().includes('/_live-cursors-ws')) {
+      const entry = { closed: false }
+      sockets.push(entry)
+      socket.on('close', () => {
+        entry.closed = true
+      })
+    }
+  })
+  await page.goto('/en')
+  const control = page.getByRole('button', { name: /^Live cursors\./ })
+  await expect(control).toHaveAccessibleName(/Connected: [1-9]\d*/)
+  await page.evaluate(() => (window as Window & { closePresence?: () => void }).closePresence?.())
+  await expect.poll(() => sockets[0]?.closed).toBe(true)
+  await page.clock.fastForward(3500)
+  await expect.poll(() => sockets.length).toBe(2)
+  await expect(control).toHaveAccessibleName(/Connected: [1-9]\d*/)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(control).toHaveCount(0)
+  await expect(page.locator('[data-live-cursors]')).toHaveCount(0)
+  await expect.poll(() => sockets[1]?.closed).toBe(true)
+  await page.clock.fastForward(10000)
+  expect(sockets).toHaveLength(2)
+})
+
+test('touch and reduced-motion visitors never open a live cursor connection', async ({ browser }) => {
+  for (const settings of [{ hasTouch: true, isMobile: true }, { reducedMotion: 'reduce' as const }]) {
+    const context = await browser.newContext(settings)
+    try {
+      const page = await context.newPage()
+      const sockets: string[] = []
+      page.on('websocket', (socket) => sockets.push(socket.url()))
+      await page.goto('/en')
+      await expect(page.getByRole('button', { name: 'Copy email address', exact: true })).toBeEnabled()
+      await expect(page.getByRole('button', { name: /^Live cursors\./ })).toHaveCount(0)
+      await expect(page.locator('[data-live-cursors]')).toHaveCount(0)
+      expect(sockets.filter((url) => url.includes('/_live-cursors-ws'))).toHaveLength(0)
+    } finally {
+      await context.close()
+    }
+  }
 })

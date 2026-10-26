@@ -6,6 +6,7 @@ for (const locale of ['ru', 'en'] as const) {
     await page.goto(`${prefix}/cv`)
     const doc = page.locator('[data-cv-document]')
     await expect(doc).toHaveAttribute('data-cv-ready', locale)
+    await expect(page.locator('[data-live-cursors]')).toHaveCount(0)
     await expect(doc.locator('h1')).toHaveText(locale === 'en' ? 'Nick Kosarev' : 'Николай Косарев')
     await expect(doc.locator('[data-cv-entry]')).toHaveCount(5)
     const expi = doc.locator('[data-cv-entry="expi"]')

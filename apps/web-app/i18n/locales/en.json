@@ -239,19 +239,18 @@
     "projectCases": "Explore project cases",
     "source": "Source code",
     "archiveIntro": "Past independent products and public source. Closed projects are labelled; the engineering work remains available.",
-    "demoTitle": "A small piece of this site",
-    "demoDescription": "An optional live demo of my Nuxt cursor module. Pointer positions stay inside this miniature view, away from the content.",
-    "demoStart": "Start live demo",
-    "demoStop": "Stop live demo",
-    "demoRestricted": "The demo stays off for touch input or reduced motion. The case study is available to everyone.",
     "demoCase": "How live cursors work",
-    "demoConnecting": "Connecting to the live demo…",
-    "demoConnected": "{count} connected to the demo",
-    "demoWaiting": "Other participants appear here when they join. Open this page in a second window to try it.",
-    "demoMap": "Pointer positions on this page, shown in miniature",
     "reaction": "Reaction",
     "addReaction": "Add a reaction",
     "views": "{count} views",
-    "closeMenu": "Close navigation"
+    "closeMenu": "Close navigation",
+    "cursors": "Live cursors",
+    "cursorsOff": "Turn off live cursors",
+    "cursorsOn": "Turn on live cursors",
+    "cursorsDisabled": "Switched off",
+    "cursorsConnected": "Connected: {count}",
+    "cursorsConnecting": "Connecting",
+    "presenceTitle": "A page you can explore together",
+    "presenceDescription": "On desktop, live cursors show where other readers point. Open a second window or send the page to a colleague. The cursor button in the header switches them off."
   }
 }
