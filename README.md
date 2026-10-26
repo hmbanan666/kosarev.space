@@ -1,26 +1,47 @@
 # kosarev.space
 
-Personal site — [kosarev.space](https://kosarev.space)
+Source for the bilingual personal site at [kosarev.space](https://kosarev.space).
+Russian is the default locale; English pages use the `/en` prefix.
 
-Brand / rework intent: [`docs/brand.md`](docs/brand.md). Full construction lives in private `hmbanan666/book` → `PLAN.md`.
+The application currently includes a portfolio, database-backed case studies,
+a CV with printable pages and downloadable PDFs, contact links, live cursors,
+and optional Yandex Metrika tracking. The [brand brief](docs/brand.md) describes
+planned positioning and features; it is not an inventory of implemented work.
 
-![Preview](apps/web-app/public/preview.png)
+![Site preview asset](apps/web-app/public/preview.png)
 
 ## Stack
 
-- **Nuxt 4** + **Vue 3** + **TypeScript**
-- **Nuxt UI v4** + **Tailwind CSS v4**
-- **PostgreSQL** + **Drizzle ORM**
-- **i18n** — Russian / English
-- **Playwright** — E2E tests + CV PDF generation
-- **Vitest** — unit tests
-- **Docker** + **Dokploy** — production deploy on VPS
-- **GitHub Actions** — CI (+ release on tags)
+- Nuxt 4, Vue 3 and TypeScript
+- Nuxt UI v4 and Tailwind CSS v4
+- PostgreSQL and Drizzle ORM
+- Nuxt i18n, sitemap and robots modules
+- Vitest for unit tests; Playwright for E2E tests and CV PDF generation
+- Docker build/runtime definition; GitHub Actions for CI and tagged releases
 
 ## Setup
 
-Use Node.js **24.21.0** (`.node-version`) and the exact pnpm version in
-`package.json`. Bootstrap pnpm locally without changing global tools:
+Run the following commands from the repository root in a POSIX shell.
+
+### Select Node and bootstrap pnpm
+
+Use the Node version in [`.node-version`](.node-version) (24.21.0) and the pnpm
+pin in [`package.json`](package.json) (12.15.0). The version file does not switch
+your shell's runtime automatically. Activate the pinned Node explicitly before
+running npm or pnpm; a system or Homebrew Node may otherwise take precedence.
+
+For an existing nvm installation:
+
+```bash
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+. "$NVM_DIR/nvm.sh"
+nvm install "$(cat .node-version)"
+nvm use "$(cat .node-version)"
+node --version # v24.21.0
+```
+
+With another runtime manager, select that same version before continuing.
+Bootstrap native pnpm into this checkout:
 
 ```bash
 npm install --global --prefix "$PWD/.cache/tooling" --allow-scripts=pnpm "$(node -p 'JSON.parse(require("node:fs").readFileSync("package.json", "utf8")).packageManager')"
@@ -30,102 +51,122 @@ pnpm install --frozen-lockfile
 pnpm exec playwright install --with-deps chromium
 ```
 
-Run the PATH export from the repository root in each new shell. Corepack 0.36
-cannot launch pnpm 12's native executable; use the npm bootstrap above. CI and
-Docker also install the pinned pnpm through npm.
+The explicit npm prefix keeps pnpm inside the ignored `.cache/tooling`
+directory; it does not replace your globally installed pnpm. Corepack 0.36
+cannot launch pnpm 12's native executable, so this setup uses npm. Installing
+Playwright system dependencies on Linux may require administrator privileges.
 
-Copy env files and fill in values:
+In each new shell, repeat runtime selection and the PATH export from the
+repository root. Git hooks use `pnpm exec nano-staged` and `pnpm exec commitlint`,
+so the pinned pnpm must also be on PATH when committing.
+
+### Configure a local database
+
+Create a dedicated local PostgreSQL database and copy the environment examples:
 
 ```bash
 cp apps/web-app/.env.example apps/web-app/.env
 cp packages/database/.env.example packages/database/.env
 ```
 
-### Database
+Edit both files for your local database. `NUXT_DATABASE_URL` is used by the app;
+`DATABASE_URL` is used by Drizzle CLI commands. Point both at the same local
+database. The examples assume `kosarev_space` on localhost:5432; copying them
+does not create the database or its user. `NUXT_PUBLIC_METRIKA_ID` is optional;
+leaving it empty disables the app's Metrika plugin.
 
-Use a dedicated local PostgreSQL database (the examples use localhost:5432).
-App startup automatically applies migrations, so do not use production
-credentials for development, tests or builds. E2E tests and CV PDF generation
-start the app. Use a local `NUXT_DATABASE_URL` to verify database-backed
-routes and migrations; CI uses an isolated PostgreSQL service. CV content is
-static, so Docker can generate the PDFs without database credentials.
+The [database plugin](apps/web-app/server/plugins/01.database.ts) attempts
+migrations on startup, but catches and logs migration errors. Startup alone
+does not prove that the schema is ready. Apply the tracked migrations explicitly
+to check them before development:
 
 ```bash
-cd packages/database
-pnpm db:generate    # generate migrations
-pnpm db:push        # push schema directly (dev)
-pnpm db:studio      # open Drizzle Studio
+pnpm --filter @kosarev/database db:migrate
 ```
 
-Migrations run automatically on app startup.
+Other database commands, also run from the repository root:
 
-## Development
+| Command | Effect |
+|---|---|
+| `pnpm --filter @kosarev/database db:generate` | Generate SQL migrations from the schema |
+| `pnpm --filter @kosarev/database db:push` | Apply the schema directly to the local database |
+| `pnpm --filter @kosarev/database db:studio` | Open Drizzle Studio |
+
+Tracked migrations create schema objects, not case-study content. There is no
+seed command in the package scripts; a new database starts with an empty case
+list. Use local credentials for development, tests and builds, not production
+credentials.
+
+## Development and checks
+
+Nuxt dev reads `apps/web-app/.env`:
 
 ```bash
 pnpm --filter @kosarev/web-app dev
 ```
 
-## Scripts
-
-| Command | Description |
-|---|---|
-| `pnpm run lint` | ESLint |
-| `pnpm run typecheck` | Type check |
-| `pnpm run test` | Unit tests |
-| `pnpm run test:e2e` | E2E tests (Playwright) |
-| `pnpm run build` | Production build + CV PDFs |
-| `pnpm run check:full` | Lint, types, unit, E2E and production build (no auto-fixes) |
-
-`check:full` requires Chromium. To exercise the database-backed routes too,
-export the local database URL when running from the repository root (Nuxt dev
-reads the app's `.env`, but the production server used to generate PDFs reads
-environment variables):
+Run checks from the repository root. Export the local database URL for processes
+that do not load the app's development `.env`, including the built server used
+to generate PDFs:
 
 ```bash
 export NUXT_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/kosarev_space
 pnpm run check:full
 ```
 
-The npm `--global` flag above controls the install layout; the explicit prefix
-keeps the tool inside this checkout and does not replace your global pnpm.
+Use the credentials you configured locally in place of this example.
 
-Git hooks run the installed `nano-staged` and `commitlint` via `pnpm exec`.
-Keep the bootstrapped pnpm on PATH when committing.
+| Command | Effect |
+|---|---|
+| `pnpm run lint` | Run ESLint |
+| `pnpm run lint:fix` | Run ESLint with automatic fixes |
+| `pnpm run typecheck` | Type-check both workspace packages |
+| `pnpm run test` | Run Vitest unit tests |
+| `pnpm run test:e2e` | Run Playwright smoke tests; starts Nuxt dev on port 3333 |
+| `pnpm run build` | Build Nuxt, then generate both CV PDFs with Chromium |
+| `pnpm run check:full` | Run lint, types, unit tests, E2E tests and build in sequence |
+| `pnpm --filter @kosarev/web-app preview` | Serve an existing build with Nuxt preview |
 
-## Project structure
+`check:full` invokes plain lint, not `lint:fix`. E2E and PDF generation require
+Chromium. The PDF generator starts the built app and writes `cv.pdf` and
+`cv-en.pdf` into `apps/web-app/.output/public`. CV content is static; the Docker
+build has been validated without database credentials. Database-backed routes
+still need a configured database and schema. For a standalone production
+preview, check the migration-directory contract in the [deployment guide](docs/deploy.md).
 
+## Routes and repository layout
+
+Pages are `/`, `/cases/[key]`, `/cv` and `/cv/print`, with English equivalents
+under `/en`. Download routes are `/cv.pdf` and `/cv-en.pdf`.
+
+The public case API exposes list/detail reads (`GET /api/cases` and
+`GET /api/cases/[key]`), view recording (`POST /api/cases/[key]/view`) and
+reaction changes (`POST /api/cases/[key]/react`). Internal repository creation
+methods are not public CRUD endpoints. Contact currently opens a modal of
+external links; there is no contact-submission endpoint or `/book` page.
+
+```text
+apps/web-app/
+├── app/                  # Pages, components, layouts, composables and Metrika plugin
+├── i18n/locales/          # Russian and English product translations
+├── public/               # Static assets
+├── server/api/cases/      # Public read, view and reaction handlers
+├── server/plugins/       # Database initialization and cache warmup
+├── server/routes/        # CV PDF serving and the sitemap data source
+└── scripts/              # CV PDF generation
+packages/database/
+├── src/                  # Schema, connection utilities and internal repository
+└── migrations/           # Tracked SQL migrations
 ```
-apps/web-app/             # Nuxt application
-├── app/
-│   ├── components/       # Vue components
-│   ├── composables/      # Composables
-│   ├── layouts/          # Page layouts
-│   ├── pages/            # Routes (/, /cases/[key], /cv, /cv/print)
-│   └── plugins/          # Yandex Metrika
-├── i18n/locales/         # Translation files
-├── server/
-│   ├── api/cases/        # Cases API (CRUD, views, reactions)
-│   ├── plugins/          # Database init + auto-migrate
-│   ├── routes/           # CV PDF serving, sitemap
-│   └── utils/            # Repository access
-└── scripts/              # PDF generation at build time
 
-packages/database/        # Shared database package
-├── src/
-│   ├── tables.ts         # Drizzle schema
-│   ├── database.ts       # Connection + migration
-│   ├── constants.ts      # Shared constants
-│   └── repository/       # Data access layer
-└── migrations/           # SQL migrations
-```
+## Build, hosting and release
 
-## Deploy
-
-Production is on **Dokploy** (build on VPS from `docker/web-app/Dockerfile`, no
-GHCR/k8s). Details: [`docs/deploy.md`](docs/deploy.md).
-
-URL: [kosarev.space](https://kosarev.space)
+The [deployment guide](docs/deploy.md) describes the Docker contract and
+separately labels the operator-reported Dokploy hosting context. Current
+workflows run CI and create GitHub Releases on `v*` tags; they do not publish
+container packages or create GitHub Deployments. Existing historical GitHub
+records are separate from the current workflow configuration.
 
 ## License
 
-MIT
+[MIT](LICENSE).

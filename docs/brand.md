@@ -1,36 +1,56 @@
-# Brand
+# Brand and planned rework
 
-Якорь для реворка сайта. Полная картина: private-репо [hmbanan666/book](https://github.com/hmbanan666/book) → `PLAN.md`.
+This is the design brief for a future site rework. It records intended
+positioning and scope, not completed features or a dated delivery commitment.
+The current implementation is described in the [README](../README.md).
 
-## Лицо
+## Positioning
 
-**Спроектирую и соберу систему** — с AI, структурно, из опыта.
+**I will design and build your system** — with AI, structure and hands-on
+experience.
 
-Не CV «наймите fullstack». Не витрина мёртвых SaaS.
+The site should express the work of a system builder. It should not primarily
+present a fullstack employment CV or a showcase of inactive SaaS products.
 
-## Что на сайте
+## Intended site structure
 
-- Герой: обещание сборщика систем (не найм в штат)
-- Кейсы / архив: «раньше строил X» (Мелотека, Стартодел, ChatGame, NextOrders…)
-- Книга: `/book`, когда будут готовые главы
-- Контакт: форма «напишите мне» → Telegram `@hmbanan666`, **без цен**
-- OSS / тулы: только живые, усиливающие позвоночник
+- Hero: the promise of designing and building systems, without a full-time
+  employment pitch.
+- Cases and archive: show what was built before, including Meloteka, Startodel,
+  ChatGame and NextOrders.
+- Book: publish finished chapters at `/book` when they are ready.
+- Contact: a “write to me” form leading to Telegram `@hmbanan666`, without prices.
+- Open source and tools: feature actively maintained work that supports the
+  central positioning.
 
-## Что не строить на сайте сейчас
+These are planned changes. The current site already has portfolio/CV routes,
+a database-backed case section and contact links. It does not have a `/book`
+route or contact-submission form. The existing contact modal links directly
+to Telegram and other contact channels.
 
-- Членство, кабинет, подписка как продукт
-- Агрессивный оффер и прайс
-- Поддомены «на будущее»
-- Стримы как канал
+## Outside the initial scope
 
-## Связь с книгой и OSS
+- Membership, user accounts or a subscription product.
+- Aggressive sales offers or pricing.
+- Speculative subdomains reserved for future products.
+- Streaming as a distribution channel.
 
-| Слой | Где |
-|------|-----|
-| Черновик книги | `hmbanan666/book` (private) |
-| Публичные главы | позже на kosarev.space/book |
-| Живые тулы | org/аккаунт hmbanan666, при необходимости поддомены |
+## Relationship to the book and open source
 
-## 90 дней (для этого репо)
+The manuscript is drafted in a separate private repository. Access to it is
+not required to set up or maintain this site, and this document does not assume
+access to any private plan. Only finished material intended for publication
+belongs here.
 
-Реворк лица и контакта под бренд выше. Книга пишется в другом репо; сюда — только публикация готового.
+| Layer | Intended home |
+|---|---|
+| Book draft | Separate private manuscript repository |
+| Published chapters | A future `kosarev.space/book` section |
+| Maintained tools | The `hmbanan666` account or organization, with subdomains only when justified |
+
+## Initial rework focus
+
+Align the public positioning and contact experience with this brief. Book
+writing remains separate; this repository is for publishing finished chapters.
+The original brief used a 90-day planning horizon without a start date. Treat
+that as an initial focus, not an active deadline or a scheduled release.
