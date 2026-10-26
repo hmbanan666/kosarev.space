@@ -23,7 +23,6 @@
     "@types/pg": "catalog:types",
     "dotenv": "catalog:dev",
     "drizzle-kit": "catalog:dev",
-    "tsx": "catalog:dev",
     "typescript": "catalog:dev"
   }
 }

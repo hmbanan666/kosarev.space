@@ -1,4 +1,4 @@
-FROM node:24-slim AS build
+FROM node:24.21.0-slim AS build
 
 LABEL org.opencontainers.image.source=https://github.com/hmbanan666/kosarev.space
 LABEL org.opencontainers.image.description="kosarev.space — personal portfolio web app"
@@ -10,12 +10,13 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY apps/web-app ./apps/web-app
 
-RUN corepack enable pnpm && pnpm install --frozen-lockfile
+RUN npm install --global --allow-scripts=pnpm "$(node -p 'JSON.parse(require("node:fs").readFileSync("package.json", "utf8")).packageManager')" \
+    && HUSKY=0 pnpm install --frozen-lockfile
 
-RUN npx playwright install --with-deps chromium
+RUN pnpm exec playwright install --with-deps chromium
 RUN pnpm --filter @kosarev/web-app build
 
-FROM node:24-slim
+FROM node:24.21.0-slim
 WORKDIR /app
 
 RUN chown node:node /app

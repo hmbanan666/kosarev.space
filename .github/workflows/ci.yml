@@ -4,7 +4,6 @@ on:
   push:
     paths-ignore:
       - '*.md'
-      - 'docker/**'
       - '.github/**'
       - '!.github/workflows/ci.yml'
     branches:
@@ -12,7 +11,6 @@ on:
   pull_request:
     paths-ignore:
       - '*.md'
-      - 'docker/**'
       - '.github/**'
       - '!.github/workflows/ci.yml'
     branches:
@@ -21,24 +19,39 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: kosarev_test
+          POSTGRES_PASSWORD: kosarev_test
+          POSTGRES_DB: kosarev_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kosarev_test -d kosarev_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NUXT_DATABASE_URL: postgresql://kosarev_test:kosarev_test@127.0.0.1:5432/kosarev_test
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: PNPM
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
       - name: Node
         uses: actions/setup-node@v6
         with:
-          node-version: lts/*
-          cache: pnpm
+          node-version-file: .node-version
+
+      - name: Bootstrap pinned pnpm
+        run: |
+          npm install --global --prefix "$PWD/.cache/tooling" --allow-scripts=pnpm "$(node -p 'JSON.parse(require("node:fs").readFileSync("package.json", "utf8")).packageManager')"
+          echo "$GITHUB_WORKSPACE/.cache/tooling/bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: ESLint
         run: pnpm run lint
@@ -58,11 +71,11 @@ jobs:
 
       - name: Install Playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Install Playwright deps (cached)
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+        run: pnpm exec playwright install-deps chromium
 
       - name: E2E tests
         run: pnpm run test:e2e

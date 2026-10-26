@@ -6,3 +6,9 @@ node_modules
 .husky
 *.md
 .env*
+
+# Local tooling, test output and editor settings
+.cache
+test-results
+playwright-report
+.zed

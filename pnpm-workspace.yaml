@@ -1,48 +1,58 @@
-shellEmulator: true
+minimumReleaseAgeExcludePrune: true
 
 trustPolicy: no-downgrade
+# Babel 7 requires semver 6; 6.3.1 is the latest 6.x and predates provenance on that line.
+# Its registry tarball SHA-512 matches the baseline lockfile (3746853).
+# https://github.com/pnpm/pnpm/issues/10202
+trustPolicyExclude:
+  - semver@6.3.1
+
+autoInstallPeers: true
+shellEmulator: true
 
 packages:
   - apps/*
   - packages/*
 
-autoInstallPeers: true
+# Native esbuild binaries and Vue version selection used by transitive tooling.
+allowBuilds:
+  esbuild: true
+  vue-demi: true
 
 catalogs:
   dev:
-    '@antfu/eslint-config': ^7.7.0
-    '@commitlint/cli': ^20.4.1
-    '@commitlint/config-conventional': ^20.4.1
-    '@iconify-json/lucide': ^1.2.88
-    '@iconify-json/simple-icons': ^1.0.0
-    bumpp: ^11.0.1
-    dotenv: ^17.3.1
-    drizzle-kit: ^0.31.10
-    eslint: ^9.39.2
+    '@antfu/eslint-config': ^10.0.0
+    '@commitlint/cli': ^21.2.4
+    '@commitlint/config-conventional': ^21.2.4
+    '@iconify-json/lucide': ^1.2.147
+    '@iconify-json/simple-icons': ^1.2.100
+    bumpp: ^12.3.0
+    dotenv: ^18.0.9
+    drizzle-kit: ^0.31.11
+    eslint: ^10.13.0
     husky: ^9.1.7
-    nano-staged: ^0.9.0
-    nuxt: ^4.4.2
-    tailwindcss: ^4.2.1
+    nano-staged: ^1.0.2
+    nuxt: ^4.6.2
+    tailwindcss: ^4.3.3
     tailwindcss-motion: ^1.1.1
-    tsx: ^4.21.0
-    typescript: ^5.9.3
-    vite: ^7.3.1
-    vue-tsc: ^3.2.4
+    typescript: ^6.0.3
+    vite: ^8.3.5
+    vue-tsc: ^3.3.13
   integrations:
-    '@nuxt/ui': ^4.5.1
-    '@nuxtjs/i18n': ^10.2.3
-    '@nuxtjs/robots': ^5.7.1
-    '@nuxtjs/sitemap': ^7.2.8
+    '@nuxt/ui': ^4.12.0
+    '@nuxtjs/i18n': ^10.6.0
+    '@nuxtjs/robots': ^7.0.2
+    '@nuxtjs/sitemap': ^9.1.0
     '@paralleldrive/cuid2': ^3.3.0
-    '@vueuse/core': ^14.2.0
-    '@vueuse/nuxt': ^14.2.0
-    drizzle-orm: ^0.45.1
+    '@vueuse/core': ^15.0.0
+    '@vueuse/nuxt': ^15.0.0
+    drizzle-orm: ^0.45.4
     nuxt-live-cursors: ^0.3.2
-    pg: ^8.20.0
+    pg: ^8.23.1
   test:
-    '@playwright/test': ^1.52.0
-    '@vitest/coverage-v8': ^4.1.0
-    vitest: ^4.1.0
+    '@playwright/test': ^1.64.1
+    '@vitest/coverage-v8': ^5.0.5
+    vitest: ^5.0.5
   types:
-    '@types/node': ^25.5.0
-    '@types/pg': ^8.18.0
+    '@types/node': ^24.19.2
+    '@types/pg': ^8.23.1
