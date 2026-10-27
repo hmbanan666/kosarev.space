@@ -12,3 +12,20 @@
 - Do not infer that historical packages, deployments or environments are absent
   merely because current workflows do not use them. Do not make private plans
   a public setup prerequisite.
+
+## Development roadmap
+
+- Read [`docs/brand.md`](docs/brand.md) for the site's approved audiences,
+  design and public-claims boundaries. Read [`docs/roadmap.md`](docs/roadmap.md)
+  for the proposed sequence of work; the roadmap is not permission to start
+  every sprint.
+- Work only on the explicitly approved sprint and scope. Confirm new
+  positioning copy, publication/disclosure decisions and expanded scope with
+  the owner before publishing them.
+- Agents may use installed AI Hero or other relevant engineering skills for
+  scoping, implementation, testing and code review. Follow these repository
+  instructions first; do not require skills to be installed and do not create
+  GitHub Issues or extra task files as a side effect.
+- Use isolated branches and focused PRs with verification evidence. Merge or
+  deploy only with explicit owner approval. Claim a change is live only when
+  deployment evidence supports it.
