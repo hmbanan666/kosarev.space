@@ -26,6 +26,6 @@
   scoping, implementation, testing and code review. Follow these repository
   instructions first; do not require skills to be installed and do not create
   GitHub Issues or extra task files as a side effect.
-- Use isolated branches and focused PRs with verification evidence. Do not
-  merge, deploy or claim a change is live without explicit owner approval
-  and deployment evidence.
+- Use isolated branches and focused PRs with verification evidence. Merge or
+  deploy only with explicit owner approval. Claim a change is live only when
+  deployment evidence supports it.
