@@ -141,7 +141,9 @@ engineering experiment, supporting professional credibility.
    required runtime/content evidence before reporting completion or proposing
    the next stage. A merged PR is not proof of a production deployment.
 
-Internal work tracking stays in the running agent/session or agreed external
-tool, not in repository GitHub Issues by default. Avoid updating this roadmap
+Tasks and specifications use GitHub Issues, following
+[the issue tracker conventions](agents/issue-tracker.md). Temporary
+execution notes stay in the running agent/session. Create issues only
+for owner-requested planning or tracking work. Avoid updating this roadmap
 for minor task status changes; change it when priorities, approved outcomes
 or constraints materially change.

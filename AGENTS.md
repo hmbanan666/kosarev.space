@@ -29,3 +29,20 @@
 - Use isolated branches and focused PRs with verification evidence. Merge or
   deploy only with explicit owner approval. Claim a change is live only when
   deployment evidence supports it.
+
+## Agent skills
+
+### Issue tracker
+
+Tasks and specifications use GitHub Issues in `hmbanan666/kosarev.space`.
+See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the five default triage labels.
+See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Use a single-context layout: root `GLOSSARY.md` and `docs/adr/`.
+See `docs/agents/domain.md`.
