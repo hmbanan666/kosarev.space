@@ -29,6 +29,7 @@ useSeoMeta({
 })
 
 useHead(() => ({
+  htmlAttrs: { lang: locale.value },
   link: [
     { rel: 'canonical', href: canonical.value },
     { rel: 'alternate', hreflang: 'ru', href: `https://kosarev.space${k39Article.path}` },
