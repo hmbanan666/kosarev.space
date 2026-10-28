@@ -73,6 +73,13 @@ Sprints 3 and 4. Phases 4 and 5 describe later work, each separately approved.
 **Outcome:** At least one substantial, credible case shows technical depth
 and personal responsibility rather than only technology names.
 
+**Owner-confirmed brief, 28 October 2026:** A public technical EXPI case is
+permitted without concrete figures or references to specific clients. The owner
+reports that initial payment/access, renewal, refund/access changes and
+payment/access reconciliation operated automatically by the end of the role.
+This is owner testimony, not an independent runtime audit or proof that every
+exception was repaired automatically. Final RU/EN wording still needs review.
+
 **Proposed delivery sequence**
 
 1. **Establish public evidence.** Use the approved EXPI CV entries in
@@ -81,8 +88,8 @@ and personal responsibility rather than only technology names.
    responsibility and a unified payment, subscription, refund and access flow
    with reconciliation. Ask the owner for a disclosure-safe account of the
    original problem, personal decisions, alternatives, failure handling and
-   actual rollout/results. Track each proposed claim, its support and approval
-   in the owner review; only approved, disclosure-safe evidence goes into a
+   actual rollout/results beyond the brief above. Track each proposed claim,
+   its support and approval in the owner review; only approved, disclosure-safe evidence goes into a
    public PR. Existing copy or agent-generated reports do not prove additional
    detail. Preserve the approved partial-migration and warm-cache qualifications.
 2. **Draft one bounded EXPI billing case.** Explain context and constraints,
@@ -90,7 +97,8 @@ and personal responsibility rather than only technology names.
    and remaining limitations. Fit it into the existing `description`, `task`,
    `solution` and `result` fields. Separate implemented behavior, tested behavior
    and launch preparation. A qualitative, evidenced result is sufficient;
-   metrics require a measurement method, period and publication approval.
+   omit concrete figures and specific clients from this EXPI case as instructed
+   by the owner.
    Obtain approval of exact RU/EN copy before a public content PR or data write.
 3. **Curate existing cases.** Review the shortlist below in both locales,
    including detail bodies. Prefer personal ownership, product relevance,
@@ -119,7 +127,7 @@ and personal responsibility rather than only technology names.
 
 | Priority | Case | Reason to consider it | Evidence needed before promotion |
 |---|---|---|---|
-| Lead | New EXPI billing case | Recent end-to-end responsibility and a concrete product invariant: payment and access consistency | Public disclosure, personal decisions, rollout state and supported outcome |
+| Lead | New EXPI billing case | Recent end-to-end responsibility and a concrete product invariant: payment and access consistency | Verify personal decisions and qualitative outcome within the approved disclosure boundary |
 | 2 | `o5-rewrite` | Evolving an existing product while maintaining continuity | Actual migration scope; substantiate or qualify client counts, zero downtime, speed and coverage claims |
 | 3 | `meloteka-transcoding` | Independent product ownership across processing, storage and playback | Verify implementation and measured limits/costs; retain its closed-in-2026 status |
 | 4 | `sushilove-async` | Background processing and operational reliability | Confirm failure handling; substantiate or qualify latency, throughput and zero-loss claims |
@@ -148,8 +156,8 @@ to the full archive; do not expand this into a prerequisite audit of every case.
 **Decision boundary:** Within the approved Phase 1 slice, the agent can inspect
 public/source evidence, choose implementation details, prepare isolated fixtures,
 implement selection behavior, test and open focused PRs. The owner confirms
-employer disclosure, attribution, new facts/metrics, exact RU/EN claims and final
-editorial selection. Private evidence stays outside the public repository/PR.
+any disclosure beyond the brief, attribution, new facts, exact RU/EN claims and
+final editorial selection. Private evidence stays outside the public repository/PR.
 Production data writes, merge and deployment require explicit owner approval;
 post-release checks must separately confirm both localized lists/detail pages,
 search, approved ordering and fresh cached responses before claiming publication.
