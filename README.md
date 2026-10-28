@@ -6,7 +6,8 @@ Russian is the default locale; English pages use the `/en` prefix.
 The application uses a dark-only black and amber interface with an original
 color portrait. It includes a portfolio, database-backed case studies,
 a CV with printable pages and downloadable PDFs, current K39/Woodlands product
-entries and a historical project archive, direct contact links,
+entries and a historical project archive, a bilingual engineering article,
+direct contact links,
 the native live-cursor module and bottom profile pill on desktop, and optional
 Yandex Metrika tracking. The
 [portfolio brief](docs/brand.md) describes the audiences, implemented design
@@ -142,8 +143,13 @@ preview, check the migration-directory contract in the [deployment guide](docs/d
 
 ## Routes and repository layout
 
-Pages are `/`, `/cases/[key]`, `/cv` and `/cv/print`, with English equivalents
+Pages are `/`, `/cases/[key]`, `/writing/k39-draft-permissions`, `/cv` and `/cv/print`, with English equivalents
 under `/en`. Download routes are `/cv.pdf` and `/cv-en.pdf`.
+
+The K39 article is static, server-rendered RU/EN content in
+`apps/web-app/app/components/writing/`, composed by its explicit page route.
+It uses no database writes or Markdown runtime. The K39 product entry links to
+the article; its sources identify the inspected public repository revision.
 
 The public case API exposes list/detail reads (`GET /api/cases` and
 `GET /api/cases/[key]`), view recording (`POST /api/cases/[key]/view`) and

@@ -1,0 +1,63 @@
+<template>
+  <div class="site-wrap writing-page">
+    <nav class="writing-navigation" :aria-label="t('writing.navigation')">
+      <NuxtLink :to="`${localePath('/')}#projects`">
+        <UIcon name="i-lucide-arrow-left" aria-hidden="true" />{{ t('writing.backToProducts') }}
+      </NuxtLink>
+      <a href="#contacts">{{ t('hero.contact') }}</a>
+    </nav>
+    <article>
+      <header class="writing-heading">
+        <p class="writing-label">
+          {{ t('writing.label') }} · K39
+        </p>
+        <h1 class="writing-title">
+          {{ title }}
+        </h1>
+        <p class="writing-deck">
+          {{ description }}
+        </p>
+      </header>
+      <div class="writing-body">
+        <slot />
+      </div>
+    </article>
+    <nav class="writing-navigation writing-end" :aria-label="t('writing.navigation')">
+      <NuxtLink :to="`${localePath('/')}#projects`">
+        {{ t('writing.backToProducts') }}
+      </NuxtLink>
+      <a
+        href="https://k39.online"
+        target="_blank"
+        rel="noopener noreferrer"
+      >{{ t('projects.k39.visit') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" /></a>
+    </nav>
+  </div>
+</template>
+
+<script setup lang="ts">
+defineProps<{ title: string, description: string }>()
+const { t } = useI18n()
+const localePath = useLocalePath()
+</script>
+
+<style scoped>
+.writing-page { padding-block: 2rem 4rem; }
+.writing-navigation { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: .85rem; }
+.writing-navigation a { display: inline-flex; align-items: center; gap: .5rem; text-decoration: underline; }
+.writing-heading { max-width: 63rem; margin-block: 3rem; }
+.writing-label { color: var(--ui-primary); font-size: .85rem; margin-bottom: 1rem !important; }
+.writing-title { font: 500 clamp(2rem,4vw,3.5rem)/1.15 var(--font-serif); letter-spacing: -.035em; max-width: 28ch; text-wrap: balance; }
+.writing-deck { max-width: 68ch; font-size: 1.1rem; color: var(--ui-text-muted); margin-top: 1.5rem !important; }
+.writing-body { max-width: 75ch; font-size: 1.05rem; line-height: 1.8; overflow-wrap: anywhere; }
+.writing-body :deep(p) { margin-block: 0 1.25rem; }
+.writing-body :deep(h2) { font: 550 1.5rem/1.35 var(--font-sans); margin-block: 2.5rem 1rem; scroll-margin-top: 6rem; }
+.writing-body :deep(a) { color: var(--ui-primary); text-decoration: underline; text-underline-offset: .2em; }
+.writing-body :deep(code) { font-size: .85em; background: var(--ui-bg-elevated); padding: .1em .3em; border-radius: .2rem; }
+.writing-body :deep(pre) { padding: 1rem; margin-block: 1.5rem; border: 1px solid var(--ui-border); border-radius: .35rem; background: var(--ui-bg-elevated); white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
+.writing-body :deep(pre code) { padding: 0; background: none; }
+.writing-body :deep(ol) { list-style: decimal; padding-left: 1.5rem; margin-block: 1.25rem; }
+.writing-body :deep(li) { padding-left: .25rem; margin-bottom: .6rem; }
+.writing-end { max-width: 75ch; border-top: 1px solid var(--ui-border); margin-top: 3rem; padding-top: 1.5rem; }
+@media (max-width: 600px) { .writing-heading { margin-block: 2rem; } .writing-body { font-size: 1rem; } }
+</style>
