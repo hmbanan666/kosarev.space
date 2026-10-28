@@ -5,7 +5,8 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
-    "./constants": "./src/constants.ts"
+    "./constants": "./src/constants.ts",
+    "./publication": "./src/publication.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
@@ -13,6 +14,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "content": "node scripts/case-content.mjs",
+    "publication": "node scripts/publication.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

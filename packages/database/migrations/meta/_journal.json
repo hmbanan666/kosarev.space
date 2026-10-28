@@ -15,6 +15,13 @@
       "when": 1773916327169,
       "tag": "0001_early_argent",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793210256609,
+      "tag": "0002_workable_captain_britain",
+      "breakpoints": true
     }
   ]
 }

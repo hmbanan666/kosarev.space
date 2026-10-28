@@ -18,7 +18,8 @@ const props = defineProps<{ kind: RelatedWork['kind'], workKey: string }>()
 const { locale } = useI18n()
 const localePath = useLocalePath()
 const language = computed(() => locale.value === 'en' ? 'en' : 'ru')
-const items = computed(() => publicationsForWork(props.kind, props.workKey))
+const { data: publications } = await usePublications()
+const items = computed(() => publicationsForWork(publications.value ?? [], props.kind, props.workKey))
 </script>
 
 <style scoped>

@@ -280,6 +280,7 @@
     "workTypes": {
       "project": "Project",
       "case": "Engineering case"
-    }
+    },
+    "empty": "No publications yet."
   }
 }

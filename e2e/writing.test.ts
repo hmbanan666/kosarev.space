@@ -1,12 +1,10 @@
 import { expect, test } from '@playwright/test'
+import { fixture } from './publication-fixture.mjs'
 
 test.use({ locale: 'ru-RU' })
 
 const articlePath = '/writing/k39-draft-permissions'
-const titles = {
-  ru: 'Как K39 отделяет правки AI-агента от публикации',
-  en: 'How K39 separates AI edits from publication',
-}
+const titles = { ru: fixture.locales.ru.title, en: fixture.locales.en.title }
 
 for (const locale of ['ru', 'en'] as const) {
   const prefix = locale === 'en' ? '/en' : ''
@@ -21,10 +19,10 @@ for (const locale of ['ru', 'en'] as const) {
       await expect(page).toHaveURL(`${prefix}${articlePath}`)
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(titles[locale])
       await expect(page.locator('html')).toHaveAttribute('lang', locale)
-      await expect(page.locator('article h2')).toHaveCount(6)
-      await expect(page.locator('article pre')).toHaveCount(2)
-      await expect(page.locator('article pre').last()).toContainText('-u DATABASE_URL_TEST')
-      await expect(page.locator('article a[href^="https://github.com/hmbanan666/k39/"]')).toHaveCount(15)
+      await expect(page.locator('article h2')).toHaveCount(1)
+      await expect(page.locator('article pre')).toHaveCount(1)
+      await expect(page.locator('article pre').last()).toContainText('  indented')
+      await expect(page.locator('article a[href="https://example.com/source"]')).toHaveCount(1)
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://kosarev.space${prefix}${articlePath}`)
       await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', `https://kosarev.space/en${articlePath}`)
@@ -45,10 +43,9 @@ for (const locale of ['ru', 'en'] as const) {
     await page.goto(`${prefix}${articlePath}`)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(titles[locale])
     await expect(page.locator('html')).toHaveAttribute('lang', locale)
-    await expect(page.locator('article')).toContainText('181')
-    await expect(page.locator('article')).toContainText(locale === 'en' ? 'production tokens' : 'production-токенов')
-    await expect(page.locator('article ol li')).toHaveCount(5)
-    await expect(page.locator('article h2')).toHaveCount(6)
+    await expect(page.locator('.writing-body p').first()).toHaveText(locale === 'en' ? 'Fixture text from the database.' : 'Тестовый текст из базы.')
+    await expect(page.locator('article ul li')).toHaveCount(2)
+    await expect(page.locator('article h2')).toHaveCount(1)
     await expect(page.locator('.site-language')).toHaveAttribute('href', `${locale === 'en' ? '' : '/en'}${articlePath}`)
     await context.close()
   })

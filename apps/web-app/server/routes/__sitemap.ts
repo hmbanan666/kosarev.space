@@ -1,7 +1,7 @@
-import { publicationPath, publications } from '../../shared/publications'
+import { publicationPath } from '../../shared/publications'
 
 export default defineEventHandler(async () => {
-  const cases = await repository.case.findAll('ru')
+  const [cases, publications] = await Promise.all([repository.case.findAll('ru'), repository.publication.findAll()])
 
   return [...cases.map((c) => ({
     loc: `/cases/${c.key}`,

@@ -5,6 +5,7 @@ const port = 3333
 
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/publication-fixture.mjs',
   timeout: 30000,
   use: {
     baseURL: `http://localhost:${port}`,

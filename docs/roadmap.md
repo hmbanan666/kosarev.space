@@ -274,6 +274,18 @@ Propose bounded improvements based on observed reader needs and verified new
 work. Each slice needs its own outcome, scope and approval; keep the site
 maintainable rather than turning it into a general-purpose platform.
 
+## Approved follow-up — database publications
+
+After completing the roadmap, the owner approved a reader-focused RU/EN rewrite
+of K39 and requested dynamic content independent of repository deployments.
+The owner chose agent-mediated submission and publication after approval, without
+an admin editor. This follow-up moves publications to the existing PostgreSQL,
+retains reviewed revisions and serves only the selected public one. It preserves
+the existing feed, addresses, first-publication date and separate project/case
+entities. The [publishing guide](publishing.md) describes the implemented command
+and rollout order; its production release still needs separate verification.
+The completed original roadmap and its dated baseline remain historical records.
+
 ## Execution contract for agents
 
 1. **One active sprint at a time.** The roadmap orders possibilities; it is

@@ -19,6 +19,9 @@ allowBuilds:
   esbuild: true
   vue-demi: true
 
+catalog:
+  markdown-it: 15.0.3
+
 catalogs:
   dev:
     '@antfu/eslint-config': ^10.0.0

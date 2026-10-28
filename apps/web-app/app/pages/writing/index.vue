@@ -4,18 +4,22 @@
       <h1>{{ t('writing.title') }}</h1>
       <p>{{ t('writing.description') }}</p>
     </header>
-    <WritingPublicationList :items="items" />
+    <WritingPublicationList :items="items ?? []" />
+    <p v-if="!items?.length">
+      {{ t('writing.empty') }}
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { publications, sortPublications } from '~~/shared/publications'
-
 definePageMeta({ colorMode: 'dark', hideLiveCursors: true })
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
-const items = sortPublications(publications)
+const { data: items, error } = await usePublications()
+if (error.value) {
+  throw createError({ statusCode: 503, statusMessage: 'Publications unavailable' })
+}
 const canonical = computed(() => `https://kosarev.space${localePath('/writing')}`)
 
 useSeoMeta({

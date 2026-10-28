@@ -12,6 +12,12 @@ _Avoid_: Treating notes, digests and articles as separate content entities.
 The author's classification of a publication as a note, digest or article, independent of its length.
 _Avoid_: Deriving type from word count.
 
+**Publication revision**:
+A saved version of a publication's complete bilingual text, classification and related work.
+
+**Published revision**:
+The publication revision selected for readers. Saving another revision does not itself replace it.
+
 **Note**:
 A publication centered on a personal observation or an engineering thought.
 
