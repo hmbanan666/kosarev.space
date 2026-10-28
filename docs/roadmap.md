@@ -1,13 +1,22 @@
 # Website development roadmap
 
-**Planning snapshot:** 27 October 2026  
-**Status:** Proposed sequence; implementation of each sprint requires separate approval.  
+**Planning snapshot:** 28 October 2026
+
+**Status:** Documentation proposal; Phase 1 implementation awaits owner approval.
+
 **Primary goal:** Help Nikolai find a suitable small product team while building
 a durable professional reputation based on real engineering work.
 
-This is a near-term direction, not a fixed delivery calendar or evidence that
-work has shipped. Job outreach and conversations can begin immediately; website
-iterations must not delay them.
+**Long-term goal:** Develop kosarev.space into Nikolai's durable professional
+and author hub: **Professional** (experience, cases and contact), **Products**
+(active independent products and their history), and **Writing** (substantial
+engineering, AI, experiment and product-building publications). The site should
+demonstrate the ability to create and evolve products independently.
+
+These are content directions, not a proposal for new navigation or a fixed
+delivery calendar. Creative work requires a separate owner decision; private
+writing is outside this roadmap. Job outreach can begin immediately; website
+iterations must not delay it.
 
 ## Sources and boundaries
 
@@ -23,46 +32,104 @@ Preserve the current design, tech stack, bilingual CV/PDF paths, accessible
 contact routes and case finder. No redesign, new CMS, speculative feature or
 infrastructure migration is justified by this plan.
 
-## Sprint 1 — Clear positioning for small product teams
+## Completed foundation and remaining evidence gaps
 
-**Outcome:** A recruiter, technical leader or founder can understand the
-hands-on role Nikolai is looking for, the responsibility he can take, and how
-to contact him from the first screen.
+Repository baseline: `dcb8f05` on `main`, inspected on 28 October 2026.
 
-**Candidate work**
-- Draft concise Russian and English introductory copy expressing interest in
-  a small product team, product/architecture ownership and continued hands-on
-  implementation. Treat role titles as copy options, not established facts.
-- Check prominent claims in the hero, CV and initially visible cases against
-  approved career facts and evidence. Resolve ambiguous claims before using
-  them to persuade hiring teams; avoid implying unverified outcomes.
-- Keep CV, PDF, work examples and direct contact easy to reach without
-  rearranging the existing layout.
+- Bilingual CV, print/PDF generation and shared career facts are implemented
+  ([PR #5](https://github.com/hmbanan666/kosarev.space/pull/5)); EXPI launch and
+  warm-cache build qualifications were clarified in
+  [PR #6](https://github.com/hmbanan666/kosarev.space/pull/6).
+- The black-and-amber design, case pages, shareable search/filters, project
+  archive and direct contacts are implemented
+  ([PR #7](https://github.com/hmbanan666/kosarev.space/pull/7)).
+- Owner-approved RU/EN small-team positioning is merged
+  ([PR #13](https://github.com/hmbanan666/kosarev.space/pull/13)). The former
+  Sprint 1's copy work is complete, but
+  [issue #10](https://github.com/hmbanan666/kosarev.space/issues/10) remains open
+  for two unverified case claims: adding a language in 30 minutes and whole-team
+  adoption within a week. This roadmap does not close that evidence work.
 
-**Acceptance**
-- The owner approves final RU/EN positioning before publication.
-- First-screen role, team preference and contact path are understandable at
-  desktop and mobile sizes; CV and PDF links continue to work.
-- High-impact claims have documented support or have been qualified/removed;
-  both locales agree in meaning.
-- No new design system or unrequested interface features are introduced.
+**Public runtime observation, 28 October 2026:** Read-only HTTP checks of
+[/](https://kosarev.space/) and [/en](https://kosarev.space/en) returned the
+approved small-team copy. Both CV pages and PDF URLs returned HTTP 200; the
+downloads had PDF signatures. The public case API returned 13 entries in each
+locale, with no EXPI entry. These checks establish observed public responses,
+not deployed commit identity, PDF visual quality or live Dokploy configuration.
+Hosting remains operator-reported as described in [deploy.md](deploy.md).
 
-**Not in scope:** Rechecking every historical case before any copy can ship.
+The [case repository](../packages/database/src/repository/case.ts) sorts by
+creation date; the [home-page catalog](../apps/web-app/app/components/SkillsShowcaseSection.vue)
+shows the first six without filters. There is no editorial selection yet.
+The [project list](../apps/web-app/app/utils/data.ts) contains the historical
+portfolio, not K39/Woodlands; publication routes are not implemented. These
+future phases have not been completed by the foundation work above.
 
-## Sprint 2 — Strong evidence of engineering responsibility
+Phase 1 below continues former Sprint 2; Phases 2 and 3 continue former
+Sprints 3 and 4. Phases 4 and 5 describe later work, each separately approved.
+
+## Phase 1 — Engineering credibility
 
 **Outcome:** At least one substantial, credible case shows technical depth
 and personal responsibility rather than only technology names.
 
-**Candidate work**
-- Prepare one bounded EXPI case, potentially about billing and keeping paid
-  access consistent, using only facts approved for public disclosure.
-- Describe problem, individual responsibility, solution, limitations and
-  verifiable results. Separate implementation, testing and planned rollout.
-- Curate a small set of hiring-relevant case examples on the home page; do
-  not rely solely on creation-date ordering.
-- Verify that meaningful case searches (for example, `billing`) surface
-  the appropriate content in both locales.
+**Proposed delivery sequence**
+
+1. **Establish public evidence.** Use the approved EXPI CV entries in
+   [RU](../apps/web-app/i18n/locales/ru.json) and
+   [EN](../apps/web-app/i18n/locales/en.json) as the starting point: sole-engineer
+   responsibility and a unified payment, subscription, refund and access flow
+   with reconciliation. Ask the owner for a disclosure-safe account of the
+   original problem, personal decisions, alternatives, failure handling and
+   actual rollout/results. Track each proposed claim, its support and approval
+   in the owner review; only approved, disclosure-safe evidence goes into a
+   public PR. Existing copy or agent-generated reports do not prove additional
+   detail. Preserve the approved partial-migration and warm-cache qualifications.
+2. **Draft one bounded EXPI billing case.** Explain context and constraints,
+   personal responsibility, decisions/tradeoffs, verification, delivered result
+   and remaining limitations. Fit it into the existing `description`, `task`,
+   `solution` and `result` fields. Separate implemented behavior, tested behavior
+   and launch preparation. A qualitative, evidenced result is sufficient;
+   metrics require a measurement method, period and publication approval.
+   Obtain approval of exact RU/EN copy before a public content PR or data write.
+3. **Curate existing cases.** Review the shortlist below in both locales,
+   including detail bodies. Prefer personal ownership, product relevance,
+   concrete decisions and evidence quality over technology count or recency.
+   Resolve the two outstanding claims from issue #10 alongside this selection.
+   Unsupported claims must be supported or replaced with approved qualified
+   wording before promotion; being online does not establish their accuracy.
+4. **Implement a small technical PR after scope approval.** Propose a static
+   ordered list of approved case keys for the unfiltered home-page view, using
+   the existing six slots and a stable fallback for other available cases.
+   Ignore missing keys, avoid duplicates, and preserve full-list/filter and
+   context-navigation behavior. Reuse the current components and schema.
+   Search currently matches key/title/description/tags, not detail bodies
+   ([filter implementation](../apps/web-app/app/utils/case-finder.ts)); include
+   natural billing terminology in the approved localized summaries and check
+   `биллинг` in RU and `billing` in EN.
+5. **Prepare and verify content delivery separately.** Case bodies are in
+   PostgreSQL. Prepare a repeatable update limited to approved keys/locales,
+   preview its before/after values in an isolated database, and provide a
+   rollback from the affected rows. Preserve IDs, unrelated cases and engagement
+   records. Confirm the target database, deployment path and cache behavior
+   with the operator before requesting permission to apply it. A schema
+   migration or code deploy alone does not publish the case.
+
+**Provisional shortlist, subject to evidence and owner approval**
+
+| Priority | Case | Reason to consider it | Evidence needed before promotion |
+|---|---|---|---|
+| Lead | New EXPI billing case | Recent end-to-end responsibility and a concrete product invariant: payment and access consistency | Public disclosure, personal decisions, rollout state and supported outcome |
+| 2 | `o5-rewrite` | Evolving an existing product while maintaining continuity | Actual migration scope; substantiate or qualify client counts, zero downtime, speed and coverage claims |
+| 3 | `meloteka-transcoding` | Independent product ownership across processing, storage and playback | Verify implementation and measured limits/costs; retain its closed-in-2026 status |
+| 4 | `sushilove-async` | Background processing and operational reliability | Confirm failure handling; substantiate or qualify latency, throughput and zero-loss claims |
+| Supporting | `nextorders-i18n`, `kosarev-live-cursors` | Contributor experience and inspectable implementation | Verify current source/ownership; resolve the i18n timing claim and check cursor copy against the current module |
+
+This is an editorial hypothesis, not a certified ranking. Public detail reads
+for the migration, transcoding and async cases exposed quantitative claims not
+substantiated by this repository audit. If evidence is insufficient, use a
+better-supported candidate rather than embellishing the story. Retain access
+to the full archive; do not expand this into a prerequisite audit of every case.
 
 **Acceptance**
 - Public wording is explicitly approved and contains no employer secrets,
@@ -70,14 +137,30 @@ and personal responsibility rather than only technology names.
 - The RU/EN case is readable, searchable and linked from the relevant site
   surface, with accurate descriptions of the work's status.
 - Curated examples are justified by relevance and their behavior is covered
-  by appropriate checks.
+  by appropriate checks: ordered selection, missing keys and duplicates,
+  unaltered filters/all-results access, and RU/EN detail/back navigation.
+- Run applicable lint, type, unit, E2E and build checks from the README for the
+  implementation PR; check desktop/mobile layout and CV/PDF/contact paths.
 - Data changes are tested against isolated preview fixtures. Case bodies live
   in PostgreSQL and are not recreated by schema migrations; a code-only PR
   does not prove production case content has changed.
 
-**Not in scope:** Importing private employer material to obtain better copy.
+**Decision boundary:** Within the approved Phase 1 slice, the agent can inspect
+public/source evidence, choose implementation details, prepare isolated fixtures,
+implement selection behavior, test and open focused PRs. The owner confirms
+employer disclosure, attribution, new facts/metrics, exact RU/EN claims and final
+editorial selection. Private evidence stays outside the public repository/PR.
+Production data writes, merge and deployment require explicit owner approval;
+post-release checks must separately confirm both localized lists/detail pages,
+search, approved ordering and fresh cached responses before claiming publication.
 
-## Sprint 3 — Current independent products
+**Current authorization:** Audit, plan and this documentation PR only. No
+Phase 1 implementation, production writes or later-phase work begins here.
+
+**Not in scope:** Importing private employer material, redesign, new publishing
+infrastructure or an exhaustive historical-case audit.
+
+## Phase 2 — Active products
 
 **Outcome:** Visitors can distinguish current product work from the archive
 of earlier projects.
@@ -98,7 +181,7 @@ of earlier projects.
 
 **Not in scope:** Rebuilding K39 or Woodlands inside this repository.
 
-## Sprint 4 — First engineering publication
+## Phase 3 — Writing
 
 **Outcome:** One substantial, reusable public explanation of a real
 engineering experiment, supporting professional credibility.
@@ -117,6 +200,24 @@ engineering experiment, supporting professional credibility.
   to it if relevant.
 
 **Not in scope:** Creating an empty blog, CMS, newsletter or video platform.
+
+## Phase 4 — Sustainable publishing
+
+**Prerequisite:** The first real publication is published and the owner approves
+this phase. Add only the infrastructure needed to maintain actual material and
+connect articles, products and cases through understandable navigation.
+
+**Acceptance:** A reader can find the publication and its related work; the
+owner has a documented, repeatable publishing path with an explicit language
+policy. Choose the smallest implementation supported by the material; a CMS,
+accounts and subscriptions are not assumed requirements.
+
+## Phase 5 — Evolution
+
+Review the site as career direction, products and public material change.
+Propose bounded improvements based on observed reader needs and verified new
+work. Each slice needs its own outcome, scope and approval; keep the site
+maintainable rather than turning it into a general-purpose platform.
 
 ## Execution contract for agents
 
