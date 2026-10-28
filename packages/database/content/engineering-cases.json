@@ -1,0 +1,161 @@
+[
+  {
+    "key": "expi-billing",
+    "translations": [
+      {
+        "locale": "ru",
+        "title": "EXPI: от оплаты к действующему доступу",
+        "description": "Биллинг, подписки и сверка оплат с доступом. Как я связал платёжные события и жизненный цикл подписки, отвечая за архитектуру, код и эксплуатацию платформы.",
+        "task": "В EXPI я был единственным инженером: отвечал за архитектуру, реализацию, инфраструктуру и выпуск изменений. Для биллинга недостаточно получить подтверждение оплаты. Первая покупка должна открыть доступ, повторная — продлить оплаченный период, а возврат и отказ от автопродления имеют разные последствия. Требовалось согласовать эти сценарии между платёжной системой, кабинетом и сервисами доступа, пока перенос старой PHP-системы ещё продолжался.",
+        "solution": "**Единый владелец состояния.** Я сосредоточил изменение статуса и оплаченного периода подписки в отдельном модуле. Кабинет и административные инструменты обращались к его командам вместо самостоятельной записи статусов. Платёжное событие и изменение подписки сохранялись в одной транзакции. Повторное уведомление об уже учтённой оплате не должно было продлевать доступ повторно.\n\n**Разные причины — разные переходы.** Продление действующей подписки, поздняя оплата истёкшей подписки и возврат не сводились к одному переключателю «оплачено». Отказ от следующего списания сохранял доступ до конца оплаченного периода; отмена при возврате обрабатывалась отдельно. Так правила оставались явными и общими для разных точек входа.\n\n**Проверка результата за пределами callback.** Отдельная сверка выявляла расхождения между оплатой и доступом. Успешный HTTP-ответ платёжной системе сам по себе не доказывал, что доступ выдан. Для таких исключений сохранялся след для разбора, а опасные ветки обработки проверялись автоматическими тестами. Обнаружение расхождения не означало безусловную автоматическую выдачу доступа или возврат денег.",
+        "result": "К завершению моей работы первая оплата, продление, обработка возврата и сверка оплат с доступом работали в системе автоматически. Биллинг связывал платёжные события с явными правилами подписки, а исключения оставались видимыми для разбора. Это был работающий участок платформы; перенос остального кабинета продолжался."
+      },
+      {
+        "locale": "en",
+        "title": "EXPI: from payment to active access",
+        "description": "Billing, subscriptions and payment-to-access reconciliation. How I connected payment events to the subscription lifecycle while owning platform architecture, implementation and operations.",
+        "task": "I was the sole engineer at EXPI, responsible for architecture, implementation, infrastructure and releases. Billing needed more than a successful payment notification. A first purchase had to grant access, a renewal had to extend the paid period, and refunds and cancellation of auto-renewal had different consequences. These scenarios had to stay consistent across the payment provider, customer portal and access services while the migration from the legacy PHP system was still in progress.",
+        "solution": "**One owner of subscription state.** I concentrated subscription status and paid-period changes in a dedicated module. The customer portal and administrative tools called its commands instead of writing statuses independently. A payment event and its subscription change were stored in the same transaction. A repeated notification for an already recorded payment must not extend access again.\n\n**Different causes, different transitions.** Renewing an active subscription, receiving a late payment for an expired subscription and processing a refund were not reduced to a single paid flag. Turning off the next recurring charge preserved access until the end of the paid period; cancellation following a refund was handled separately. This kept the rules explicit and shared across entry points.\n\n**Checking beyond the callback.** Separate reconciliation detected mismatches between payment and access. A successful HTTP response to the payment provider did not by itself prove that access had been granted. These exceptions left a trace for investigation, and risky processing branches were covered by automated tests. Detecting a mismatch did not mean unconditionally granting access or refunding money automatically.",
+        "result": "By the end of my work, initial payments, renewals, refund processing and payment-to-access reconciliation were running automatically in the system. Billing connected payment events to explicit subscription rules, while exceptions remained visible for investigation. This was an operational part of the platform; migration of the rest of the portal continued."
+      }
+    ],
+    "create": {
+      "project": "expi",
+      "tags": [
+        "TypeScript",
+        "Nuxt",
+        "Nitro",
+        "PostgreSQL",
+        "Drizzle ORM"
+      ],
+      "icon": "i-lucide-credit-card",
+      "image": null
+    }
+  },
+  {
+    "key": "o5-rewrite",
+    "translations": [
+      {
+        "locale": "ru",
+        "title": "Развитие o5.Еда: переход на React и NestJS",
+        "description": "Переписал ядро платформы заказа еды с PHP/jQuery на TypeScript, React и NestJS. Работа над существующим продуктом, его интерфейсом и серверной частью.",
+        "task": "Развивать действующую платформу заказа еды и перенести её ядро с PHP/jQuery на TypeScript.",
+        "solution": "Я работал над интерфейсом на React и серверной частью на NestJS. Перенос ядра был частью моей ответственности за развитие продукта; отдельно занимался инфраструктурой и переносом развёртывания в Kubernetes.",
+        "result": "Ядро платформы было переписано на TypeScript, React и NestJS. Этот кейс показывает работу с существующим продуктом и ответственность за клиентскую и серверную части."
+      },
+      {
+        "locale": "en",
+        "title": "Evolving o5.Food: moving to React and NestJS",
+        "description": "Rewrote the food-ordering platform core from PHP/jQuery to TypeScript, React and NestJS, working across an existing product’s interface and backend.",
+        "task": "Develop an operating food-ordering platform and move its PHP/jQuery core to TypeScript.",
+        "solution": "I worked on the React interface and NestJS backend. Rewriting the core was part of my responsibility for product development; I also maintained infrastructure and moved deployments to Kubernetes.",
+        "result": "The platform core was rewritten in TypeScript, React and NestJS. This case reflects work on an existing product with responsibility across its client and server components."
+      }
+    ]
+  },
+  {
+    "key": "meloteka-transcoding",
+    "translations": [
+      {
+        "locale": "ru",
+        "title": "Meloteka: загрузка и обработка аудио",
+        "description": "Собственный музыкальный продукт: загрузка и транскодирование аудио, хранение в S3 и воспроизведение в браузере.",
+        "task": "Для музыкальной библиотеки требовалось связать загрузку файлов, подготовку аудио и доступ к нему из браузера.",
+        "solution": "Я реализовал загрузку и транскодирование аудио, хранение файлов в S3 и связал эту обработку с музыкальным каталогом. Работал над продуктом целиком: от серверной обработки файлов до пользовательского интерфейса.",
+        "result": "В Meloteka были реализованы загрузка, транскодирование и хранение аудио. Проект закрыт в 2026 году; кейс сохранён как пример самостоятельной разработки продукта."
+      },
+      {
+        "locale": "en",
+        "title": "Meloteka: audio upload and processing",
+        "description": "An independent music product connecting audio upload and transcoding, S3 storage and browser playback.",
+        "task": "The music library needed to connect file upload, audio preparation and access from a browser.",
+        "solution": "I implemented audio upload and transcoding, stored files in S3 and connected processing to the music catalog. My work spanned the product, from server-side file processing to the user interface.",
+        "result": "Meloteka implemented audio upload, transcoding and storage. The project closed in 2026; this case remains as an example of independent product development."
+      }
+    ]
+  },
+  {
+    "key": "sushilove-async",
+    "translations": [
+      {
+        "locale": "ru",
+        "title": "Sushi-Love: фоновая обработка задач",
+        "description": "Связал PostgreSQL и RabbitMQ для фоновых задач внутренних сервисов ресторанной сети.",
+        "task": "Выделить фоновую обработку задач во внутренних сервисах ресторанной сети.",
+        "solution": "Я интегрировал PostgreSQL и RabbitMQ: данные сервиса хранились в базе, а очередь использовалась для фоновой обработки. Это было частью работы над внутренними сервисами Sushi-Love.",
+        "result": "Внутренние сервисы получили обработку фоновых задач с PostgreSQL и RabbitMQ. Кейс отражает мой вклад в серверную часть продукта."
+      },
+      {
+        "locale": "en",
+        "title": "Sushi-Love: background task processing",
+        "description": "Connected PostgreSQL and RabbitMQ for background tasks in a restaurant chain’s internal services.",
+        "task": "Introduce background task processing in a restaurant chain’s internal services.",
+        "solution": "I integrated PostgreSQL and RabbitMQ: service data lived in the database, while the queue supported background processing. This was part of my work on Sushi-Love’s internal services.",
+        "result": "The internal services gained background task processing with PostgreSQL and RabbitMQ. This case describes my contribution to the product’s backend."
+      }
+    ]
+  },
+  {
+    "key": "nextorders-i18n",
+    "translations": [
+      {
+        "locale": "ru",
+        "title": "NextOrders: мультиязычный интерфейс",
+        "description": "Мультиязычная платформа заказа еды на Nuxt. Локализация интерфейса как часть разработки open-source продукта.",
+        "task": "Предусмотреть использование платформы заказа еды на разных языках.",
+        "solution": "Я работал над мультиязычной платформой NextOrders на Nuxt. Локализация была частью пользовательского интерфейса наряду с каталогом, корзиной и оформлением заказа.",
+        "result": "NextOrders поддерживает несколько языков интерфейса. Исходный код платформы доступен в open source; время добавления языка зависит от объёма перевода и проверки."
+      },
+      {
+        "locale": "en",
+        "title": "NextOrders: a multilingual interface",
+        "description": "A multilingual food-ordering platform built with Nuxt. Interface localization as part of open-source product development.",
+        "task": "Support using a food-ordering platform in different languages.",
+        "solution": "I worked on the multilingual NextOrders platform built with Nuxt. Localization was part of the user experience alongside the catalog, cart and checkout.",
+        "result": "NextOrders supports multiple interface languages. The platform source is open; adding a language requires time for translation and verification depending on its scope."
+      }
+    ]
+  },
+  {
+    "key": "kosarev-live-cursors",
+    "translations": [
+      {
+        "locale": "ru",
+        "title": "Живые курсоры на kosarev.space",
+        "description": "Интеграция nuxt-live-cursors в портфолио: общий курсорный слой и нативная панель профиля с учётом устройства и настройки движения.",
+        "task": "Добавить присутствие других посетителей, сохранив удобство чтения портфолио, кейсов и резюме.",
+        "solution": "Я интегрировал nuxt-live-cursors и его нативную панель профиля. Компонент включается на страницах портфолио и кейсов для точного указателя; на сенсорных устройствах, при reduced motion и на CV/print он не монтируется. Через публичный слот добавлены смена профиля, скрытие курсоров и ссылка на этот кейс. Скрытие сохраняет соединение.",
+        "result": "Совместные курсоры работают в существующем интерфейсе. Поведение проверяется E2E-сценариями с отдельными страницами и реальными WebSocket-соединениями, включая переподключение и смену настройки движения."
+      },
+      {
+        "locale": "en",
+        "title": "Live cursors on kosarev.space",
+        "description": "Integrating nuxt-live-cursors into a portfolio: shared cursors and the native profile pill, with pointer and motion preferences respected.",
+        "task": "Show other visitors’ presence while keeping the portfolio, case studies and CV comfortable to read.",
+        "solution": "I integrated nuxt-live-cursors and its native profile pill. The component mounts on portfolio and case pages for fine pointers; it stays unmounted on coarse pointers, with reduced motion and on CV/print pages. Public slot actions provide profile shuffling, cursor visibility and a link to this case. Hiding cursors keeps the connection active.",
+        "result": "Shared cursors operate within the existing interface. E2E scenarios use separate pages and real WebSocket connections to verify behavior, including reconnection and changes to motion preferences."
+      }
+    ]
+  },
+  {
+    "key": "sushilove-telegram",
+    "translations": [
+      {
+        "locale": "ru",
+        "title": "Telegram Mini App для управления командой",
+        "description": "Приложение для задач команды ресторана: назначения, статусы, сроки и отчётность.",
+        "task": "Собрать работу с задачами и отчётностью команды в приложении.",
+        "solution": "Я разработал веб-приложение и Telegram Mini App для назначения задач, работы со статусами и сроками, отчётности команды и партнёров.",
+        "result": "Команда получила веб-приложение и Telegram Mini App с задачами и отчётностью."
+      },
+      {
+        "locale": "en",
+        "title": "Telegram Mini App for team management",
+        "description": "An application for restaurant team tasks: assignments, statuses, deadlines and reporting.",
+        "task": "Bring team tasks and reporting into an application.",
+        "solution": "I built a web application and Telegram Mini App for task assignment, statuses, deadlines, and team/partner reporting.",
+        "result": "The team received a web application and Telegram Mini App with task tracking and reporting."
+      }
+    ]
+  }
+]

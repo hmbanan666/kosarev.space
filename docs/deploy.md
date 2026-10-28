@@ -88,3 +88,72 @@ no Kubernetes deployment manifests or `kubectl` rollout steps. GitHub Packages
 and GitHub Deployments are not requirements of the build/runtime flow defined
 here. Historical deployment or environment records may remain in GitHub;
 workflow contents do not prove that those records or old packages were deleted.
+
+## Case-content updates
+
+[`case-content.mjs`](../packages/database/scripts/case-content.mjs) updates a
+reviewed content bundle without changing the schema or deploying the app. It
+uses the existing `pg` dependency from a repository checkout with dependencies
+installed. It is not included in the runtime image. There is no public write
+endpoint and no automatic content import on startup.
+
+The [Phase 1 bundle](../packages/database/content/engineering-cases.json) adds
+the EXPI billing case and revises six existing cases. The owner approved its
+RU/EN wording and the home-page order on 28 October 2026. The EXPI account
+describes implementation decisions and owner-confirmed operating behavior;
+it includes no employer metrics or specific clients. Historical case revisions
+remove unsupported outcomes and align the cursor case with the current module.
+This approval does not establish that the content is already live.
+
+Run from the repository root. Set `CASE_CONTENT_DATABASE_URL` explicitly to the
+intended database through a secure environment; the tool never loads `.env`.
+For a local rehearsal, use only a dedicated local database containing the
+existing case fixtures. The bundle deliberately refuses to recreate missing
+historical cases and is not a seed for a fresh installation.
+
+```bash
+mkdir -p .cache/case-content
+pnpm --filter @kosarev/database content plan content/engineering-cases.json "$PWD/.cache/case-content/phase1.json"
+```
+
+Planning is read-only. The new file contains the connection target (without
+credentials), before/after content and stable IDs for the affected cases.
+It is created with owner-only permissions and refuses to overwrite an existing
+file. Keep it outside version control: it contains the prior database content
+needed for rollback. Review the target and every changed value before applying.
+Generate a separate plan for each target; a local plan cannot be used against
+production. Confirm Dokploy's actual database and release path with the operator.
+
+After explicit owner approval of the production write:
+
+```bash
+pnpm --filter @kosarev/database content apply "$PWD/.cache/case-content/phase1.json"
+```
+
+The update is transactional and repeatable. It checks current content against
+the plan and aborts on intervening edits. Existing IDs, metadata, other locales,
+unrelated cases, views and reactions are preserved. A brief table lock serializes
+case/translation writes; reads remain available. Translation `updated_at` values
+advance when text changes. Case creation dates are preserved, so this operation
+does not change the full catalog's date ordering.
+
+Before reporting publication, verify the deployed application separately from
+the data update: both localized EXPI detail pages, the localized case lists,
+the featured order, `биллинг`/`billing` searches, all-results/back navigation and
+CV/PDF/contact paths. The list/detail handlers use a 60-second stale-while-
+revalidate cache. An immediate request can return old content; confirm refreshed
+responses instead of treating an accepted update as proof of public visibility.
+
+To revert this plan after reviewing the current state:
+
+```bash
+pnpm --filter @kosarev/database content rollback "$PWD/.cache/case-content/phase1.json"
+```
+
+Rollback restores prior text and removes translations created by the plan;
+translation update timestamps still reflect the rollback. Later content changes
+cause an atomic abort. Deleting a newly created case is refused if it has views
+or reactions, to avoid cascading deletion of engagement. In that situation,
+prepare an owner-approved corrective content update and, if necessary, remove
+the case from the featured selection. The application PR can be reverted
+independently; neither rollback path is automatic.

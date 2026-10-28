@@ -15,6 +15,24 @@ export interface CaseFilters {
   all: boolean
 }
 
+export const featuredCaseKeys = [
+  'expi-billing',
+  'o5-rewrite',
+  'meloteka-transcoding',
+  'sushilove-async',
+  'nextorders-i18n',
+  'kosarev-live-cursors',
+] as const
+
+export function selectFeaturedCases<T extends CasePreview>(cases: T[], keys: readonly string[] = featuredCaseKeys, limit = 6): T[] {
+  const available = new Map(cases.map((item) => [item.key, item]))
+  const orderedKeys = new Set([...keys, ...cases.map((item) => item.key)])
+  return [...orderedKeys].flatMap((key) => {
+    const item = available.get(key)
+    return item ? [item] : []
+  }).slice(0, limit)
+}
+
 const areaTags: Record<CaseArea, string[]> = {
   interface: ['Vue', 'Nuxt', 'React', 'Next.js', 'Canvas API', 'Tailwind CSS', 'Nuxt UI'],
   systems: ['PostgreSQL', 'RabbitMQ', 'Redis', 'WebSocket', 'Node.js', 'NestJS', 'S3', 'Telegram Mini App'],

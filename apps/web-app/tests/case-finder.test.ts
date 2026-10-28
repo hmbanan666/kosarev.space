@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { caseContextQuery, filterCases, readCaseFilters } from '../app/utils/case-finder'
+import { caseContextQuery, filterCases, readCaseFilters, selectFeaturedCases } from '../app/utils/case-finder'
 
 const examples = [
   { key: 'legacy-import', title: 'Data migration', description: 'Invoice reconciliation and retry handling', tags: ['PostgreSQL', 'Node.js'] },
@@ -8,6 +8,15 @@ const examples = [
 ]
 
 describe('case discovery and shared context', () => {
+  it('prioritizes selected cases without changing the source order used by search and the archive', () => {
+    expect(selectFeaturedCases(examples, ['build-cache'], 2).map((item) => item.key)).toEqual(['build-cache', 'legacy-import'])
+    expect(examples.map((item) => item.key)).toEqual(['legacy-import', 'web-catalog', 'build-cache'])
+    expect(filterCases(examples, readCaseFilters({}))).toEqual(examples)
+  })
+  it('ignores unavailable selections and deduplicates before filling the remaining slots', () => {
+    expect(selectFeaturedCases([...examples, examples[0]!], ['not-published', 'web-catalog', 'web-catalog'], 6).map((item) => item.key)).toEqual(['web-catalog', 'legacy-import', 'build-cache'])
+    expect(selectFeaturedCases([], ['not-published'])).toEqual([])
+  })
   it('finds problems in descriptions as well as titles, technology and project keys', () => {
     expect(filterCases(examples, readCaseFilters({ q: 'INVOICE' })).map((item) => item.key)).toEqual(['legacy-import'])
     expect(filterCases(examples, readCaseFilters({ q: 'товаров' })).map((item) => item.key)).toEqual(['web-catalog'])

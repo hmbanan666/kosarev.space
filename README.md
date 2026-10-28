@@ -112,6 +112,7 @@ to generate PDFs:
 
 ```bash
 export NUXT_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/kosarev_space
+export CASE_CONTENT_TEST_DATABASE_URL="$NUXT_DATABASE_URL"
 pnpm run check:full
 ```
 
@@ -123,13 +124,16 @@ Use the credentials you configured locally in place of this example.
 | `pnpm run lint:fix` | Run ESLint with automatic fixes |
 | `pnpm run typecheck` | Type-check both workspace packages |
 | `pnpm run test` | Run Vitest unit tests |
+| `pnpm run test:content` | Test case-content transactions in temporary schemas on `CASE_CONTENT_TEST_DATABASE_URL` |
 | `pnpm run test:e2e` | Run Playwright smoke tests; starts Nuxt dev on port 3333 |
 | `pnpm run build` | Build Nuxt, then generate both CV PDFs with Chromium |
-| `pnpm run check:full` | Run lint, types, unit tests, E2E tests and build in sequence |
+| `pnpm run check:full` | Run lint, types, unit and content-transaction tests, E2E tests and build in sequence |
 | `pnpm --filter @kosarev/web-app preview` | Serve an existing build with Nuxt preview |
 
 `check:full` invokes plain lint, not `lint:fix`. E2E and PDF generation require
-Chromium. The PDF generator starts the built app and writes `cv.pdf` and
+Chromium. Content tests require an explicitly selected local/test database;
+they create and remove their own temporary schemas, without modifying the
+application's tables. The PDF generator starts the built app and writes `cv.pdf` and
 `cv-en.pdf` into `apps/web-app/.output/public`. CV content is static; the Docker
 build has been validated without database credentials. Database-backed routes
 still need a configured database and schema. For a standalone production
@@ -147,6 +151,14 @@ methods are not public CRUD endpoints. Case search supports shareable `q`,
 `focus` and `tech` query parameters, with `all=1` exposing the full list. Contact
 links are directly visible, with email copy/manual-selection feedback; there
 is no contact-submission endpoint or `/book` page.
+
+The unfiltered home page prioritizes the editorial keys in
+[`case-finder.ts`](apps/web-app/app/utils/case-finder.ts), fills remaining slots
+from available cases and shows at most six. Search and the full catalog keep
+their database order. The reviewed bilingual content bundle is in
+[`engineering-cases.json`](packages/database/content/engineering-cases.json).
+It is applied separately from application deployment; see the
+[case-content procedure](docs/deploy.md#case-content-updates).
 
 ```text
 apps/web-app/
