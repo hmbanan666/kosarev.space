@@ -43,7 +43,7 @@ for (const locale of ['ru', 'en'] as const) {
     await page.goto(`${prefix}${articlePath}`)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(titles[locale])
     await expect(page.locator('html')).toHaveAttribute('lang', locale)
-    await expect(page.locator('article')).toContainText(locale === 'en' ? 'Fixture text from the database.' : 'Тестовый текст из базы.')
+    await expect(page.locator('.writing-body p').first()).toHaveText(locale === 'en' ? 'Fixture text from the database.' : 'Тестовый текст из базы.')
     await expect(page.locator('article ul li')).toHaveCount(2)
     await expect(page.locator('article h2')).toHaveCount(1)
     await expect(page.locator('.site-language')).toHaveAttribute('href', `${locale === 'en' ? '' : '/en'}${articlePath}`)

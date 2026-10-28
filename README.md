@@ -108,17 +108,29 @@ Nuxt dev reads `apps/web-app/.env`:
 pnpm --filter @kosarev/web-app dev
 ```
 
-Run checks from the repository root. Export the local database URL for processes
-that do not load the app's development `.env`, including the built server used
-to generate PDFs:
+Run checks from the repository root against a separate local test database.
+Using PostgreSQL client tools and your local role, create it once:
 
 ```bash
-export NUXT_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/kosarev_space
+PGPASSWORD=postgres createdb --host=127.0.0.1 --username=postgres kosarev_space_test
+```
+
+Export matching test URLs for the application and fixture commands, then apply
+the tracked migrations. These explicit values also cover processes that do not
+load the development `.env`, including PDF generation:
+
+```bash
+export NUXT_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/kosarev_space_test
 export CASE_CONTENT_TEST_DATABASE_URL="$NUXT_DATABASE_URL"
+DATABASE_URL="$NUXT_DATABASE_URL" pnpm --filter @kosarev/database db:migrate
 pnpm run check:full
 ```
 
-Use the credentials you configured locally in place of this example.
+Use the credentials and port you configured locally in place of this example.
+The E2E fixture guard requires a loopback host and an effective database name
+ending in `_test`; it checks the actual `pg` connection parameters before
+connecting. E2E setup replaces its synthetic publication fixtures, so do not
+point these commands at a database containing content you need to retain.
 
 | Command | Effect |
 |---|---|
@@ -126,7 +138,7 @@ Use the credentials you configured locally in place of this example.
 | `pnpm run lint:fix` | Run ESLint with automatic fixes |
 | `pnpm run typecheck` | Type-check both workspace packages |
 | `pnpm run test` | Run Vitest unit tests |
-| `pnpm run test:content` | Test case-content transactions in temporary schemas on `CASE_CONTENT_TEST_DATABASE_URL` |
+| `pnpm run test:content` | Test case-content and publication transactions in temporary schemas on `CASE_CONTENT_TEST_DATABASE_URL` |
 | `pnpm run test:e2e` | Run Playwright smoke tests; starts Nuxt dev on port 3333 |
 | `pnpm run build` | Build Nuxt, then generate both CV PDFs with Chromium |
 | `pnpm run check:full` | Run lint, types, unit and content-transaction tests, E2E tests and build in sequence |

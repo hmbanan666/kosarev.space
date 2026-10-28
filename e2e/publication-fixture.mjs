@@ -15,9 +15,8 @@ export const fixture = {
   relatedWork: [{ kind: 'project', key: 'k39', title: { ru: 'K39', en: 'K39' } }],
 }
 
-export async function openTestDatabase() {
-  const url = process.env.CASE_CONTENT_TEST_DATABASE_URL
-  if (!url || url !== process.env.NUXT_DATABASE_URL) {
+export function createTestDatabaseClient(url, appUrl) {
+  if (!url || url !== appUrl) {
     throw new Error('E2E requires matching explicit CASE_CONTENT_TEST_DATABASE_URL and NUXT_DATABASE_URL')
   }
   const parsed = new URL(url)
@@ -25,6 +24,15 @@ export async function openTestDatabase() {
     throw new Error('Publication E2E fixtures require a local database ending in _test')
   }
   const client = new Client({ connectionString: url })
+  const { host, database } = client.connectionParameters
+  if (!['localhost', '127.0.0.1', '::1'].includes(host) || !database.endsWith('_test')) {
+    throw new Error('Effective PostgreSQL target must be a local database ending in _test')
+  }
+  return client
+}
+
+export async function openTestDatabase() {
+  const client = createTestDatabaseClient(process.env.CASE_CONTENT_TEST_DATABASE_URL, process.env.NUXT_DATABASE_URL)
   await client.connect()
   return client
 }
