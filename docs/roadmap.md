@@ -115,9 +115,12 @@ real interface images and public destination links. Preserve the archive and
 visual system. No new product case, database change, blog or product-repository
 implementation is required.
 
-**Verified baseline, 28 October 2026:** K39 main `0420863` and Woodlands main
-`5359a46` match successful Dokploy deployments. Public K39 pages and map render;
-the Woodlands bot launch page and application respond. Woodlands uses demo
+**Product baseline, 28 October 2026:** Authenticated, read-only Dokploy
+`application.one` and `deployment.all` API checks confirmed the source branches
+and successful deployment records for K39 main `0420863` and Woodlands main
+`5359a46`. These are observations of Dokploy's records, not operator testimony
+or full application acceptance. Separately, public K39 pages and map rendered;
+the Woodlands bot launch page and application responded. Woodlands uses demo
 fixtures outside Telegram, so a browser capture is labelled as a demo and does
 not establish authenticated gameplay or payment acceptance. Its repository is
 private: expose the bot link, not the repository or private implementation files.

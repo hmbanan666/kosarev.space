@@ -68,10 +68,10 @@ pages per language, selectable text and clickable contact/source links.
 ## Accuracy and boundaries
 
 The current-product images in `public/projects/` (under `apps/web-app`) are
-unaltered interface captures from 28 October 2026. `k39.png` shows the public
+interface captures approved by the owner on 28 October 2026. `k39.png` shows the public
 visitor map with its place panel collapsed; the figure credits OpenStreetMap
 contributors and Protomaps. `woodlands.png` shows the deployed app's ordinary
-browser demo, with no Telegram account or player records. Its caption identifies
+browser demo with demo fixtures outside Telegram. Its caption identifies
 the demo deal; the destination link opens the Telegram bot.
 
 Career chronology and approved CV copy are canonical for career claims.

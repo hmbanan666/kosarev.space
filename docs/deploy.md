@@ -1,10 +1,13 @@
 # Build and deployment contract
 
 This guide describes the tracked Dockerfile, runtime configuration and GitHub
-workflows. The operator reports hosting the site through Dokploy on a VPS.
-Live Dokploy settings, network topology, database location, replica count,
-TLS configuration and auto-deploy triggers are external to this repository
-and were not verified for this documentation update.
+workflows. The operator reports VPS hosting. On 28 October 2026, authenticated,
+read-only Dokploy `application.one` and `deployment.all` API checks confirmed
+the portfolio application's GitHub source (`hmbanan666/kosarev.space`, `main`),
+Dockerfile build (`docker/web-app/Dockerfile`, context `.`), enabled automatic
+deployment and a successful deployment record for `6ebaca6`. These are dated
+observations of the live control plane; they do not establish every future
+release, the complete network topology, replica count or TLS configuration.
 
 The canonical site URL configured in [`nuxt.config.ts`](../apps/web-app/nuxt.config.ts)
 is `https://kosarev.space`.
@@ -60,8 +63,9 @@ for local verification.
 
 Before changing a live installation, confirm its source repository and branch,
 Dockerfile path, root build context, runtime environment, database connectivity
-and routing in Dokploy. This guide does not establish the current GitHub App,
-LAN addresses or deployment triggers.
+and routing in Dokploy. The dated snapshot above does not establish the current
+GitHub App, LAN addresses or every webhook/watch-path trigger condition. Recheck
+the live settings for each release rather than relying on a historical snapshot.
 
 If automatic deployment is configured, these are suggested watch paths:
 

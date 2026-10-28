@@ -178,7 +178,7 @@ packages/database/
 ## Build, hosting and release
 
 The [deployment guide](docs/deploy.md) describes the Docker contract and
-separately labels the operator-reported Dokploy hosting context. Current
+separately labels the dated live Dokploy checks and operator-reported hosting. Current
 workflows run CI and create GitHub Releases on `v*` tags; they do not publish
 container packages or create GitHub Deployments. Existing historical GitHub
 records are separate from the current workflow configuration.
