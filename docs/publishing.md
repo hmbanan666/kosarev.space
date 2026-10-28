@@ -45,6 +45,13 @@ source material or credentials. Approve new public copy before pushing it.
 Explicit owner delegation can authorize a defined batch; it does not turn
 unrelated future materials into pre-approved claims.
 
+Apply the [publication editor](../.agents/skills/publication-editor/SKILL.md)
+when proposing, drafting, translating or reviewing Writing material, as required
+by [AGENTS.md](../AGENTS.md#editorial-publications). Establish the reader's
+question and useful takeaway, then perform its editorial review in both
+languages before publication. Code review and passing tests do not replace
+that reader-value review.
+
 ## Add the publication
 
 1. Create a focused branch from current `main`. Reuse the existing layout and
