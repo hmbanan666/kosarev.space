@@ -2,7 +2,7 @@
 
 **Planning snapshot:** 28 October 2026
 
-**Status:** Documentation proposal; Phase 1 implementation awaits owner approval.
+**Status:** Phase 1 approved; later phases require separate owner approval.
 
 **Primary goal:** Help Nikolai find a suitable small product team while building
 a durable professional reputation based on real engineering work.
@@ -78,7 +78,9 @@ permitted without concrete figures or references to specific clients. The owner
 reports that initial payment/access, renewal, refund/access changes and
 payment/access reconciliation operated automatically by the end of the role.
 This is owner testimony, not an independent runtime audit or proof that every
-exception was repaired automatically. Final RU/EN wording still needs review.
+exception was repaired automatically. The owner subsequently approved the exact
+RU/EN wording and featured order prepared in
+[PR #15](https://github.com/hmbanan666/kosarev.space/pull/15).
 
 **Proposed delivery sequence**
 
@@ -162,8 +164,11 @@ Production data writes, merge and deployment require explicit owner approval;
 post-release checks must separately confirm both localized lists/detail pages,
 search, approved ordering and fresh cached responses before claiming publication.
 
-**Current authorization:** Audit, plan and this documentation PR only. No
-Phase 1 implementation, production writes or later-phase work begins here.
+**Current authorization:** The owner approved Phase 1 implementation, the
+reviewed case texts/order, and merge, content publication and deployment after
+successful CI on 28 October 2026. This authorization covers the bounded release
+in PRs #14 and #15; completion still requires separate production evidence.
+Later-phase work remains unapproved.
 
 **Not in scope:** Importing private employer material, redesign, new publishing
 infrastructure or an exhaustive historical-case audit.
