@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { caseAreas, caseContextQuery, filterCases, readCaseFilters } from '~/utils/case-finder'
+import { caseAreas, caseContextQuery, filterCases, readCaseFilters, selectFeaturedCases } from '~/utils/case-finder'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -123,7 +123,7 @@ const technologyItems = computed(() => [
 ])
 const matchingCases = computed(() => filterCases(data.value ?? [], filters.value))
 const hasFilters = computed(() => Boolean(filters.value.q || filters.value.tech || filters.value.focus))
-const visibleCases = computed(() => hasFilters.value || filters.value.all ? matchingCases.value : matchingCases.value.slice(0, 6))
+const visibleCases = computed(() => hasFilters.value || filters.value.all ? matchingCases.value : selectFeaturedCases(matchingCases.value))
 const showMore = computed(() => visibleCases.value.length < matchingCases.value.length)
 function applyFilters() {
   navigateTo({ path: localePath('/'), query: caseContextQuery({ ...form, all: '1' }), hash: '#skills' })

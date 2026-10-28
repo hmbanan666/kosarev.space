@@ -341,6 +341,7 @@ useHead({
 .case-image { max-width: 100%; height: auto; max-height: 32rem; object-fit: contain; margin-bottom: 2rem; border-radius: .4rem; }
 .case-content-section { scroll-margin-top: 6rem; margin-bottom: 2.5rem; }
 .case-content-section h2 { font: 550 1.5rem/1.35 var(--font-sans); margin-bottom: .75rem; }
+.case-content-section p { white-space: pre-line; }
 .case-solution { margin-bottom: 2.5rem; padding-block: 1.25rem; border-block: 1px solid var(--ui-border); scroll-margin-top: 6rem; }
 .case-solution summary { font-size: 1rem; font-weight: 550; min-height: 2.75rem; }
 .case-solution .case-content-section { margin-top: 1.5rem; margin-bottom: .5rem; }

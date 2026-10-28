@@ -14,8 +14,9 @@
     "lint:fix": "eslint --fix .",
     "typecheck": "pnpm -r run typecheck",
     "test": "vitest run",
+    "test:content": "vitest run --config vitest.content.config.ts",
     "test:e2e": "playwright test",
-    "check:full": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run test:e2e && pnpm run build",
+    "check:full": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run test:content && pnpm run test:e2e && pnpm run build",
     "release": "bumpp -r",
     "prepare": "husky"
   },
