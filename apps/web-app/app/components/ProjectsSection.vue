@@ -19,6 +19,7 @@
       <div class="project-list">
         <article
           v-for="project in orderedProjects"
+          :id="`project-${project.key}`"
           :key="project.key"
           class="project-entry"
         >
@@ -55,6 +56,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
               >{{ t('site.source') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" /></a>
+              <WritingRelatedPublications kind="project" :work-key="project.key" />
             </div>
           </div>
         </article>
@@ -74,7 +76,7 @@ const orderedProjects = computed(() => [...projects].sort((a, b) => Number(b.key
 .archive-intro { margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--ui-border); }
 .project-title { margin: 0; font: 600 1.15rem/1.4 var(--font-sans); }
 .project-list { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0 3rem; }
-.project-entry { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; padding-block: 1.25rem; border-bottom: 1px solid var(--ui-border); }
+.project-entry { scroll-margin-top: 6rem; display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; padding-block: 1.25rem; border-bottom: 1px solid var(--ui-border); }
 .project-visual { min-width: 0; }
 .project-entry img { width: 100%; aspect-ratio: 16/10; object-fit: cover; object-position: top; border: 1px solid var(--ui-border); border-radius: .3rem; }
 .project-entry:first-child { grid-row: span 3; display: block; padding: 0; border: none; background: var(--ui-bg-elevated); border-radius: .5rem; overflow: hidden; align-self: start; }

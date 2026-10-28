@@ -16,7 +16,7 @@ for (const locale of ['ru', 'en'] as const) {
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto(`${prefix}/`)
       await page.locator('[data-active-product="k39"]').getByRole('link', {
-        name: locale === 'en' ? 'How AI edits are handled' : 'Как устроены правки AI-агента',
+        name: titles[locale],
       }).click()
       await expect(page).toHaveURL(`${prefix}${articlePath}`)
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(titles[locale])

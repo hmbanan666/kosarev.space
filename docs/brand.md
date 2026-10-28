@@ -29,10 +29,12 @@ the earlier direction that explicitly deprioritized employment.
 - A project archive retaining real visuals and source links. Startodel, Meloteka
   and ChatGame closed in 2026; individual closure months are not established.
   NextOrders has not been declared closed.
-- A bilingual engineering article about K39's draft and publication boundaries,
-  linked from the K39 product entry. Its code and local test evidence is dated
-  and separate from production claims. Article reading uses the existing dark
-  typography and layout, with live cursors unmounted.
+- One chronological Writing feed for notes, digests and articles, with type
+  metadata independent of length. K39 is its first real bilingual publication;
+  no placeholder materials are displayed. Publications may link to separate
+  projects and cases. Reading uses the existing dark typography and layout,
+  with live cursors unmounted. Code and local test evidence is dated and separate
+  from production claims; digests require primary sources and author commentary.
 - Email and Telegram are directly visible. Email copying confirms success or
   offers manual selection if clipboard access fails. No contact backend exists.
 - The native `nuxt-live-cursors` component starts automatically on fine-pointer

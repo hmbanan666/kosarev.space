@@ -47,6 +47,7 @@
           <h2>{{ t('site.techDetails') }}</h2>
           <p>{{ data.tags.join(', ') }}</p>
           <a href="#contacts" class="site-text-link">{{ t('cases.ctaText') }}</a>
+          <WritingRelatedPublications kind="case" :work-key="String(route.params.key)" />
         </aside>
         <div class="case-body">
           <img

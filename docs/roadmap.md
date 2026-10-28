@@ -2,10 +2,10 @@
 
 **Planning snapshot:** 28 October 2026
 
-**Status:** Phases 1 and 2 published and verified. The owner has authorized
+**Status:** Phases 1, 2 and 3 published and verified. The owner has authorized
 completion of the remaining current roadmap, including the reviewed bilingual
-K39 article, public PRs and verified releases. Phase 3 implementation is in
-review; publication must still be confirmed live. Phase 4 follows its release.
+K39 article, public PRs and verified releases. Phase 4 implements the approved
+unified publication feed; its production release requires separate verification.
 Phase 5 is bounded here to a maintenance policy and a verified current baseline;
 future career and product changes cannot be marked complete in advance.
 
@@ -71,8 +71,10 @@ Woodlands above the retained historical project list. Dokploy recorded the
 automatic deployment of `ea99af9` as successful at 12:45:24 UTC on 28 October
 2026. Separate public checks confirmed exact RU/EN product copy, matching image
 hashes, desktop/mobile navigation, archive access, EXPI, contacts and CV/PDF.
-The Phase 3 branch adds the explicit bilingual K39 article route; this is
-implementation evidence until its deployment and public response are verified.
+Phase 3 deployed `569fedd` on 28 October 2026 at 16:54:03 UTC, confirmed by
+Dokploy. Separate public checks verified exact RU/EN article text at four widths
+per locale, both no-JavaScript pages, locale switching, metadata, product entry
+links, contacts and CV/PDF. This verifies the portfolio article, not K39 itself.
 
 Phase 1 below continues former Sprint 2; Phases 2 and 3 continue former
 Sprints 3 and 4. Phases 4 and 5 describe later work, each separately approved.
@@ -167,9 +169,11 @@ explicitly limits those results to local verification. The original incident
 trigger is unknown and is not invented. The owner delegated completion after
 reviewing the draft and its natural engineering-problem introduction.
 
-The explicit route is `/writing/k39-draft-permissions` with an `/en` variant,
-linked from K39. The pilot uses static Vue content and existing site styles;
-no CMS, index or publication framework is part of this first release.
+**Completed in [PR #17](https://github.com/hmbanan666/kosarev.space/pull/17):**
+The route `/writing/k39-draft-permissions` and its `/en` variant were published
+and verified, linked from K39. The pilot used static Vue content and existing
+site styles. Phase 4 reuses its unchanged text and URL in the shared publication
+model and reading route.
 
 **Outcome:** One substantial, reusable public explanation of a real
 engineering experiment, supporting professional credibility.
@@ -192,19 +196,72 @@ engineering experiment, supporting professional credibility.
 ## Phase 4 — Sustainable publishing
 
 **Prerequisite:** The first real publication is published. The owner has approved
-this phase as part of completion of the current roadmap. Add only the infrastructure needed to maintain actual material and
-connect articles, products and cases through understandable navigation.
+this phase as part of completion of the current roadmap. The concept below was
+explicitly approved during Phase 3 review on 28 October 2026. It is the intended
+Phase 4 concept. The code in this change implements it; the feed must still be
+verified publicly after its authorized release.
 
-**Acceptance:** A reader can find the publication and its related work; the
-owner has a documented, repeatable publishing path with an explicit language
-policy. Choose the smallest implementation supported by the material; a CMS,
-accounts and subscriptions are not assumed requirements.
+**Product concept:** Writing is one system of author publications. A single
+chronological feed contains short personal and engineering notes, digests with
+primary sources and author commentary, and substantial articles or technical
+deep dives. Digest subjects may include AI, open source, models, tools and
+noteworthy GitHub developments. These are types of one publication entity,
+not separate content sections. Length does not determine type.
+
+Projects and engineering cases remain separate entities. A publication can
+link to either when there is a real relationship; no case or project must be
+reclassified as a publication to appear in related work.
+
+**Implementation in this Phase 4 change**
+
+- Reuse the K39 article and its existing public URLs as the first real entry.
+  Preserve its text, source links and stated verification limits.
+- Maintain one small, version-controlled publication registry with a stable
+  slug, actual publication date, an explicitly selected type (`note`, `digest`
+  or `article`), localized title/summary and content references, and optional
+  project/case links. The type is display metadata and a possible future filter;
+  it is not inferred from word count or stored in separate catalogs.
+- Add one `/writing` feed and its `/en` equivalent, ordered newest first by
+  publication date. Show the date, type, title and summary for each real entry.
+  Preserve a publication's identity across locales. Use actual release dates,
+  not source-inspection dates or generated timestamps on each build.
+- Reuse the existing article layout and static server-rendered content for
+  publication pages. Keep the current visual system, language switcher, source
+  links and product navigation. Provide a clear route to Writing from the site.
+- Document one repeatable draft, evidence, language, review and release workflow
+  in English. Keep public text in its intended language. The existing article
+  is RU/EN; any future single-language pilot must be explicit and must not show
+  a fabricated translation or a misleading locale switch.
+- Support source attribution and author commentary within the same publication
+  body. Do not auto-populate a digest from headlines, repositories or release
+  feeds, or invent notes to make the feed look established.
+
+**Acceptance**
+
+- One nonempty chronological feed serves all publication types. The K39 article
+  is discoverable there and retains its existing bilingual addresses.
+- Type, date and language metadata are explicit and accurate. Adding a note or
+  digest follows the same publication path as adding an article.
+- Readers can follow genuine publication/project/case relationships without
+  merging those entities or creating duplicate content sections.
+- The owner has a small, documented publishing path with an explicit language
+  policy. Repository checks and separate production verification cover the feed,
+  reading pages, localized links and existing professional/product routes.
+
+**Not in scope:** A CMS, accounts, newsletters, subscriptions, scheduled content
+ingestion, complex editorial infrastructure, empty type sections, placeholder
+publications or filters without a current reader need.
+
+The [publishing guide](publishing.md) records the implemented file layout,
+RU/EN policy, source expectations, checks and release/rollback procedure.
 
 ## Phase 5 — Evolution
 
 **Approved bounded outcome:** Record a current production baseline and a small
 maintenance policy after Phase 4. Completing that handoff does not complete
-future career developments, products or unpublished material.
+future career developments, products or unpublished material. The
+[maintenance policy](maintenance.md) defines event-driven upkeep and release
+checks. Its final current-baseline verification follows the Phase 4 deployment.
 
 Review the site as career direction, products and public material change.
 Propose bounded improvements based on observed reader needs and verified new

@@ -266,9 +266,20 @@
     "presenceDescription": "On desktop, live cursors show where other readers point. Open a second window or send the page to a colleague. The pill at the bottom opens your profile, where you can hide or show cursors."
   },
   "writing": {
-    "label": "Engineering article",
     "backToProducts": "Back to projects",
-    "k39Link": "How AI edits are handled",
-    "navigation": "Article navigation"
+    "navigation": "Publication navigation",
+    "title": "Writing",
+    "description": "Notes, digests and in-depth articles on engineering, AI, products and personal experience.",
+    "backToWriting": "All publications",
+    "relatedWork": "Related work",
+    "types": {
+      "note": "Note",
+      "digest": "Digest",
+      "article": "Article"
+    },
+    "workTypes": {
+      "project": "Project",
+      "case": "Engineering case"
+    }
   }
 }
