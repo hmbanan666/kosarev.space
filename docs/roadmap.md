@@ -2,12 +2,11 @@
 
 **Planning snapshot:** 28 October 2026
 
-**Status:** Phases 1, 2 and 3 published and verified. The owner has authorized
-completion of the remaining current roadmap, including the reviewed bilingual
-K39 article, public PRs and verified releases. Phase 4 implements the approved
-unified publication feed; its production release requires separate verification.
-Phase 5 is bounded here to a maintenance policy and a verified current baseline;
-future career and product changes cannot be marked complete in advance.
+**Status:** The approved current roadmap is complete. Phases 1–4 are published
+and verified; Phase 5 delivered a maintenance policy and a verified current
+baseline. The owner authorized this bounded completion, including public PRs
+and verified releases. Future career changes, products and publications remain
+new work, not unfinished tasks in this delivery.
 
 **Primary goal:** Help Nikolai find a suitable small product team while building
 a durable professional reputation based on real engineering work.
@@ -77,7 +76,7 @@ per locale, both no-JavaScript pages, locale switching, metadata, product entry
 links, contacts and CV/PDF. This verifies the portfolio article, not K39 itself.
 
 Phase 1 below continues former Sprint 2; Phases 2 and 3 continue former
-Sprints 3 and 4. Phases 4 and 5 describe later work, each separately approved.
+Sprints 3 and 4. Phases 4 and 5 record the subsequent approved delivery.
 
 ## Phase 1 — Engineering credibility
 
@@ -178,7 +177,7 @@ model and reading route.
 **Outcome:** One substantial, reusable public explanation of a real
 engineering experiment, supporting professional credibility.
 
-**Candidate work**
+**Completed work**
 - Select a completed or clearly bounded AI-assisted development experiment
   with a concrete problem, method, verification and honest limitations.
 - Draft the content and decide on a publication channel only after the draft
@@ -195,11 +194,15 @@ engineering experiment, supporting professional credibility.
 
 ## Phase 4 — Sustainable publishing
 
-**Prerequisite:** The first real publication is published. The owner has approved
-this phase as part of completion of the current roadmap. The concept below was
-explicitly approved during Phase 3 review on 28 October 2026. It is the intended
-Phase 4 concept. The code in this change implements it; the feed must still be
-verified publicly after its authorized release.
+**Completed in [PR #19](https://github.com/hmbanan666/kosarev.space/pull/19):**
+The first real publication was already public. The owner approved this phase
+as part of completion of the current roadmap and explicitly approved the concept
+below during Phase 3 review on 28 October 2026. Dokploy confirmed deployment of
+`543b60c` at 17:17:51 UTC that day. Separate public verification passed for the
+feed, reader and product links in RU/EN at six widths (320–1280 px), both
+no-JavaScript variants, unknown-slug 404 responses and all four localized
+Writing sitemap addresses. Exact article-copy checks passed at four widths per
+locale; its text and existing addresses were preserved.
 
 **Product concept:** Writing is one system of author publications. A single
 chronological feed contains short personal and engineering notes, digests with
@@ -212,7 +215,7 @@ Projects and engineering cases remain separate entities. A publication can
 link to either when there is a real relationship; no case or project must be
 reclassified as a publication to appear in related work.
 
-**Implementation in this Phase 4 change**
+**Delivered implementation**
 
 - Reuse the K39 article and its existing public URLs as the first real entry.
   Preserve its text, source links and stated verification limits.
@@ -257,11 +260,14 @@ RU/EN policy, source expectations, checks and release/rollback procedure.
 
 ## Phase 5 — Evolution
 
-**Approved bounded outcome:** Record a current production baseline and a small
-maintenance policy after Phase 4. Completing that handoff does not complete
-future career developments, products or unpublished material. The
+**Completed bounded outcome, 28 October 2026:** The
 [maintenance policy](maintenance.md) defines event-driven upkeep and release
-checks. Its final current-baseline verification follows the Phase 4 deployment.
+checks. Its [verified baseline](maintenance.md#verified-baseline-28-october-2026)
+records the public checks after Phase 4 deployment: approved case text and order,
+search/detail/back navigation, current products and images, historical archive,
+Writing, contacts and bilingual CV/print/PDF access. No new database content or
+infrastructure was required. This closes the current roadmap, not future career
+developments, products or unpublished material.
 
 Review the site as career direction, products and public material change.
 Propose bounded improvements based on observed reader needs and verified new

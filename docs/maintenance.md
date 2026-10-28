@@ -37,6 +37,39 @@ Writing currently changes static files only; case-content transactions follow
 the separate [deployment procedure](deploy.md#case-content-updates). Keep a
 reversible release path and sanitized evidence of what was actually checked.
 
+## Verified baseline 28 October 2026
+
+[PR #19](https://github.com/hmbanan666/kosarev.space/pull/19) deployed as
+`543b60c`; Dokploy reported success at 17:17:51 UTC. Separate public checks
+completed after deployment:
+
+- **Professional:** both localized catalogs contain 14 cases; all seven
+  approved revised texts match the tracked content bundle. Mobile/desktop checks
+  passed for the six featured cases and their order, full-list access, billing
+  search, EXPI detail and context-preserving back navigation. Email/Telegram
+  links were present, CV and print routes responded, and both downloaded PDFs
+  had valid signatures.
+- **Products:** K39 and Woodlands copy and image hashes match the approved
+  repository assets. Destination links, labelled Woodlands demo, retained
+  archive and responsive navigation passed in RU/EN. Both home pages also
+  showed the products and archive without JavaScript. This verifies their
+  presentation on the portfolio, not the products' internal behavior.
+- **Writing:** both feeds and the unchanged K39 article passed responsive,
+  language, metadata, related-project and no-JavaScript checks. Unknown slugs
+  return 404; the sitemap contains both localized feed and article addresses.
+  No browser page errors or horizontal overflow were observed in tested views.
+
+The release passed hosted CI on `03b2697`; local checks covered lint, types,
+41 unit tests, 6 database content tests, 54 E2E tests and the build/PDF output.
+Independent standards and specification reviews had no actionable findings.
+CodeRabbit did not perform its PR #19 review because its free review allowance
+was exhausted; a passed status was not counted as a completed review.
+
+These observations close the bounded Phase 5 handoff. They are dated release
+evidence, not continuous monitoring, a complete security audit or a guarantee
+about future releases. Production verification made no content transactions or
+deliberate engagement writes; browser checks blocked case view/reaction calls.
+
 ## Scope after this handoff
 
 Phase 5 completion means the current baseline was checked and these maintenance
