@@ -192,13 +192,60 @@ engineering experiment, supporting professional credibility.
 ## Phase 4 — Sustainable publishing
 
 **Prerequisite:** The first real publication is published. The owner has approved
-this phase as part of completion of the current roadmap. Add only the infrastructure needed to maintain actual material and
-connect articles, products and cases through understandable navigation.
+this phase as part of completion of the current roadmap. The concept below was
+explicitly approved during Phase 3 review on 28 October 2026. It is the intended
+Phase 4 design, not a claim that the feed is already implemented or deployed.
 
-**Acceptance:** A reader can find the publication and its related work; the
-owner has a documented, repeatable publishing path with an explicit language
-policy. Choose the smallest implementation supported by the material; a CMS,
-accounts and subscriptions are not assumed requirements.
+**Product concept:** Writing is one system of author publications. A single
+chronological feed contains short personal and engineering notes, digests with
+primary sources and author commentary, and substantial articles or technical
+deep dives. Digest subjects may include AI, open source, models, tools and
+noteworthy GitHub developments. These are types of one publication entity,
+not separate content sections. Length does not determine type.
+
+Projects and engineering cases remain separate entities. A publication can
+link to either when there is a real relationship; no case or project must be
+reclassified as a publication to appear in related work.
+
+**Minimum implementation proposal**
+
+- Reuse the K39 article and its existing public URLs as the first real entry.
+  Preserve its text, source links and stated verification limits.
+- Maintain one small, version-controlled publication registry with a stable
+  slug, actual publication date, an explicitly selected type (`note`, `digest`
+  or `article`), localized title/summary and content references, and optional
+  project/case links. The type is display metadata and a possible future filter;
+  it is not inferred from word count or stored in separate catalogs.
+- Add one `/writing` feed and its `/en` equivalent, ordered newest first by
+  publication date. Show the date, type, title and summary for each real entry.
+  Preserve a publication's identity across locales. Use actual release dates,
+  not source-inspection dates or generated timestamps on each build.
+- Reuse the existing article layout and static server-rendered content for
+  publication pages. Keep the current visual system, language switcher, source
+  links and product navigation. Provide a clear route to Writing from the site.
+- Document one repeatable draft, evidence, language, review and release workflow
+  in English. Keep public text in its intended language. The existing article
+  is RU/EN; any future single-language pilot must be explicit and must not show
+  a fabricated translation or a misleading locale switch.
+- Support source attribution and author commentary within the same publication
+  body. Do not auto-populate a digest from headlines, repositories or release
+  feeds, or invent notes to make the feed look established.
+
+**Acceptance**
+
+- One nonempty chronological feed serves all publication types. The K39 article
+  is discoverable there and retains its existing bilingual addresses.
+- Type, date and language metadata are explicit and accurate. Adding a note or
+  digest follows the same publication path as adding an article.
+- Readers can follow genuine publication/project/case relationships without
+  merging those entities or creating duplicate content sections.
+- The owner has a small, documented publishing path with an explicit language
+  policy. Repository checks and separate production verification cover the feed,
+  reading pages, localized links and existing professional/product routes.
+
+**Not in scope:** A CMS, accounts, newsletters, subscriptions, scheduled content
+ingestion, complex editorial infrastructure, empty type sections, placeholder
+publications or filters without a current reader need.
 
 ## Phase 5 — Evolution
 
