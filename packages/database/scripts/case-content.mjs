@@ -13,7 +13,7 @@ export function validateContent(content) {
   }
   const keys = new Set()
   for (const item of content) {
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.key) || keys.has(item.key)) {
+    if (typeof item?.key !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.key) || keys.has(item.key)) {
       throw new Error('Case keys must be unique slugs')
     }
     keys.add(item.key)

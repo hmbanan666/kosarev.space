@@ -41,6 +41,7 @@ async function withDatabase(run) {
 it('validates complete bilingual content and refuses missing historical cases', async () => {
   assert.throws(() => validateContent([{ ...content(), translations: [content().translations[0]] }]), /exactly RU and EN/)
   assert.throws(() => validateContent([content(), content()]), /unique slugs/)
+  assert.throws(() => validateContent([{ ...content(), key: 123 }]), /unique slugs/)
   await withDatabase(async (client) => {
     await assert.rejects(planContent(client, [{ key: 'missing', translations: content().translations }]), /refusing to recreate/)
   })
