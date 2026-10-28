@@ -1,36 +1,24 @@
 <template>
-  <WritingPublicationFrame :publication="publication">
-    <component :is="body" />
+  <WritingPublicationFrame v-if="publication" :publication="publication">
+    <div v-html="text.html" />
   </WritingPublicationFrame>
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue'
-import { findPublication, publicationPath, relatedWorkPath } from '~~/shared/publications'
+import { publicationPath, relatedWorkPath } from '~~/shared/publications'
 
-definePageMeta({ colorMode: 'dark', hideLiveCursors: true })
+definePageMeta({ colorMode: 'dark', hideLiveCursors: true, key: (route) => String(route.params.slug) })
 
-const content = import.meta.glob<{ default: Component }>('../../components/writing/content/*.vue')
 const { t, locale } = useI18n()
 const route = useRoute()
 const localePath = useLocalePath()
 const language = computed(() => locale.value === 'en' ? 'en' : 'ru')
-const publication = computed(() => {
-  const found = findPublication(String(route.params.slug))
-  if (!found) {
-    throw createError({ statusCode: 404, statusMessage: 'Publication not found' })
-  }
-  return found
-})
-const text = computed(() => publication.value.locales[language.value])
-const body = computed(() => {
-  const loader = content[`../../components/writing/content/${text.value.content}.vue`]
-  if (!loader) {
-    throw createError({ statusCode: 500, statusMessage: 'Publication content unavailable' })
-  }
-  return defineAsyncComponent(loader)
-})
-const canonical = computed(() => `https://kosarev.space${localePath(publicationPath(publication.value))}`)
+const { data: publication, error } = await useFetch(() => `/api/publications/${encodeURIComponent(String(route.params.slug))}`)
+if (error.value || !publication.value) {
+  throw createError({ statusCode: error.value?.statusCode === 404 ? 404 : 503, statusMessage: error.value?.statusCode === 404 ? 'Publication not found' : 'Publication unavailable' })
+}
+const text = computed(() => publication.value!.locales[language.value])
+const canonical = computed(() => `https://kosarev.space${localePath(publicationPath(publication.value!))}`)
 const image = 'https://kosarev.space/og-image.png'
 
 useSeoMeta({
@@ -48,9 +36,9 @@ useHead(() => ({
   htmlAttrs: { lang: locale.value },
   link: [
     { rel: 'canonical', href: canonical.value },
-    { rel: 'alternate', hreflang: 'ru', href: `https://kosarev.space${publicationPath(publication.value)}` },
-    { rel: 'alternate', hreflang: 'en', href: `https://kosarev.space/en${publicationPath(publication.value)}` },
-    { rel: 'alternate', hreflang: 'x-default', href: `https://kosarev.space${publicationPath(publication.value)}` },
+    { rel: 'alternate', hreflang: 'ru', href: `https://kosarev.space${publicationPath(publication.value!)}` },
+    { rel: 'alternate', hreflang: 'en', href: `https://kosarev.space/en${publicationPath(publication.value!)}` },
+    { rel: 'alternate', hreflang: 'x-default', href: `https://kosarev.space${publicationPath(publication.value!)}` },
   ],
   script: [{
     type: 'application/ld+json',
@@ -61,15 +49,15 @@ useHead(() => ({
       'description': text.value.description,
       'url': canonical.value,
       'inLanguage': language.value,
-      'datePublished': publication.value.publishedAt,
+      'datePublished': publication.value!.publishedAt,
       'image': image,
       'author': { '@type': 'Person', 'name': t('hero.name'), 'url': 'https://kosarev.space' },
-      'mentions': publication.value.relatedWork.map((work) => ({
+      'mentions': publication.value!.relatedWork.map((work) => ({
         '@type': 'CreativeWork',
         'name': work.title[language.value],
         'url': `https://kosarev.space${localePath(relatedWorkPath(work))}`,
       })),
-    }),
+    }).replace(/</g, '\\u003c'),
   }],
 }))
 </script>

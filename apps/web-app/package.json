@@ -21,6 +21,7 @@
     "@nuxtjs/sitemap": "catalog:integrations",
     "@vueuse/core": "catalog:integrations",
     "@vueuse/nuxt": "catalog:integrations",
+    "markdown-it": "catalog:",
     "nuxt-live-cursors": "catalog:integrations"
   },
   "devDependencies": {

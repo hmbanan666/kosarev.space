@@ -25,6 +25,7 @@ export default defineNuxtConfig({
 
   sitemap: {
     sources: ['/__sitemap'],
+    cacheMaxAgeSeconds: false,
   },
 
   i18n: {

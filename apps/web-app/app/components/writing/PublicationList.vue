@@ -25,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Publication } from '~~/shared/publications'
+import type { PublicationSummary } from '~~/shared/publications'
 import { formatPublicationDate, publicationPath } from '~~/shared/publications'
 
-defineProps<{ items: readonly Publication[] }>()
+defineProps<{ items: readonly PublicationSummary[] }>()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const language = computed(() => locale.value === 'en' ? 'en' : 'ru')

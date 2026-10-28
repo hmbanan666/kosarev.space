@@ -77,6 +77,7 @@ const text = computed(() => props.publication.locales[language.value])
 .writing-body :deep(code) { font-size: .85em; background: var(--ui-bg-elevated); padding: .1em .3em; border-radius: .2rem; }
 .writing-body :deep(pre) { padding: 1rem; margin-block: 1.5rem; border: 1px solid var(--ui-border); border-radius: .35rem; background: var(--ui-bg-elevated); white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
 .writing-body :deep(pre code) { padding: 0; background: none; }
+.writing-body :deep(ul) { list-style: disc; padding-left: 1.5rem; margin-block: 1.25rem; }
 .writing-body :deep(ol) { list-style: decimal; padding-left: 1.5rem; margin-block: 1.25rem; }
 .writing-body :deep(li) { padding-left: .25rem; margin-bottom: .6rem; }
 .writing-end { max-width: 75ch; border-top: 1px solid var(--ui-border); margin-top: 3rem; padding-top: 1.5rem; }

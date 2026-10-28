@@ -33,8 +33,9 @@ paths, contact links and CV/PDF access. Do not create views or reactions merely
 to test engagement features on production.
 
 Content publication, database changes and code deployment are separate actions.
-Writing currently changes static files only; case-content transactions follow
-the separate [deployment procedure](deploy.md#case-content-updates). Keep a
+Writing content uses the [revision publication workflow](publishing.md), while
+case-content transactions follow the separate
+[deployment procedure](deploy.md#case-content-updates). Keep a
 reversible release path and sanitized evidence of what was actually checked.
 
 ## Verified baseline 28 October 2026

@@ -146,14 +146,14 @@ preview, check the migration-directory contract in the [deployment guide](docs/d
 Pages are `/`, `/cases/[key]`, `/writing`, `/writing/[slug]`, `/cv` and `/cv/print`, with English equivalents
 under `/en`. Download routes are `/cv.pdf` and `/cv-en.pdf`.
 
-Writing uses one publication registry in `apps/web-app/shared/publications.ts`
-for notes, digests and articles. The chronological feed and shared reading route
-serve static RU/EN bodies from `apps/web-app/app/components/writing/content/`.
-The first K39 article retains `/writing/k39-draft-permissions`; its body and
-immutable sources are unchanged. Related work links connect publications to
-separate projects and cases. See the [publishing guide](docs/publishing.md) for
-adding material and the [maintenance policy](docs/maintenance.md) for upkeep.
-There are no Writing database writes, CMS or runtime Markdown parser.
+Writing reads published revisions from the existing PostgreSQL database. Notes,
+digests and articles use one model and shared reading page. RU/EN Markdown,
+titles, summaries and related work are saved through an operator command and
+published as an exact reviewed revision; content-only updates need no build or
+Git commit. Drafts are not returned by public APIs. The K39 article keeps its
+existing address and original date. See the [publishing workflow](docs/publishing.md)
+and [maintenance policy](docs/maintenance.md). No CMS or public write API exists.
+
 
 The public case API exposes list/detail reads (`GET /api/cases` and
 `GET /api/cases/[key]`), view recording (`POST /api/cases/[key]/view`) and
