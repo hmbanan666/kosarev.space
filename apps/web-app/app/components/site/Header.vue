@@ -62,6 +62,7 @@ onMounted(() => {
 const pdfPath = computed(() => locale.value === 'en' ? '/cv-en.pdf' : '/cv.pdf')
 const links = computed(() => [
   { label: t('nav.cases'), to: `${localePath('/')}#skills`, current: route.path.includes('/cases/') },
+  { label: t('projects.title'), to: `${localePath('/')}#projects`, current: false },
   { label: t('site.experience'), to: `${localePath('/')}#experience`, current: false },
   { label: t('nav.cv'), to: localePath('/cv'), current: route.path === localePath('/cv') },
   { label: t('hero.contact'), to: '#contacts', current: false },

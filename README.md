@@ -5,7 +5,8 @@ Russian is the default locale; English pages use the `/en` prefix.
 
 The application uses a dark-only black and amber interface with an original
 color portrait. It includes a portfolio, database-backed case studies,
-a CV with printable pages and downloadable PDFs, direct contact links,
+a CV with printable pages and downloadable PDFs, current K39/Woodlands product
+entries and a historical project archive, direct contact links,
 the native live-cursor module and bottom profile pill on desktop, and optional
 Yandex Metrika tracking. The
 [portfolio brief](docs/brand.md) describes the audiences, implemented design
@@ -177,7 +178,7 @@ packages/database/
 ## Build, hosting and release
 
 The [deployment guide](docs/deploy.md) describes the Docker contract and
-separately labels the operator-reported Dokploy hosting context. Current
+separately labels the dated live Dokploy checks and operator-reported hosting. Current
 workflows run CI and create GitHub Releases on `v*` tags; they do not publish
 container packages or create GitHub Deployments. Existing historical GitHub
 records are separate from the current workflow configuration.
