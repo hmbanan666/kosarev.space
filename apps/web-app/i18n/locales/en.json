@@ -264,5 +264,11 @@
     "closeMenu": "Close navigation",
     "presenceTitle": "A page you can explore together",
     "presenceDescription": "On desktop, live cursors show where other readers point. Open a second window or send the page to a colleague. The pill at the bottom opens your profile, where you can hide or show cursors."
+  },
+  "writing": {
+    "label": "Engineering article",
+    "backToProducts": "Back to projects",
+    "k39Link": "How AI edits are handled",
+    "navigation": "Article navigation"
   }
 }

@@ -2,8 +2,12 @@
 
 **Planning snapshot:** 28 October 2026
 
-**Status:** Phase 1 published. Phase 2 copy, images, public PR and release after
-successful CI are owner-approved. Later phases remain out of scope.
+**Status:** Phases 1 and 2 published and verified. The owner has authorized
+completion of the remaining current roadmap, including the reviewed bilingual
+K39 article, public PRs and verified releases. Phase 3 implementation is in
+review; publication must still be confirmed live. Phase 4 follows its release.
+Phase 5 is bounded here to a maintenance policy and a verified current baseline;
+future career and product changes cannot be marked complete in advance.
 
 **Primary goal:** Help Nikolai find a suitable small product team while building
 a durable professional reputation based on real engineering work.
@@ -63,9 +67,12 @@ The [case repository](../packages/database/src/repository/case.ts) retains
 creation-date order for the full catalog and search. The unfiltered home page
 uses the editorial selection in
 [case-finder.ts](../apps/web-app/app/utils/case-finder.ts). Phase 2 adds K39 and
-Woodlands above the retained historical project list; its release is approved
-but still requires separate deployment verification. Publication routes are not
-implemented.
+Woodlands above the retained historical project list. Dokploy recorded the
+automatic deployment of `ea99af9` as successful at 12:45:24 UTC on 28 October
+2026. Separate public checks confirmed exact RU/EN product copy, matching image
+hashes, desktop/mobile navigation, archive access, EXPI, contacts and CV/PDF.
+The Phase 3 branch adds the explicit bilingual K39 article route; this is
+implementation evidence until its deployment and public response are verified.
 
 Phase 1 below continues former Sprint 2; Phases 2 and 3 continue former
 Sprints 3 and 4. Phases 4 and 5 describe later work, each separately approved.
@@ -109,7 +116,7 @@ That release approval does not authorize later product copy or releases.
 
 ## Phase 2 — Active products
 
-**Current scope:** The owner requested the next step after Phase 1 publication.
+**Completed scope:** The owner requested the next step after Phase 1 publication.
 Prepare K39 and Woodlands in the existing project section, with bilingual copy,
 real interface images and public destination links. Preserve the archive and
 visual system. No new product case, database change, blog or product-repository
@@ -134,7 +141,7 @@ separately before reporting publication.
 **Outcome:** Visitors can distinguish current product work from the archive
 of earlier projects.
 
-**Candidate work**
+**Delivered in [PR #16](https://github.com/hmbanan666/kosarev.space/pull/16)**
 - Present K39 and Woodlands with their actual scope, current status,
   appropriate links, real visuals and a few relevant engineering decisions.
 - Retain the existing historical project archive and its closure labels.
@@ -151,6 +158,18 @@ of earlier projects.
 **Not in scope:** Rebuilding K39 or Woodlands inside this repository.
 
 ## Phase 3 — Writing
+
+**Approved delivery, 28 October 2026:** One complete RU/EN article explains
+K39 place proposals, the distinction between scope and publication state, and
+a verified pending-apply bug. Evidence is pinned to public K39 `0420863`; 181
+targeted tests passed, including 153 with disposable PostgreSQL. The article
+explicitly limits those results to local verification. The original incident
+trigger is unknown and is not invented. The owner delegated completion after
+reviewing the draft and its natural engineering-problem introduction.
+
+The explicit route is `/writing/k39-draft-permissions` with an `/en` variant,
+linked from K39. The pilot uses static Vue content and existing site styles;
+no CMS, index or publication framework is part of this first release.
 
 **Outcome:** One substantial, reusable public explanation of a real
 engineering experiment, supporting professional credibility.
@@ -172,8 +191,8 @@ engineering experiment, supporting professional credibility.
 
 ## Phase 4 — Sustainable publishing
 
-**Prerequisite:** The first real publication is published and the owner approves
-this phase. Add only the infrastructure needed to maintain actual material and
+**Prerequisite:** The first real publication is published. The owner has approved
+this phase as part of completion of the current roadmap. Add only the infrastructure needed to maintain actual material and
 connect articles, products and cases through understandable navigation.
 
 **Acceptance:** A reader can find the publication and its related work; the
@@ -182,6 +201,10 @@ policy. Choose the smallest implementation supported by the material; a CMS,
 accounts and subscriptions are not assumed requirements.
 
 ## Phase 5 — Evolution
+
+**Approved bounded outcome:** Record a current production baseline and a small
+maintenance policy after Phase 4. Completing that handoff does not complete
+future career developments, products or unpublished material.
 
 Review the site as career direction, products and public material change.
 Propose bounded improvements based on observed reader needs and verified new

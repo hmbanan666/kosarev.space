@@ -65,6 +65,9 @@
           >
             {{ t('site.source') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
           </a>
+          <NuxtLink v-if="product.key === 'k39'" :to="localePath(k39Article.path)">
+            {{ t('writing.k39Link') }}<UIcon name="i-lucide-arrow-right" aria-hidden="true" />
+          </NuxtLink>
         </div>
       </article>
     </div>
@@ -72,7 +75,10 @@
 </template>
 
 <script setup lang="ts">
+import { k39Article } from '~/utils/writing'
+
 const { t } = useI18n()
+const localePath = useLocalePath()
 </script>
 
 <style scoped>
