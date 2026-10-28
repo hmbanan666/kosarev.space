@@ -25,6 +25,36 @@ export interface Contact {
   to: string
 }
 
+export interface ActiveProduct {
+  key: 'k39' | 'woodlands'
+  title: string
+  image: string
+  width: number
+  height: number
+  link: string
+  source?: string
+}
+
+export const activeProducts: ActiveProduct[] = [
+  {
+    key: 'k39',
+    title: 'K39',
+    image: '/projects/k39.png',
+    width: 1000,
+    height: 700,
+    link: 'https://k39.online',
+    source: 'https://github.com/hmbanan666/k39',
+  },
+  {
+    key: 'woodlands',
+    title: 'Woodlands',
+    image: '/projects/woodlands.png',
+    width: 430,
+    height: 560,
+    link: 'https://t.me/WoodlandsGameBot',
+  },
+]
+
 export const projects: Project[] = [
   {
     key: 'meloteka',

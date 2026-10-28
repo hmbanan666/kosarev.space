@@ -2,7 +2,9 @@
 
 **Planning snapshot:** 28 October 2026
 
-**Status:** Phase 1 approved; later phases require separate owner approval.
+**Status:** Phase 1 published. Phase 2 preparation and implementation approved;
+new public copy and the next release require owner review. Later phases remain
+out of scope.
 
 **Primary goal:** Help Nikolai find a suitable small product team while building
 a durable professional reputation based on real engineering work.
@@ -34,7 +36,7 @@ infrastructure migration is justified by this plan.
 
 ## Completed foundation and remaining evidence gaps
 
-Repository baseline: `dcb8f05` on `main`, inspected on 28 October 2026.
+Pre-Phase-1 repository baseline: `dcb8f05` on `main`, inspected on 28 October 2026.
 
 - Bilingual CV, print/PDF generation and shared career facts are implemented
   ([PR #5](https://github.com/hmbanan666/kosarev.space/pull/5)); EXPI launch and
@@ -45,25 +47,25 @@ Repository baseline: `dcb8f05` on `main`, inspected on 28 October 2026.
   ([PR #7](https://github.com/hmbanan666/kosarev.space/pull/7)).
 - Owner-approved RU/EN small-team positioning is merged
   ([PR #13](https://github.com/hmbanan666/kosarev.space/pull/13)). The former
-  Sprint 1's copy work is complete, but
-  [issue #10](https://github.com/hmbanan666/kosarev.space/issues/10) remains open
-  for two unverified case claims: adding a language in 30 minutes and whole-team
-  adoption within a week. This roadmap does not close that evidence work.
+  Sprint 1's copy work is complete. Phase 1 replaced the unverified i18n timing
+  and team-adoption claims with owner-approved wording; it did not change the
+  status of [issue #10](https://github.com/hmbanan666/kosarev.space/issues/10).
 
-**Public runtime observation, 28 October 2026:** Read-only HTTP checks of
-[/](https://kosarev.space/) and [/en](https://kosarev.space/en) returned the
-approved small-team copy. Both CV pages and PDF URLs returned HTTP 200; the
-downloads had PDF signatures. The public case API returned 13 entries in each
-locale, with no EXPI entry. These checks establish observed public responses,
-not deployed commit identity, PDF visual quality or live Dokploy configuration.
-Hosting remains operator-reported as described in [deploy.md](deploy.md).
+**Post-Phase-1 runtime verification, 28 October 2026:** Dokploy reported a
+successful automatic deployment of `6ebaca6` from `main`. A separate approved
+transaction added EXPI and revised six cases in RU/EN. Public list/detail reads
+confirmed 14 cases and exact agreement with all seven approved bilingual texts
+after cache refresh. Live browser checks covered featured order, full-list
+access, billing search, detail/back navigation and mobile/desktop layouts in
+both locales; CV/print responses, PDF signatures and contact links also passed.
+This is portfolio release evidence, not an audit of EXPI's production systems.
 
-The [case repository](../packages/database/src/repository/case.ts) sorts by
-creation date; the [home-page catalog](../apps/web-app/app/components/SkillsShowcaseSection.vue)
-shows the first six without filters. There is no editorial selection yet.
-The [project list](../apps/web-app/app/utils/data.ts) contains the historical
-portfolio, not K39/Woodlands; publication routes are not implemented. These
-future phases have not been completed by the foundation work above.
+The [case repository](../packages/database/src/repository/case.ts) retains
+creation-date order for the full catalog and search. The unfiltered home page
+uses the editorial selection in
+[case-finder.ts](../apps/web-app/app/utils/case-finder.ts). Phase 2 adds K39 and
+Woodlands above the retained historical project list; its publication is pending
+owner review. Publication routes are not implemented.
 
 Phase 1 below continues former Sprint 2; Phases 2 and 3 continue former
 Sprints 3 and 4. Phases 4 and 5 describe later work, each separately approved.
@@ -82,98 +84,47 @@ exception was repaired automatically. The owner subsequently approved the exact
 RU/EN wording and featured order prepared in
 [PR #15](https://github.com/hmbanan666/kosarev.space/pull/15).
 
-**Proposed delivery sequence**
+**Completed delivery**
 
-1. **Establish public evidence.** Use the approved EXPI CV entries in
-   [RU](../apps/web-app/i18n/locales/ru.json) and
-   [EN](../apps/web-app/i18n/locales/en.json) as the starting point: sole-engineer
-   responsibility and a unified payment, subscription, refund and access flow
-   with reconciliation. Ask the owner for a disclosure-safe account of the
-   original problem, personal decisions, alternatives, failure handling and
-   actual rollout/results beyond the brief above. Track each proposed claim,
-   its support and approval in the owner review; only approved, disclosure-safe evidence goes into a
-   public PR. Existing copy or agent-generated reports do not prove additional
-   detail. Preserve the approved partial-migration and warm-cache qualifications.
-2. **Draft one bounded EXPI billing case.** Explain context and constraints,
-   personal responsibility, decisions/tradeoffs, verification, delivered result
-   and remaining limitations. Fit it into the existing `description`, `task`,
-   `solution` and `result` fields. Separate implemented behavior, tested behavior
-   and launch preparation. A qualitative, evidenced result is sufficient;
-   omit concrete figures and specific clients from this EXPI case as instructed
-   by the owner.
-   Obtain approval of exact RU/EN copy before a public content PR or data write.
-3. **Curate existing cases.** Review the shortlist below in both locales,
-   including detail bodies. Prefer personal ownership, product relevance,
-   concrete decisions and evidence quality over technology count or recency.
-   Resolve the two outstanding claims from issue #10 alongside this selection.
-   Unsupported claims must be supported or replaced with approved qualified
-   wording before promotion; being online does not establish their accuracy.
-4. **Implement a small technical PR after scope approval.** Propose a static
-   ordered list of approved case keys for the unfiltered home-page view, using
-   the existing six slots and a stable fallback for other available cases.
-   Ignore missing keys, avoid duplicates, and preserve full-list/filter and
-   context-navigation behavior. Reuse the current components and schema.
-   Search currently matches key/title/description/tags, not detail bodies
-   ([filter implementation](../apps/web-app/app/utils/case-finder.ts)); include
-   natural billing terminology in the approved localized summaries and check
-   `биллинг` in RU and `billing` in EN.
-5. **Prepare and verify content delivery separately.** Case bodies are in
-   PostgreSQL. Prepare a repeatable update limited to approved keys/locales,
-   preview its before/after values in an isolated database, and provide a
-   rollback from the affected rows. Preserve IDs, unrelated cases and engagement
-   records. Confirm the target database, deployment path and cache behavior
-   with the operator before requesting permission to apply it. A schema
-   migration or code deploy alone does not publish the case.
+- [PR #14](https://github.com/hmbanan666/kosarev.space/pull/14) established the
+  long-term direction and Phase 1 plan.
+- [PR #15](https://github.com/hmbanan666/kosarev.space/pull/15) delivered the
+  approved EXPI billing account, qualified historical copy and ordered selection.
+  The featured order is EXPI, o5, Meloteka, Sushi-Love async, NextOrders i18n and
+  live cursors. The full archive remains accessible.
+- The [content bundle](../packages/database/content/engineering-cases.json) and
+  [transactional command](../packages/database/scripts/case-content.mjs) separate
+  code deployment from content publication. Production planning preserved the
+  previous text for rollback; existing IDs, metadata, views and reactions were
+  preserved. The [deployment guide](deploy.md#case-content-updates) describes
+  drift checks and the rollback restriction once a new case has engagement.
+- Local lint, types, unit/content/E2E tests and build passed, followed by hosted
+  CI and the separate public checks above.
 
-**Provisional shortlist, subject to evidence and owner approval**
-
-| Priority | Case | Reason to consider it | Evidence needed before promotion |
-|---|---|---|---|
-| Lead | New EXPI billing case | Recent end-to-end responsibility and a concrete product invariant: payment and access consistency | Verify personal decisions and qualitative outcome within the approved disclosure boundary |
-| 2 | `o5-rewrite` | Evolving an existing product while maintaining continuity | Actual migration scope; substantiate or qualify client counts, zero downtime, speed and coverage claims |
-| 3 | `meloteka-transcoding` | Independent product ownership across processing, storage and playback | Verify implementation and measured limits/costs; retain its closed-in-2026 status |
-| 4 | `sushilove-async` | Background processing and operational reliability | Confirm failure handling; substantiate or qualify latency, throughput and zero-loss claims |
-| Supporting | `nextorders-i18n`, `kosarev-live-cursors` | Contributor experience and inspectable implementation | Verify current source/ownership; resolve the i18n timing claim and check cursor copy against the current module |
-
-This is an editorial hypothesis, not a certified ranking. Public detail reads
-for the migration, transcoding and async cases exposed quantitative claims not
-substantiated by this repository audit. If evidence is insufficient, use a
-better-supported candidate rather than embellishing the story. Retain access
-to the full archive; do not expand this into a prerequisite audit of every case.
-
-**Acceptance**
-- Public wording is explicitly approved and contains no employer secrets,
-  private architecture records, client data or invented metrics.
-- The RU/EN case is readable, searchable and linked from the relevant site
-  surface, with accurate descriptions of the work's status.
-- Curated examples are justified by relevance and their behavior is covered
-  by appropriate checks: ordered selection, missing keys and duplicates,
-  unaltered filters/all-results access, and RU/EN detail/back navigation.
-- Run applicable lint, type, unit, E2E and build checks from the README for the
-  implementation PR; check desktop/mobile layout and CV/PDF/contact paths.
-- Data changes are tested against isolated preview fixtures. Case bodies live
-  in PostgreSQL and are not recreated by schema migrations; a code-only PR
-  does not prove production case content has changed.
-
-**Decision boundary:** Within the approved Phase 1 slice, the agent can inspect
-public/source evidence, choose implementation details, prepare isolated fixtures,
-implement selection behavior, test and open focused PRs. The owner confirms
-any disclosure beyond the brief, attribution, new facts, exact RU/EN claims and
-final editorial selection. Private evidence stays outside the public repository/PR.
-Production data writes, merge and deployment require explicit owner approval;
-post-release checks must separately confirm both localized lists/detail pages,
-search, approved ordering and fresh cached responses before claiming publication.
-
-**Current authorization:** The owner approved Phase 1 implementation, the
-reviewed case texts/order, and merge, content publication and deployment after
-successful CI on 28 October 2026. This authorization covers the bounded release
-in PRs #14 and #15; completion still requires separate production evidence.
-Later-phase work remains unapproved.
-
-**Not in scope:** Importing private employer material, redesign, new publishing
-infrastructure or an exhaustive historical-case audit.
+**Approval and evidence boundary:** The owner approved the exact bilingual
+wording/order and the bounded merge, data update and deployment of PRs #14/#15.
+EXPI outcomes rely on owner testimony and reviewed implementation evidence;
+no figures, clients, private documents or operational identifiers were published.
+That release approval does not authorize later product copy or releases.
 
 ## Phase 2 — Active products
+
+**Current scope:** The owner requested the next step after Phase 1 publication.
+Prepare K39 and Woodlands in the existing project section, with bilingual copy,
+real interface images and public destination links. Preserve the archive and
+visual system. No new product case, database change, blog or product-repository
+implementation is required.
+
+**Verified baseline, 28 October 2026:** K39 main `0420863` and Woodlands main
+`5359a46` match successful Dokploy deployments. Public K39 pages and map render;
+the Woodlands bot launch page and application respond. Woodlands uses demo
+fixtures outside Telegram, so a browser capture is labelled as a demo and does
+not establish authenticated gameplay or payment acceptance. Its repository is
+private: expose the bot link, not the repository or private implementation files.
+
+New first-person attribution, the Woodlands implementation summary and the exact
+RU/EN presentation must be owner-approved before a public PR. Merge/deployment
+remain separately gated by explicit owner approval.
 
 **Outcome:** Visitors can distinguish current product work from the archive
 of earlier projects.

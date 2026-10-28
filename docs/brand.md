@@ -22,6 +22,10 @@ the earlier direction that explicitly deprioritized employment.
   and technical context available through native disclosure controls.
 - Case pages with challenge/result summaries, expandable implementation details,
   context-preserving navigation and direct contact through the shared footer.
+- A project section with K39 and Woodlands above the retained historical list.
+  Current products have public destination links, bilingual implementation
+  summaries and actual interface captures. Woodlands uses a labelled demo
+  capture; its private repository is not linked.
 - A project archive retaining real visuals and source links. Startodel, Meloteka
   and ChatGame closed in 2026; individual closure months are not established.
   NextOrders has not been declared closed.
@@ -62,6 +66,13 @@ actions at intermediate widths. Print CV styling remains separate: two A4
 pages per language, selectable text and clickable contact/source links.
 
 ## Accuracy and boundaries
+
+The current-product images in `public/projects/` (under `apps/web-app`) are
+unaltered interface captures from 28 October 2026. `k39.png` shows the public
+visitor map with its place panel collapsed; the figure credits OpenStreetMap
+contributors and Protomaps. `woodlands.png` shows the deployed app's ordinary
+browser demo, with no Telegram account or player records. Its caption identifies
+the demo deal; the destination link opens the Telegram bot.
 
 Career chronology and approved CV copy are canonical for career claims.
 Distinguish partial migrations from completed work and launch preparation from

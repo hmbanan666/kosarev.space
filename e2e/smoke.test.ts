@@ -40,7 +40,7 @@ test.describe('English locale (/en)', () => {
   test('has correct section headings', async ({ page }) => {
     await page.goto('/en')
 
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Projects', level: 2, exact: true })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Experience' })).toBeVisible()
   })
 

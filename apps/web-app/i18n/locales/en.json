@@ -12,7 +12,7 @@
   },
   "projects": {
     "title": "Projects",
-    "description": "Past independent products and public source. Closed projects are labelled; the engineering work remains available.",
+    "description": "I develop independent products, from the interface and backend to release and operation.",
     "visit": "Visit",
     "source": "Source",
     "meloteka": {
@@ -29,7 +29,25 @@
     "nextorders": {
       "description": "An open-source food-ordering platform with SSR, multiple languages, a persistent cart and guest checkout."
     },
-    "closed": "Project closed in {year}"
+    "closed": "Project closed in {year}",
+    "activeTitle": "In active development",
+    "archiveTitle": "Past projects and open source",
+    "k39": {
+      "kind": "A travel guide to Kaliningrad Oblast",
+      "description": "Helps visitors choose places and plan a trip through a map, routes and destination pages.",
+      "work": "I built the web app and its editorial workflow. Pages are server-rendered from PostgreSQL; AI agents have a separate draft-only access level without publishing rights.",
+      "visit": "Explore K39 (in Russian)",
+      "imageAlt": "K39 map of Kaliningrad Oblast with marked destinations",
+      "caption": "K39 map"
+    },
+    "woodlands": {
+      "kind": "Solitaire in Telegram",
+      "description": "Klondike with a shared daily deal, saved games and a weekly league.",
+      "work": "I develop the game engine and backend: the generator finds solvable deals, while games and progress are stored in PostgreSQL.",
+      "visit": "Play in Telegram",
+      "imageAlt": "Woodlands game board showing a Klondike solitaire deal",
+      "caption": "Game interface with a demo deal."
+    }
   },
   "skills": {
     "title": "Skills & Stack",
