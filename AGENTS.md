@@ -30,6 +30,15 @@
   deploy only with explicit owner approval. Claim a change is live only when
   deployment evidence supports it.
 
+## Editorial publications
+
+When proposing, drafting, rewriting, translating or reviewing public Writing
+materials (notes, curated digests, articles and technical essays), first apply
+[publication-editor](.agents/skills/publication-editor/SKILL.md). Its reader-value
+review is required in addition to code review; a technically correct article is
+not necessarily ready to publish. It is not required for routine code or internal
+engineering documentation. The owner still approves publication and disclosure.
+
 ## Agent skills
 
 ### Issue tracker
