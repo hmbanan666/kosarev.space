@@ -14,6 +14,9 @@
       <div class="site-footer-bottom">
         <p>{{ t('footer.copyright', { year: new Date().getFullYear() }) }}</p>
         <div>
+          <NuxtLink :to="localePath('/writing')">
+            {{ t('writing.title') }}
+          </NuxtLink>
           <NuxtLink :to="localePath('/cv')">
             {{ t('nav.cv') }}
           </NuxtLink>

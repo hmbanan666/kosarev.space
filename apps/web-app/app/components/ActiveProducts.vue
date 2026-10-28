@@ -6,6 +6,7 @@
     <div class="active-list">
       <article
         v-for="product in activeProducts"
+        :id="`project-${product.key}`"
         :key="product.key"
         :data-active-product="product.key"
         class="active-product"
@@ -65,9 +66,7 @@
           >
             {{ t('site.source') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
           </a>
-          <NuxtLink v-if="product.key === 'k39'" :to="localePath(k39Article.path)">
-            {{ t('writing.k39Link') }}<UIcon name="i-lucide-arrow-right" aria-hidden="true" />
-          </NuxtLink>
+          <WritingRelatedPublications kind="project" :work-key="product.key" />
         </div>
       </article>
     </div>
@@ -75,16 +74,13 @@
 </template>
 
 <script setup lang="ts">
-import { k39Article } from '~/utils/writing'
-
 const { t } = useI18n()
-const localePath = useLocalePath()
 </script>
 
 <style scoped>
 .active-heading { margin-bottom: 1.25rem; }
 .active-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
-.active-product { min-width: 0; }
+.active-product { min-width: 0; scroll-margin-top: 6rem; }
 .active-figure { margin: 0 0 1.25rem; }
 .active-image-wrap { height: 19rem; padding: 1rem; background: #242019; border: 1px solid #51432C; border-radius: .5rem; }
 .active-image { width: 100%; height: 100%; object-fit: contain; }
