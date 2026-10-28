@@ -2,9 +2,8 @@
 
 **Planning snapshot:** 28 October 2026
 
-**Status:** Phase 1 published. Phase 2 preparation and implementation approved;
-new public copy and the next release require owner review. Later phases remain
-out of scope.
+**Status:** Phase 1 published. Phase 2 copy, images, public PR and release after
+successful CI are owner-approved. Later phases remain out of scope.
 
 **Primary goal:** Help Nikolai find a suitable small product team while building
 a durable professional reputation based on real engineering work.
@@ -64,8 +63,9 @@ The [case repository](../packages/database/src/repository/case.ts) retains
 creation-date order for the full catalog and search. The unfiltered home page
 uses the editorial selection in
 [case-finder.ts](../apps/web-app/app/utils/case-finder.ts). Phase 2 adds K39 and
-Woodlands above the retained historical project list; its publication is pending
-owner review. Publication routes are not implemented.
+Woodlands above the retained historical project list; its release is approved
+but still requires separate deployment verification. Publication routes are not
+implemented.
 
 Phase 1 below continues former Sprint 2; Phases 2 and 3 continue former
 Sprints 3 and 4. Phases 4 and 5 describe later work, each separately approved.
@@ -122,9 +122,11 @@ fixtures outside Telegram, so a browser capture is labelled as a demo and does
 not establish authenticated gameplay or payment acceptance. Its repository is
 private: expose the bot link, not the repository or private implementation files.
 
-New first-person attribution, the Woodlands implementation summary and the exact
-RU/EN presentation must be owner-approved before a public PR. Merge/deployment
-remain separately gated by explicit owner approval.
+**Owner approval, 28 October 2026:** The exact RU/EN text, first-person
+attribution, product images and Woodlands implementation summary were approved.
+The owner authorized the public PR and its merge/deployment after successful CI.
+This approval covers only the bounded Phase 2 change; verify the live result
+separately before reporting publication.
 
 **Outcome:** Visitors can distinguish current product work from the archive
 of earlier projects.
