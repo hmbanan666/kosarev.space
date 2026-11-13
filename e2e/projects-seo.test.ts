@@ -37,16 +37,26 @@ test('writing pages advertise both feeds', async ({ page }) => {
 
 for (const locale of ['ru', 'en'] as const) {
   const prefix = locale === 'en' ? '/en' : ''
-  test(`project pages describe Context and paused Dostigus (${locale})`, async ({ page }) => {
+  test(`project pages describe Context and paused Dostigus (${locale})`, async ({ page, request }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await page.goto(`${prefix}/projects/context`)
     await expect(page.locator('h1')).toHaveText('Context')
     await expect(page.locator('[data-project-status="active"]')).toHaveText(locale === 'en' ? 'Active' : 'В работе')
-    await expect(page.locator('article')).toContainText(locale === 'en'
+    const contextArticle = page.locator('article')
+    await expect(contextArticle).toContainText(locale === 'en'
       ? 'On 60 synthetic notes, 10 of 12 questions got complete answers.'
       : '10 из 12 вопросов получили полные ответы')
-    await expect(page.locator('[data-project-sections]')).toHaveCount(0)
-    await expect(page.locator('a[href="https://github.com/hmbanan666/context"]')).toHaveAttribute('rel', 'noopener noreferrer')
+    await expect(contextArticle).not.toContainText(locale === 'en' ? '3 of 12' : '3 из 12')
+    await expect(contextArticle).toContainText('Keycloak')
+    await expect(contextArticle).not.toContainText('EXPI')
+    await expect(page.locator('[data-project-sections]')).toBeVisible()
+    for (const heading of Object.values((locale === 'en' ? en : ru).projects.sections)) {
+      await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible()
+    }
+    const contextRepo = page.locator('a[href="https://github.com/hmbanan666/context"]')
+    await expect(contextRepo).toHaveCount(2)
+    await expect(contextRepo.first()).toHaveAttribute('rel', 'noopener noreferrer')
+    await expect(contextRepo.nth(1)).toHaveAttribute('rel', 'noopener noreferrer')
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://kosarev.space${prefix}/projects/context`)
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `https://kosarev.space/og/${locale}/projects/context.png`)
     const contextData = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!)
@@ -58,8 +68,18 @@ for (const locale of ['ru', 'en'] as const) {
     await page.goto(`${prefix}/projects/dostigus`)
     await expect(page.locator('h1')).toHaveText('Dostigus')
     await expect(page.locator('[data-project-status="paused"]')).toHaveText(locale === 'en' ? 'Paused' : 'На паузе')
-    await expect(page.locator('[data-project-sections]')).toHaveCount(0)
-    await expect(page.locator('a[href="https://github.com/dostigus/dostigus"]')).toBeVisible()
+    const dostigusArticle = page.locator('article')
+    await expect(dostigusArticle).toContainText(locale === 'en' ? 'Development is paused' : 'Разработка на паузе')
+    await expect(dostigusArticle).not.toContainText(locale === 'en' ? 'dead end' : 'тупик')
+    await expect(dostigusArticle).not.toContainText(locale === 'en' ? 'later used the same' : 'затем использовал')
+    await expect(dostigusArticle).toContainText('Mailer')
+    await expect(dostigusArticle).toContainText('@nuxtjs/mcp-toolkit')
+    await expect(page.locator('[data-project-sections]')).toBeVisible()
+    const dostigusRepo = page.locator('a[href="https://github.com/dostigus/dostigus"]')
+    await expect(dostigusRepo).toHaveCount(2)
+    const dostigusHtml = await (await request.get(`${prefix}/projects/dostigus`)).text()
+    expect(dostigusHtml).toContain('@nuxtjs/mcp-toolkit')
+    expect(dostigusHtml).not.toContain('{\'@\'}')
     await expect(page.locator('a[href="https://dostigus.ru"]')).toHaveCount(0)
     const pausedData = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!)
     expect(pausedData['@type']).toBe('SoftwareSourceCode')
@@ -129,11 +149,17 @@ for (const locale of ['ru', 'en'] as const) {
     await expect(page.locator('.project-deck')).toHaveText(messages.projects.k39.description)
     await expect(page.locator('.project-work')).toHaveText(messages.projects.k39.work)
     await expect(page.getByRole('link', { name: messages.projects.k39.visit })).toHaveAttribute('href', 'https://k39.online')
-    await expect(page.locator('a[href="https://github.com/hmbanan666/k39"]')).toHaveAttribute('rel', 'noopener noreferrer')
-    await expect(page.locator('[data-project-sections]')).toHaveCount(0)
+    const k39Repo = page.locator('a[href="https://github.com/hmbanan666/k39"]')
+    await expect(k39Repo).toHaveCount(2)
+    await expect(k39Repo.first()).toHaveAttribute('rel', 'noopener noreferrer')
+    await expect(page.locator('[data-project-sections]')).toBeVisible()
     for (const heading of Object.values(messages.projects.sections)) {
-      await expect(page.getByRole('heading', { name: heading, exact: true })).toHaveCount(0)
+      await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible()
     }
+    await expect(page.locator('#project-status-next')).toContainText(locale === 'en'
+      ? 'test whether the site can earn money'
+      : 'может ли сайт зарабатывать')
+    await expect(page.locator('article')).not.toContainText('EXPI')
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://kosarev.space${prefix}/projects/k39`)
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `https://kosarev.space/og/${locale}/projects/k39.png`)
     await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', messages.projects.k39.description)
@@ -152,6 +178,7 @@ for (const locale of ['ru', 'en'] as const) {
     await page.getByRole('link', { name: locale === 'en' ? 'Русский' : 'English', exact: true }).click()
     await expect(page).toHaveURL(locale === 'en' ? /:\/\/[^/]+\/projects\/k39$/ : /\/en\/projects\/k39$/)
     await expect(page.locator('.project-deck')).toHaveText(locale === 'en' ? ru.projects.k39.description : en.projects.k39.description)
+    await expect(page.locator('#project-problem')).toContainText(locale === 'en' ? 'Туристу нужно понять' : 'A visitor needs to know')
   })
 
   test(`section fixture shows every long-form block (${locale})`, async ({ page }) => {
@@ -183,7 +210,8 @@ test('k39 project page is readable without javascript', async ({ browser }) => {
   const page = await context.newPage()
   await page.goto('/projects/k39')
   await expect(page.locator('h1')).toHaveText('K39')
-  await expect(page.locator('a[href="https://k39.online"]')).toHaveAttribute('rel', 'noopener noreferrer')
-  await expect(page.locator('[data-project-sections]')).toHaveCount(0)
+  await expect(page.locator('a[href="https://k39.online"]').first()).toHaveAttribute('rel', 'noopener noreferrer')
+  await expect(page.locator('[data-project-sections]')).toBeVisible()
+  await expect(page.locator('#project-problem')).toContainText('Туристу нужно понять, куда пускают')
   await context.close()
 })

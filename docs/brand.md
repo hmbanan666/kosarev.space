@@ -28,10 +28,12 @@ the earlier direction that explicitly deprioritized employment.
   page. Context and Dostigus link to their public repositories and do not use
   interface captures. K39 and Woodlands keep public destination links,
   bilingual implementation summaries and actual interface captures. The K39
-  page repeats that existing short summary and links to https://k39.online.
+  page keeps that short summary, adds the long-form sections, and links to
+  https://k39.online.
   Project pages render optional long-form sections when text is present:
   problem, what was built, key decisions, stack, status and next, and links.
-  Context, Dostigus and K39 currently leave those sections empty.
+  Context, Dostigus and K39 fill those sections in Russian and English.
+  Source lists stay off the pages.
   Woodlands uses a labelled demo capture; its private repository is not linked.
 - A project archive retaining real visuals and source links. Startodel, Meloteka
   and ChatGame closed in 2026; individual closure months are not established.
