@@ -10,6 +10,6 @@
 
 <script setup lang="ts">
 useHead({
-  link: writingFeedLinks,
+  link: [...writingFeedLinks],
 })
 </script>

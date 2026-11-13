@@ -13,4 +13,4 @@ export const writingFeedLinks = [
     title: 'Writing by Nick Kosarev',
     href: 'https://kosarev.space/en/writing/feed.xml',
   },
-]
+] as const
