@@ -36,6 +36,14 @@ export interface ActiveProduct {
   page?: string
 }
 
+export interface PortfolioPage {
+  key: 'context' | 'dostigus' | 'k39'
+  title: string
+  status: 'active' | 'paused'
+  source: string
+  link?: string
+}
+
 export interface PausedProject {
   key: 'dostigus'
   title: string
@@ -58,6 +66,7 @@ export const activeProducts: ActiveProduct[] = [
     height: 700,
     link: 'https://k39.online',
     source: 'https://github.com/hmbanan666/k39',
+    page: '/projects/k39',
   },
   {
     key: 'woodlands',
@@ -78,7 +87,7 @@ export const pausedProjects: PausedProject[] = [
   },
 ]
 
-export const portfolioPages = [
+export const portfolioPages: readonly PortfolioPage[] = [
   {
     key: 'context',
     title: 'Context',
@@ -86,12 +95,19 @@ export const portfolioPages = [
     source: 'https://github.com/hmbanan666/context',
   },
   {
+    key: 'k39',
+    title: 'K39',
+    status: 'active',
+    source: 'https://github.com/hmbanan666/k39',
+    link: 'https://k39.online',
+  },
+  {
     key: 'dostigus',
     title: 'Dostigus',
     status: 'paused',
     source: 'https://github.com/dostigus/dostigus',
   },
-] as const
+]
 
 export const projects: Project[] = [
   {

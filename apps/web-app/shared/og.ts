@@ -16,14 +16,29 @@ export interface OgMessages {
     statusPaused: string
     context: { description: string }
     dostigus: { description: string }
+    k39: { description: string }
   }
+}
+
+export const ogProjectKeys = ['context', 'dostigus', 'k39'] as const
+
+export type OgProjectKey = typeof ogProjectKeys[number]
+
+export function isOgProjectKey(value: string): value is OgProjectKey {
+  return (ogProjectKeys as readonly string[]).includes(value)
+}
+
+const projectTitles: Record<OgProjectKey, string> = {
+  context: 'Context',
+  dostigus: 'Dostigus',
+  k39: 'K39',
 }
 
 export type OgSubject
   = | { kind: 'home' }
     | { kind: 'writing' }
     | { kind: 'cv' }
-    | { kind: 'project', key: 'context' | 'dostigus' }
+    | { kind: 'project', key: OgProjectKey }
     | { kind: 'article' | 'case', title: string, description: string }
 
 export function ogCard(subject: OgSubject, messages: OgMessages): OgCard {
@@ -46,7 +61,7 @@ export function ogCard(subject: OgSubject, messages: OgMessages): OgCard {
     const description = subject.key === 'dostigus'
       ? `${messages.projects.statusPaused}. ${project.description}`
       : project.description
-    return { eyebrow: name, title: subject.key === 'context' ? 'Context' : 'Dostigus', description }
+    return { eyebrow: name, title: projectTitles[subject.key], description }
   }
   return { eyebrow: name, title: subject.title, description: subject.description }
 }

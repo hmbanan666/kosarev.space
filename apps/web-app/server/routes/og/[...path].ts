@@ -1,7 +1,7 @@
 import type { OgMessages, OgSubject } from '../../../shared/og'
 import en from '../../../i18n/locales/en.json'
 import ru from '../../../i18n/locales/ru.json'
-import { ogCard } from '../../../shared/og'
+import { isOgProjectKey, ogCard } from '../../../shared/og'
 import { renderOgPng } from '../../utils/og-png'
 
 const copy = { ru, en } satisfies Record<'ru' | 'en', OgMessages>
@@ -20,7 +20,7 @@ function subjectFor(parts: string[], article?: { title: string, description: str
   if (head === 'cv' && !second) {
     return { kind: 'cv' }
   }
-  if (head === 'projects' && (second === 'context' || second === 'dostigus') && parts.length === 2) {
+  if (head === 'projects' && second && isOgProjectKey(second) && parts.length === 2) {
     return { kind: 'project', key: second }
   }
   if (head === 'cases' && second && parts.length === 2 && workCase) {

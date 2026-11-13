@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import { portfolioPages } from '../app/utils/data'
 import { portfolioItemList, projectPageEntity } from '../app/utils/structured-data'
 import en from '../i18n/locales/en.json'
 import ru from '../i18n/locales/ru.json'
 import { renderWritingFeed } from '../shared/feed'
-import { ogCard, ogImagePath, renderOgSvg } from '../shared/og'
+import { ogCard, ogImagePath, ogProjectKeys, renderOgSvg } from '../shared/og'
 import { wrapText } from '../shared/text'
 
 function translate(messages: Record<string, unknown>, key: string, params?: Record<string, unknown>) {
@@ -58,6 +59,14 @@ describe('open graph cards', () => {
     expect(ogCard({ kind: 'home' }, en).title).toBe(en.hero.name)
     expect(ogCard({ kind: 'project', key: 'dostigus' }, en).description.startsWith('Paused.')).toBe(true)
     expect(ogCard({ kind: 'project', key: 'context' }, ru).description).toBe(ru.projects.context.description)
+    expect(ogCard({ kind: 'project', key: 'k39' }, en)).toEqual({
+      eyebrow: en.hero.name,
+      title: 'K39',
+      description: en.projects.k39.description,
+    })
+    expect(ogCard({ kind: 'project', key: 'k39' }, ru).description).toBe(ru.projects.k39.description)
+    expect(ogProjectKeys).toEqual(['context', 'dostigus', 'k39'])
+    expect(portfolioPages.map((page) => page.key).sort()).toEqual([...ogProjectKeys].sort())
   })
 })
 
@@ -75,6 +84,15 @@ describe('project structured data', () => {
     const dostigus = projectPageEntity('ru', 'dostigus', (key, params) => translate(ru, key, params))
     expect(dostigus.description.startsWith('На паузе.')).toBe(true)
     expect(dostigus.url).toBe('https://kosarev.space/projects/dostigus')
+    const k39 = projectPageEntity('en', 'k39', (key, params) => translate(en, key, params))
+    expect(k39['@type']).toBe('SoftwareSourceCode')
+    expect(k39.url).toBe('https://kosarev.space/en/projects/k39')
+    expect(k39.sameAs).toBe('https://k39.online')
+    expect(k39.codeRepository).toBe('https://github.com/hmbanan666/k39')
+    expect(k39.description).toBe(en.projects.k39.description)
+    expect(k39.programmingLanguage).toBeUndefined()
+    expect(k39.license).toBeUndefined()
+    expect(projectPageEntity('ru', 'k39', (key, params) => translate(ru, key, params)).url).toBe('https://kosarev.space/projects/k39')
     const woodlands = list.itemListElement.find((entry) => entry.item.name === 'Woodlands')!.item
     expect(woodlands['@type']).toBe('CreativeWork')
     expect(woodlands.codeRepository).toBeUndefined()

@@ -1,38 +1,20 @@
 <template>
-  <div class="site-wrap project-page">
-    <nav class="project-breadcrumb" :aria-label="t('site.caseNavigation')">
-      <NuxtLink :to="`${localePath('/')}#projects`">
-        <UIcon name="i-lucide-arrow-left" aria-hidden="true" />{{ t('writing.backToProducts') }}
-      </NuxtLink>
-    </nav>
-    <article :data-project-page="entry.key">
-      <p class="project-status" :data-project-status="entry.status">
-        {{ t(entry.status === 'active' ? 'projects.statusActive' : 'projects.statusPaused') }}
-      </p>
-      <h1>{{ entry.title }}</h1>
-      <p class="project-kind">
-        {{ t(`projects.${entry.key}.kind`) }}
-      </p>
-      <p class="project-deck">
-        {{ t(`projects.${entry.key}.description`) }}
-      </p>
-      <p class="project-work">
-        {{ t(`projects.${entry.key}.work`) }}
-      </p>
-      <div class="project-links">
-        <a
-          :href="entry.source"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {{ t('site.source') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
-        </a>
-      </div>
-    </article>
-  </div>
+  <ProjectArticle
+    :page-key="entry.key"
+    :title="entry.title"
+    :status="entry.status"
+    :kind="t(`projects.${entry.key}.kind`)"
+    :description="t(`projects.${entry.key}.description`)"
+    :work="t(`projects.${entry.key}.work`)"
+    :source="entry.source"
+    :link="entry.link"
+    :link-label="entry.link ? t(`projects.${entry.key}.visit`) : undefined"
+    :sections="sections"
+  />
 </template>
 
 <script setup lang="ts">
+import { projectSectionsFor } from '~/utils/project-sections'
 import { projectPageEntity } from '~/utils/structured-data'
 
 definePageMeta({
@@ -41,7 +23,7 @@ definePageMeta({
   key: (route) => String(route.params.key),
 })
 
-const { t, locale } = useI18n()
+const { t, te, tm, rt, locale } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
 const key = String(route.params.key)
@@ -58,6 +40,11 @@ const summary = computed(() => entry.status === 'paused'
   : t(`projects.${entry.key}.description`))
 const image = computed(() => `https://kosarev.space/og/${language.value}/projects/${entry.key}.png`)
 const entity = computed(() => projectPageEntity(language.value, entry.key, t))
+const sections = computed(() => projectSectionsFor(entry.key, {
+  te,
+  tm,
+  resolve: (message) => rt(message as Parameters<typeof rt>[0]),
+}))
 
 useSeoMeta({
   title: () => entry.title,
@@ -88,18 +75,3 @@ useHead(() => ({
   }],
 }))
 </script>
-
-<style scoped>
-.project-page { padding-block: 2rem 4rem; }
-.project-breadcrumb { font-size: .85rem; margin-bottom: 2.5rem; }
-.project-breadcrumb a { display: inline-flex; gap: .6rem; align-items: center; color: var(--ui-text-muted); }
-.project-breadcrumb a:hover { text-decoration: underline; }
-.project-status { font-size: .85rem; color: var(--ui-text-muted); border-left: 3px solid var(--ui-border-accented); padding-left: 1rem; margin-bottom: 1.5rem !important; }
-.project-page h1 { font: 500 clamp(2rem, 4vw, 3.5rem)/1.15 var(--font-serif); letter-spacing: -.035em; }
-.project-kind { margin-top: .75rem !important; color: var(--ui-primary); }
-.project-deck, .project-work { max-width: 70ch; }
-.project-deck { font-size: 1.1rem; margin-top: 1.5rem !important; }
-.project-work { margin-top: 1rem !important; color: var(--ui-text-muted); }
-.project-links { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; margin-top: 1.75rem; font-size: .9rem; }
-.project-links a { display: inline-flex; align-items: center; gap: .4rem; color: var(--ui-primary); text-decoration: underline; }
-</style>

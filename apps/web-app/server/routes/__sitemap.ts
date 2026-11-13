@@ -1,3 +1,4 @@
+import { portfolioPages } from '../../app/utils/data'
 import { publicationPath } from '../../shared/publications'
 
 export default defineEventHandler(async () => {
@@ -9,13 +10,10 @@ export default defineEventHandler(async () => {
   })), ...publications.map((publication) => ({
     loc: publicationPath(publication),
     _i18nTransform: true,
+  })), ...portfolioPages.map((page) => ({
+    loc: `/projects/${page.key}`,
+    _i18nTransform: true,
   })), {
-    loc: '/projects/context',
-    _i18nTransform: true,
-  }, {
-    loc: '/projects/dostigus',
-    _i18nTransform: true,
-  }, {
     loc: '/writing/feed.xml',
   }, {
     loc: '/en/writing/feed.xml',

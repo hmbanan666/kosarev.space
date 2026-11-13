@@ -11,6 +11,7 @@ for (const locale of ['ru', 'en']) {
     const k39 = section.locator('[data-active-product="k39"]')
     const woodlands = section.locator('[data-active-product="woodlands"]')
     await expect(k39.getByRole('link', { name: locale === 'en' ? 'Explore K39 (in Russian)' : 'Открыть K39' })).toHaveAttribute('href', 'https://k39.online')
+    await expect(k39.locator(`a[href="${prefix}/projects/k39"]`)).toBeVisible()
     await expect(k39.locator('a[href="https://github.com/hmbanan666/k39"]')).toHaveAttribute('rel', 'noopener noreferrer')
     await expect(woodlands.getByRole('link', { name: locale === 'en' ? 'Play in Telegram' : 'Играть в Telegram' })).toHaveAttribute('href', 'https://t.me/WoodlandsGameBot')
     await expect(woodlands.locator('a[href*="github.com"]')).toHaveCount(0)
