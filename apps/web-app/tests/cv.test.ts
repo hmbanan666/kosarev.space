@@ -62,19 +62,70 @@ describe('machine-readable CV parity', () => {
     })))
     expect(profile.experience[0]?.description).toContain('27.04.2026–27.10.2026 (6 месяцев)')
     expect(profile.title).toBe(ru.cv.subtitle)
-    expect(profile.bio).toContain(ru.cv.summary)
+    expect(profile.bio).toBe('Пишу весь стек с 2010 года: интерфейсы, сервер, данные, инфраструктура и релизы. Сейчас строю продукты с AI-агентами: доступ через MCP с ограниченными правами, спецификации и ADR, тесты, ревью и CI. Ищу работу в продуктовой команде.')
+    expect(profile.bio.length).toBeLessThanOrEqual(300)
+    expect(profile.specialization).toEqual(['ai', 'fullstack', 'frontend', 'devops'])
+    expect(profile.specialization.length).toBeLessThanOrEqual(5)
+    expect(profile.skills).toEqual([
+      'AI agents',
+      'TypeScript',
+      'Vue',
+      'Nuxt',
+      'Nitro',
+      'Node.js',
+      'PostgreSQL',
+      'Drizzle ORM',
+      'Redis',
+      'BullMQ',
+      'Docker',
+      'CI/CD',
+      'REST API',
+      'WebSocket',
+      'Telegram / grammY',
+      'MCP',
+      'React',
+      'NestJS',
+      'Kubernetes',
+      'RabbitMQ',
+    ])
+    expect(profile.skills.length).toBeLessThanOrEqual(20)
     expect(profile).not.toHaveProperty('experience_years')
     expect(profile).not.toHaveProperty('salary')
     expect(profile).not.toHaveProperty('relocate')
   })
 
-  it('preserves education, public contacts and C1 using the profile schema vocabulary', () => {
+  it('preserves education, public contacts and the English level', () => {
     expect(profile.education[0]).toEqual({ institution: ru.cv.educationTitle, degree: ru.cv.educationText })
     expect(profile.contacts.email).toBe(cvContactLinks[0]?.href.replace('mailto:', ''))
     expect(cvContactLinks).toContainEqual({ label: 't.me/hmbanan666', href: `https://t.me/${profile.contacts.telegram.slice(1)}` })
     expect(profile.links.github).toBe(cvContactLinks[2]?.href)
     expect(profile.languages).toContainEqual({ language: 'en', level: 'advanced' })
-    expect(profile.bio).toContain('C1')
+    expect(ru.cv.languageText).toContain('C1')
+    expect(en.cv.languageText).toContain('C1')
+  })
+
+  it('publishes current products that already have site pages', () => {
+    expect(profile.cases.length).toBeLessThanOrEqual(10)
+    expect(profile.cases.slice(0, 2)).toEqual([
+      {
+        title: 'K39',
+        url: 'https://k39.online',
+        image: '/projects/k39.png',
+        description: ru.projects.k39.description,
+      },
+      {
+        title: 'Woodlands',
+        url: 'https://t.me/WoodlandsGameBot',
+        image: '/projects/woodlands.png',
+        description: ru.projects.woodlands.description,
+      },
+    ])
+    expect(profile.cases.map((item) => item.title)).not.toContain('Dostigus')
+    expect(profile.cases.map((item) => item.title)).not.toContain('Context')
+    for (const item of profile.cases) {
+      expect(item.description.length).toBeLessThanOrEqual(200)
+      expect(item.tags?.length ?? 0).toBeLessThanOrEqual(10)
+    }
   })
 
   it('labels closed-project case descriptions with canonical archive years', () => {

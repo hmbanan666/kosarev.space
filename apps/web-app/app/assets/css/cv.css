@@ -107,7 +107,7 @@
   .cv-skills dt { font-size: 8.5pt; margin-bottom: 2pt; }
   .cv-skills dd { font-size: 9pt; }
   .cv-entry { break-inside: avoid; }
-  .cv-entry + .cv-entry { margin-top: 12pt; padding-top: 10pt; }
+  .cv-entry + .cv-entry { margin-top: 10pt; padding-top: 8pt; }
   .cv-entry-heading { display: flex; gap: 12pt; }
   .cv-role { font-size: 9.5pt; margin-top: 2pt !important; }
   .cv-period { font-size: 8.5pt; }
@@ -117,13 +117,13 @@
   .cv-highlights li + li { margin-top: 3pt; }
   .cv-stack { font-size: 8.5pt; margin-top: 6pt !important; }
   .cv-sheet-secondary { break-before: page; border: 0; padding: 0; margin: 0; }
-  .cv-print-continuation { display: block; font-size: 8.5pt; color: #52525b; margin-bottom: 12pt !important; }
-  .cv-sheet-secondary > .cv-section + .cv-section { margin-top: 14pt; }
-  .cv-projects > div { grid-template-columns: 65pt 1fr; gap: 10pt; padding-block: 3pt; }
-  .cv-section-intro { font-size: 9pt; margin-bottom: 5pt !important; }
-  .cv-public-work { margin-top: 8pt; }
+  .cv-print-continuation { display: block; font-size: 8.5pt; color: #52525b; margin-bottom: 8pt !important; }
+  .cv-sheet-secondary > .cv-section + .cv-section { margin-top: 10pt; }
+  .cv-projects > div { grid-template-columns: 65pt 1fr; gap: 10pt; padding-block: 2pt; }
+  .cv-section-intro { font-size: 9pt; margin-bottom: 4pt !important; }
+  .cv-public-work { margin-top: 6pt; }
   .cv-public-work .cv-period { margin-block: 2pt 3pt !important; }
-  .cv-background { gap: 16pt; grid-template-columns: 2fr 1fr; margin-top: 12pt; padding-top: 10pt; font-size: 9pt; }
+  .cv-background { gap: 16pt; grid-template-columns: 2fr 1fr; margin-top: 8pt; padding-top: 8pt; font-size: 9pt; }
   .cv-background h3 { font-size: 9.5pt; }
   .cv-background p + p { margin-top: 4pt; }
   .cv-document a { color: inherit; }

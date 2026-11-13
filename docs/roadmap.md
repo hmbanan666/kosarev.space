@@ -8,7 +8,7 @@ baseline. The owner authorized this bounded completion, including public PRs
 and verified releases. Future career changes, products and publications remain
 new work, not unfinished tasks in this delivery.
 
-**Primary goal:** Help Nikolai find a suitable small product team while building
+**Primary goal:** Help Nikolai find a full-time role on a product team while building
 a durable professional reputation based on real engineering work.
 
 **Long-term goal:** Develop kosarev.space into Nikolai's durable professional

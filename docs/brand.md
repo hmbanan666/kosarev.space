@@ -1,6 +1,6 @@
 # Portfolio direction
 
-The site presents Nikolai Kosarev as a hands-on Fullstack Developer / Tech Lead
+The site presents Nikolai Kosarev as an AI Product Engineer / Fullstack Engineer
 who has built products, backend systems and infrastructure since 2010. It
 supports both hiring and product or contract discussions. This brief replaces
 the earlier direction that explicitly deprioritized employment.

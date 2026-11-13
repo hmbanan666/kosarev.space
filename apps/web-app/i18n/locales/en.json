@@ -1,12 +1,12 @@
 {
   "seo": {
-    "title": "Nick Kosarev - Fullstack Developer / Tech Lead",
-    "description": "Fullstack Developer / Tech Lead. Interfaces, backend systems and infrastructure since 2010. Selected case studies, experience, CV and direct contact."
+    "title": "Nick Kosarev - AI Product Engineer / Fullstack Engineer",
+    "description": "AI Product Engineer / Fullstack Engineer. I build products with AI agents and MCP on TypeScript, Nuxt and PostgreSQL. Building software since 2010. Cases, projects and CV."
   },
   "hero": {
     "badge": "Open for collaboration",
     "name": "Nick Kosarev",
-    "description": "I'm looking for a small product team where I can own architecture and keep writing code. I build interfaces, backend services and infrastructure, from data models to release.",
+    "description": "I build products with AI inside and write the full stack myself, from the data model to release. My projects include Dostigus, a self-hosted platform for AI bots, Context, an MCP memory service for agents, and K39, a travel guide where agents draft edits and a person publishes them.",
     "projects": "Projects",
     "contact": "Get in touch"
   },
@@ -89,14 +89,14 @@
   },
   "cv": {
     "title": "CV",
-    "seoTitle": "Nick Kosarev - Fullstack Developer / Tech Lead CV",
-    "seoDescription": "TypeScript, Vue/Nuxt and backend systems. EXPI platform, billing, trading workers and infrastructure. Building software since 2010.",
-    "subtitle": "Fullstack Developer / Tech Lead",
+    "seoTitle": "Nick Kosarev - AI Product Engineer / Fullstack Engineer CV",
+    "seoDescription": "TypeScript, Nuxt, PostgreSQL and AI agents over MCP. Products, billing, background services and infrastructure. Building software since 2010.",
+    "subtitle": "AI Product Engineer / Fullstack Engineer",
     "location": "Kaliningrad, Russia",
     "remote": "Remote work",
     "eyebrow": "Curriculum vitae",
     "since": "Building software since 2010",
-    "summary": "Built food-ordering platforms, internal tools and fintech products. I work across interfaces, backend code, data models and releases.",
+    "summary": "I have built across the full stack since 2010: interfaces, backend code, data models, infrastructure and releases. I built food-ordering platforms, internal tools and fintech products. Now I build products with AI agents: they get scoped access through MCP, work follows specs and ADRs, and changes pass tests, review and CI. I'm looking for a full-time role on a product team.",
     "downloadPdf": "Download PDF",
     "printVersion": "Print version",
     "actions": "CV actions",

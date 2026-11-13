@@ -64,7 +64,7 @@ test.describe('SEO meta tags', () => {
   test('English page has correct meta', async ({ page }) => {
     await page.goto('/en')
 
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Fullstack Developer/)
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /AI Product Engineer \/ Fullstack Engineer/)
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /Kosarev/)
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', /kosarev\.space\/en/)
   })
@@ -78,6 +78,8 @@ test.describe('SEO meta tags', () => {
 
     expect(data['@type']).toBe('Person')
     expect(data.name).toBe('Nick Kosarev')
+    expect(data.jobTitle).toBe('AI Product Engineer / Fullstack Engineer')
+    expect(data.knowsAbout).toEqual(expect.arrayContaining(['AI agents', 'Model Context Protocol', 'LLM integration']))
     expect(data.url).toBe('https://kosarev.space')
     expect(data.sameAs).toContain('https://github.com/hmbanan666')
   })
