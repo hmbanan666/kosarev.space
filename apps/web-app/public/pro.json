@@ -10,11 +10,13 @@
   "location": "Калининград, Россия",
   "remote": true,
   "specialization": [
+    "ai",
     "fullstack",
     "frontend",
     "devops"
   ],
   "skills": [
+    "AI agents",
     "TypeScript",
     "Vue",
     "Nuxt",
@@ -93,6 +95,18 @@
     "resume": "https://kosarev.space/cv.pdf"
   },
   "cases": [
+    {
+      "title": "K39",
+      "url": "https://k39.online",
+      "image": "/projects/k39.png",
+      "description": "Помогает выбрать место и спланировать поездку: карта, маршруты и страницы достопримечательностей."
+    },
+    {
+      "title": "Woodlands",
+      "url": "https://t.me/WoodlandsGameBot",
+      "image": "/projects/woodlands.png",
+      "description": "Косынка с общим ежедневным раскладом, сохранением партии и недельной лигой."
+    },
     {
       "title": "Миграция платформы на React и NestJS",
       "role": "Fullstack-разработчик",
