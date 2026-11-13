@@ -270,11 +270,7 @@ const canonicalUrl = computed(() => {
   return path.startsWith('/') ? `${base}${path}` : `${base}/${path}`
 })
 
-const ogImage = computed(() => {
-  return data.value?.image
-    ? `https://kosarev.space${data.value.image}`
-    : 'https://kosarev.space/og-image.png'
-})
+const ogImage = computed(() => `https://kosarev.space/og/${locale.value === 'en' ? 'en' : 'ru'}/cases/${route.params.key}.png`)
 
 const caseDescription = computed(() => closedYear.value
   ? `${t('cases.archiveNote', { year: closedYear.value })} ${data.value?.description ?? ''}`
@@ -295,6 +291,7 @@ useSeoMeta({
 useHead({
   link: [
     { rel: 'canonical', href: canonicalUrl },
+    ...writingFeedLinks,
   ],
   script: [
     {

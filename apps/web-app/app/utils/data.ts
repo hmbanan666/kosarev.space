@@ -26,16 +26,30 @@ export interface Contact {
 }
 
 export interface ActiveProduct {
-  key: 'k39' | 'woodlands'
+  key: 'context' | 'k39' | 'woodlands'
   title: string
-  image: string
-  width: number
-  height: number
-  link: string
+  image?: string
+  width?: number
+  height?: number
+  link?: string
   source?: string
+  page?: string
+}
+
+export interface PausedProject {
+  key: 'dostigus'
+  title: string
+  source: string
+  page: string
 }
 
 export const activeProducts: ActiveProduct[] = [
+  {
+    key: 'context',
+    title: 'Context',
+    source: 'https://github.com/hmbanan666/context',
+    page: '/projects/context',
+  },
   {
     key: 'k39',
     title: 'K39',
@@ -54,6 +68,30 @@ export const activeProducts: ActiveProduct[] = [
     link: 'https://t.me/WoodlandsGameBot',
   },
 ]
+
+export const pausedProjects: PausedProject[] = [
+  {
+    key: 'dostigus',
+    title: 'Dostigus',
+    source: 'https://github.com/dostigus/dostigus',
+    page: '/projects/dostigus',
+  },
+]
+
+export const portfolioPages = [
+  {
+    key: 'context',
+    title: 'Context',
+    status: 'active',
+    source: 'https://github.com/hmbanan666/context',
+  },
+  {
+    key: 'dostigus',
+    title: 'Dostigus',
+    status: 'paused',
+    source: 'https://github.com/dostigus/dostigus',
+  },
+] as const
 
 export const projects: Project[] = [
   {

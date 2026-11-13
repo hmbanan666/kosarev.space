@@ -17,6 +17,12 @@
   ],
   "skills": [
     "AI agents",
+    "LLM integration",
+    "MCP",
+    "n8n",
+    "OpenRouter",
+    "Codex",
+    "Cursor cloud agents",
     "TypeScript",
     "Vue",
     "Nuxt",
@@ -24,18 +30,12 @@
     "Node.js",
     "PostgreSQL",
     "Drizzle ORM",
-    "Redis",
-    "BullMQ",
     "Docker",
+    "Dokploy",
     "CI/CD",
-    "REST API",
-    "WebSocket",
     "Telegram / grammY",
-    "MCP",
     "React",
-    "NestJS",
-    "Kubernetes",
-    "RabbitMQ"
+    "NestJS"
   ],
   "employment": [
     "full-time",

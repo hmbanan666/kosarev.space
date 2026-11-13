@@ -21,6 +21,7 @@ if (error.value) {
   throw createError({ statusCode: 503, statusMessage: 'Publications unavailable' })
 }
 const canonical = computed(() => `https://kosarev.space${localePath('/writing')}`)
+const ogImage = computed(() => `https://kosarev.space/og/${locale.value === 'en' ? 'en' : 'ru'}/writing.png`)
 
 useSeoMeta({
   title: () => t('writing.title'),
@@ -29,7 +30,11 @@ useSeoMeta({
   ogDescription: () => t('writing.description'),
   ogType: 'website',
   ogUrl: canonical,
-  ogImage: 'https://kosarev.space/og-image.png',
+  ogImage,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  twitterCard: 'summary_large_image',
+  twitterImage: ogImage,
 })
 useHead(() => ({
   htmlAttrs: { lang: locale.value },
@@ -38,6 +43,7 @@ useHead(() => ({
     { rel: 'alternate', hreflang: 'ru', href: 'https://kosarev.space/writing' },
     { rel: 'alternate', hreflang: 'en', href: 'https://kosarev.space/en/writing' },
     { rel: 'alternate', hreflang: 'x-default', href: 'https://kosarev.space/writing' },
+    ...writingFeedLinks,
   ],
 }))
 </script>

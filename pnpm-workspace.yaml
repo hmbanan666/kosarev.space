@@ -16,6 +16,7 @@ packages:
 
 # Native esbuild binaries and Vue version selection used by transitive tooling.
 allowBuilds:
+  '@resvg/resvg-js': true
   esbuild: true
   vue-demi: true
 
@@ -47,6 +48,7 @@ catalogs:
     '@nuxtjs/robots': ^7.0.2
     '@nuxtjs/sitemap': ^9.1.0
     '@paralleldrive/cuid2': ^3.3.0
+    '@resvg/resvg-js': ^2.6.2
     '@vueuse/core': ^15.0.0
     '@vueuse/nuxt': ^15.0.0
     drizzle-orm: ^0.45.4

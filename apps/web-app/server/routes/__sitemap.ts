@@ -9,5 +9,15 @@ export default defineEventHandler(async () => {
   })), ...publications.map((publication) => ({
     loc: publicationPath(publication),
     _i18nTransform: true,
-  }))]
+  })), {
+    loc: '/projects/context',
+    _i18nTransform: true,
+  }, {
+    loc: '/projects/dostigus',
+    _i18nTransform: true,
+  }, {
+    loc: '/writing/feed.xml',
+  }, {
+    loc: '/en/writing/feed.xml',
+  }]
 })

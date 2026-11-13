@@ -32,6 +32,7 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const pdfPath = computed(() => locale.value === 'en' ? '/cv-en.pdf' : '/cv.pdf')
 const canonical = computed(() => `https://kosarev.space${localePath('/cv')}`)
+const ogImage = computed(() => `https://kosarev.space/og/${locale.value === 'en' ? 'en' : 'ru'}/cv.png`)
 
 useSeoMeta({
   title: () => t('cv.seoTitle'),
@@ -40,9 +41,14 @@ useSeoMeta({
   ogDescription: () => t('cv.seoDescription'),
   ogUrl: canonical,
   ogType: 'profile',
+  ogImage,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  twitterCard: 'summary_large_image',
+  twitterImage: ogImage,
 })
 useHead({
   htmlAttrs: { lang: locale },
-  link: [{ rel: 'canonical', href: canonical }],
+  link: [{ rel: 'canonical', href: canonical }, ...writingFeedLinks],
 })
 </script>

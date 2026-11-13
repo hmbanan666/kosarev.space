@@ -19,6 +19,7 @@
     "@nuxtjs/i18n": "catalog:integrations",
     "@nuxtjs/robots": "catalog:integrations",
     "@nuxtjs/sitemap": "catalog:integrations",
+    "@resvg/resvg-js": "catalog:integrations",
     "@vueuse/core": "catalog:integrations",
     "@vueuse/nuxt": "catalog:integrations",
     "markdown-it": "catalog:",

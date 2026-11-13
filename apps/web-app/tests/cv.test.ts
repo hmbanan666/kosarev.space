@@ -68,6 +68,12 @@ describe('machine-readable CV parity', () => {
     expect(profile.specialization.length).toBeLessThanOrEqual(5)
     expect(profile.skills).toEqual([
       'AI agents',
+      'LLM integration',
+      'MCP',
+      'n8n',
+      'OpenRouter',
+      'Codex',
+      'Cursor cloud agents',
       'TypeScript',
       'Vue',
       'Nuxt',
@@ -75,18 +81,12 @@ describe('machine-readable CV parity', () => {
       'Node.js',
       'PostgreSQL',
       'Drizzle ORM',
-      'Redis',
-      'BullMQ',
       'Docker',
+      'Dokploy',
       'CI/CD',
-      'REST API',
-      'WebSocket',
       'Telegram / grammY',
-      'MCP',
       'React',
       'NestJS',
-      'Kubernetes',
-      'RabbitMQ',
     ])
     expect(profile.skills.length).toBeLessThanOrEqual(20)
     expect(profile).not.toHaveProperty('experience_years')
