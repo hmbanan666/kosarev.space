@@ -1,5 +1,5 @@
-import type { ActiveProduct, PausedProject, Project } from './data'
-import { activeProducts, closedProjectYears, pausedProjects, projects } from './data'
+import type { ActiveProduct, PausedProject, PortfolioPage, Project } from './data'
+import { activeProducts, closedProjectYears, pausedProjects, portfolioPages, projects } from './data'
 
 type Locale = 'ru' | 'en'
 type Translate = (key: string, params?: Record<string, unknown>) => string
@@ -12,6 +12,7 @@ export interface ProjectEntity {
   'codeRepository'?: string
   'programmingLanguage'?: string
   'license'?: string
+  'sameAs'?: string
   'author': { '@type': 'Person', 'name': string, 'url': string }
 }
 
@@ -27,6 +28,7 @@ function entity(input: {
   codeRepository?: string
   programmingLanguage?: string
   license?: string
+  sameAs?: string
   authorName: string
 }): ProjectEntity {
   return {
@@ -37,6 +39,7 @@ function entity(input: {
     ...(input.codeRepository ? { codeRepository: input.codeRepository } : {}),
     ...(input.programmingLanguage ? { programmingLanguage: input.programmingLanguage } : {}),
     ...(input.license ? { license: input.license } : {}),
+    ...(input.sameAs ? { sameAs: input.sameAs } : {}),
     'author': { '@type': 'Person', 'name': input.authorName, 'url': 'https://kosarev.space' },
   }
 }
@@ -75,11 +78,12 @@ export function portfolioItemList(locale: Locale, t: Translate) {
 }
 
 function activeEntity(locale: Locale, t: Translate, product: ActiveProduct, authorName: string): ProjectEntity {
-  const page = product.page ? localeUrl(locale, product.page) : product.link!
+  const pageUrl = product.page ? localeUrl(locale, product.page) : undefined
   return entity({
     name: product.title,
     description: descriptionFor(t, product.key, false),
-    url: product.key === 'context' ? page : product.link!,
+    url: pageUrl ?? product.link!,
+    sameAs: pageUrl && product.link ? product.link : undefined,
     codeRepository: product.source,
     programmingLanguage: product.key === 'context' ? 'TypeScript' : undefined,
     license: product.key === 'context' ? 'MIT' : undefined,
@@ -111,9 +115,10 @@ function archiveEntity(locale: Locale, t: Translate, project: Project, authorNam
   })
 }
 
-export function projectPageEntity(locale: Locale, key: 'context' | 'dostigus', t: Translate): ProjectEntity {
+export function projectPageEntity(locale: Locale, key: PortfolioPage['key'], t: Translate): ProjectEntity {
+  const page = portfolioPages.find((item) => item.key === key)
   const list = portfolioItemList(locale, t)
-  const match = list.itemListElement.find((entry) => entry.item.name === (key === 'context' ? 'Context' : 'Dostigus'))
+  const match = list.itemListElement.find((entry) => entry.item.name === page?.title)
   if (!match) {
     throw new Error(`Missing structured data for ${key}`)
   }

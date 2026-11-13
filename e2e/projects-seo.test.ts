@@ -1,4 +1,8 @@
+import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
+
+const en = JSON.parse(readFileSync(new URL('../apps/web-app/i18n/locales/en.json', import.meta.url), 'utf8'))
+const ru = JSON.parse(readFileSync(new URL('../apps/web-app/i18n/locales/ru.json', import.meta.url), 'utf8'))
 
 test('writing feeds are valid RSS in both locales and stay out of draft content', async ({ request }) => {
   for (const [path, title, link] of [
@@ -41,6 +45,7 @@ for (const locale of ['ru', 'en'] as const) {
     await expect(page.locator('article')).toContainText(locale === 'en'
       ? 'On 60 synthetic notes, 10 of 12 questions got complete answers.'
       : '10 из 12 вопросов получили полные ответы')
+    await expect(page.locator('[data-project-sections]')).toHaveCount(0)
     await expect(page.locator('a[href="https://github.com/hmbanan666/context"]')).toHaveAttribute('rel', 'noopener noreferrer')
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://kosarev.space${prefix}/projects/context`)
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `https://kosarev.space/og/${locale}/projects/context.png`)
@@ -53,6 +58,7 @@ for (const locale of ['ru', 'en'] as const) {
     await page.goto(`${prefix}/projects/dostigus`)
     await expect(page.locator('h1')).toHaveText('Dostigus')
     await expect(page.locator('[data-project-status="paused"]')).toHaveText(locale === 'en' ? 'Paused' : 'На паузе')
+    await expect(page.locator('[data-project-sections]')).toHaveCount(0)
     await expect(page.locator('a[href="https://github.com/dostigus/dostigus"]')).toBeVisible()
     await expect(page.locator('a[href="https://dostigus.ru"]')).toHaveCount(0)
     const pausedData = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!)
@@ -66,7 +72,7 @@ for (const locale of ['ru', 'en'] as const) {
 test('unknown project and generated images respond correctly', async ({ request }) => {
   expect((await request.get('/projects/missing')).status()).toBe(404)
   expect((await request.get('/og/en/projects/missing.png')).status()).toBe(404)
-  for (const path of ['/og/en/home.png', '/og/ru/projects/context.png', '/og/en/writing/k39-draft-permissions.png']) {
+  for (const path of ['/og/en/home.png', '/og/ru/projects/context.png', '/og/ru/projects/k39.png', '/og/en/projects/k39.png', '/og/en/writing/k39-draft-permissions.png']) {
     const response = await request.get(path)
     expect(response.status(), path).toBe(200)
     expect(response.headers()['content-type']).toContain('image/png')
@@ -82,11 +88,17 @@ test('homepage structured data keeps the person first and describes projects', a
   expect(list['@type']).toBe('ItemList')
   expect(list.itemListElement[0].item.name).toBe('Context')
   expect(list.itemListElement.find((entry: { item: { name: string } }) => entry.item.name === 'Woodlands').item.codeRepository).toBeUndefined()
+  const k39 = list.itemListElement.find((entry: { item: { name: string } }) => entry.item.name === 'K39').item
+  expect(k39.url).toBe('https://kosarev.space/en/projects/k39')
+  expect(k39.sameAs).toBe('https://k39.online')
+  expect(k39.description).toBe(en.projects.k39.description)
 })
 
 test('sitemap lists project pages and writing feeds', async ({ request }) => {
   const source = await (await request.get('/__sitemap')).text()
   expect(source).toContain('/projects/context')
+  expect(source).toContain('/projects/k39')
+  expect(source).not.toContain('section-fixture')
   expect(source).toContain('/writing/feed.xml')
   const index = await (await request.get('/sitemap_index.xml')).text()
   const locs = [...index.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]!)
@@ -96,7 +108,82 @@ test('sitemap lists project pages and writing feeds', async ({ request }) => {
     combined += await (await request.get(new URL(loc!).pathname)).text()
   }
   expect(combined).toContain('/projects/context')
+  expect(combined).toContain('/projects/k39')
+  expect(combined).toContain('/en/projects/k39')
   expect(combined).toContain('/en/projects/dostigus')
+  expect(combined).not.toContain('/projects/section-fixture')
   expect(combined).toContain('/writing/feed.xml')
   expect(combined).toContain('/en/writing/feed.xml')
+})
+
+for (const locale of ['ru', 'en'] as const) {
+  const prefix = locale === 'en' ? '/en' : ''
+  const messages = locale === 'en' ? en : ru
+
+  test(`k39 project page keeps the short description and public link (${locale})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto(`${prefix}/projects/k39`)
+    await expect(page.locator('h1')).toHaveText('K39')
+    await expect(page.locator('[data-project-status="active"]')).toHaveText(messages.projects.statusActive)
+    await expect(page.locator('.project-kind')).toHaveText(messages.projects.k39.kind)
+    await expect(page.locator('.project-deck')).toHaveText(messages.projects.k39.description)
+    await expect(page.locator('.project-work')).toHaveText(messages.projects.k39.work)
+    await expect(page.getByRole('link', { name: messages.projects.k39.visit })).toHaveAttribute('href', 'https://k39.online')
+    await expect(page.locator('a[href="https://github.com/hmbanan666/k39"]')).toHaveAttribute('rel', 'noopener noreferrer')
+    await expect(page.locator('[data-project-sections]')).toHaveCount(0)
+    for (const heading of Object.values(messages.projects.sections)) {
+      await expect(page.getByRole('heading', { name: heading, exact: true })).toHaveCount(0)
+    }
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://kosarev.space${prefix}/projects/k39`)
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `https://kosarev.space/og/${locale}/projects/k39.png`)
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', messages.projects.k39.description)
+    const data = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!)
+    expect(data['@type']).toBe('SoftwareSourceCode')
+    expect(data.name).toBe('K39')
+    expect(data.url).toBe(`https://kosarev.space${prefix}/projects/k39`)
+    expect(data.sameAs).toBe('https://k39.online')
+    expect(data.codeRepository).toBe('https://github.com/hmbanan666/k39')
+    expect(data.description).toBe(messages.projects.k39.description)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await expect(page.locator('h1')).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await page.getByRole('link', { name: locale === 'en' ? 'Русский' : 'English', exact: true }).click()
+    await expect(page).toHaveURL(locale === 'en' ? /:\/\/[^/]+\/projects\/k39$/ : /\/en\/projects\/k39$/)
+    await expect(page.locator('.project-deck')).toHaveText(locale === 'en' ? ru.projects.k39.description : en.projects.k39.description)
+  })
+
+  test(`section fixture shows every long-form block (${locale})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto(`${prefix}/projects/section-fixture`)
+    const article = page.locator('[data-project-fixture]')
+    await expect(article.locator('h1')).toHaveText(locale === 'en' ? 'Sample project' : 'Образец проекта')
+    await expect(article.locator('[data-project-sections]')).toBeVisible()
+    for (const heading of Object.values(messages.projects.sections)) {
+      await expect(article.getByRole('heading', { name: heading, exact: true })).toBeVisible()
+    }
+    await expect(article).toContainText(locale === 'en' ? 'One reason per decision' : 'Одна причина на решение')
+    await expect(article).toContainText(locale === 'en' ? 'Sample markup' : 'Образец разметки')
+    await expect(article.locator('a[href="https://example.com/fixture"]')).toHaveCount(2)
+    await expect(article).not.toContainText('K39')
+    await expect(article).not.toContainText('Context')
+    await expect(article).not.toContainText('Dostigus')
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await expect(article.locator('#project-decisions')).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  })
+}
+
+test('k39 project page is readable without javascript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  await page.goto('/projects/k39')
+  await expect(page.locator('h1')).toHaveText('K39')
+  await expect(page.locator('a[href="https://k39.online"]')).toHaveAttribute('rel', 'noopener noreferrer')
+  await expect(page.locator('[data-project-sections]')).toHaveCount(0)
+  await context.close()
 })

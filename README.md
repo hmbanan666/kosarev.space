@@ -6,11 +6,10 @@ Russian is the default locale; English pages use the `/en` prefix.
 The application uses a dark-only black and amber interface with an original
 color portrait. It includes a portfolio, database-backed case studies,
 a CV with printable pages and downloadable PDFs, current Context, K39 and
-Woodlands product entries, a paused Dostigus entry and a historical project
-archive, a unified bilingual Writing feed,
-direct contact links,
-the native live-cursor module and bottom profile pill on desktop, and optional
-Yandex Metrika tracking. The
+Woodlands product entries, a paused Dostigus entry, project pages for Context,
+K39 and Dostigus, a historical project archive, a unified bilingual Writing
+feed, direct contact links, the native live-cursor module and bottom profile
+pill on desktop, and optional Yandex Metrika tracking. The
 [portfolio brief](docs/brand.md) describes the audiences, implemented design
 direction and boundaries for future work.
 

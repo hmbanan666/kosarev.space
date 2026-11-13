@@ -37,6 +37,14 @@
     "statusActive": "Active",
     "statusPaused": "Paused",
     "pageLink": "Read the project",
+    "sections": {
+      "problem": "Problem",
+      "built": "What was built",
+      "decisions": "Key decisions",
+      "stack": "Stack",
+      "statusNext": "Status and next",
+      "links": "Links"
+    },
     "k39": {
       "kind": "A travel guide to Kaliningrad Oblast",
       "description": "Helps visitors choose places and plan a trip through a map, routes and destination pages.",
