@@ -33,7 +33,7 @@ for (const locale of ['ru', 'en'] as const) {
       })).toBe(true)
       await page.locator('.writing-end').getByRole('link', { name: locale === 'en' ? 'Back to projects' : 'К проектам' }).click()
       await expect(page.locator('#projects')).toBeInViewport()
-      await expect(page.locator('[data-active-product]')).toHaveCount(2)
+      await expect(page.locator('[data-active-product]')).toHaveCount(3)
     })
   }
 

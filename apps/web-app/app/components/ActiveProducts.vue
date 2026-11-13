@@ -14,6 +14,7 @@
         <figure class="active-figure">
           <div class="active-image-wrap">
             <img
+              v-if="product.image"
               :src="product.image"
               :alt="t(`projects.${product.key}.imageAlt`)"
               :width="product.width"
@@ -21,6 +22,9 @@
               loading="lazy"
               class="active-image"
             >
+            <p v-else class="active-text-mark">
+              {{ product.title }}
+            </p>
           </div>
           <figcaption class="active-caption">
             {{ t(`projects.${product.key}.caption`) }}
@@ -51,7 +55,11 @@
           {{ t(`projects.${product.key}.work`) }}
         </p>
         <div class="active-links">
+          <NuxtLink v-if="product.page" :to="localePath(product.page)">
+            {{ t('projects.pageLink') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+          </NuxtLink>
           <a
+            v-if="product.link"
             :href="product.link"
             target="_blank"
             rel="noopener noreferrer"
@@ -75,6 +83,7 @@
 
 <script setup lang="ts">
 const { t } = useI18n()
+const localePath = useLocalePath()
 </script>
 
 <style scoped>
@@ -84,6 +93,7 @@ const { t } = useI18n()
 .active-figure { margin: 0 0 1.25rem; }
 .active-image-wrap { height: 19rem; padding: 1rem; background: #242019; border: 1px solid #51432C; border-radius: .5rem; }
 .active-image { width: 100%; height: 100%; object-fit: contain; }
+.active-text-mark { display: flex; align-items: center; justify-content: center; height: 100%; margin: 0; font: 500 2.4rem/1.15 var(--font-serif); text-align: center; }
 .active-caption { font-size: .7rem; line-height: 1.5; color: var(--ui-text-muted); margin-top: .5rem; }
 .active-caption a { text-decoration: underline; }
 .active-title { margin: 0; font: 600 1.3rem/1.4 var(--font-sans); }

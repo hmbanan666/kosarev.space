@@ -12,6 +12,7 @@
         <p>{{ t('projects.description') }}</p>
       </div>
       <ActiveProducts />
+      <PausedProjects />
       <div class="section-intro archive-intro">
         <h3>{{ t('projects.archiveTitle') }}</h3>
         <p>{{ t('site.archiveIntro') }}</p>

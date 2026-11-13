@@ -19,7 +19,7 @@ if (error.value || !publication.value) {
 }
 const text = computed(() => publication.value!.locales[language.value])
 const canonical = computed(() => `https://kosarev.space${localePath(publicationPath(publication.value!))}`)
-const image = 'https://kosarev.space/og-image.png'
+const image = computed(() => `https://kosarev.space/og/${language.value}/writing/${publication.value!.slug}.png`)
 
 useSeoMeta({
   title: () => text.value.title,
@@ -29,6 +29,8 @@ useSeoMeta({
   ogType: 'article',
   ogUrl: canonical,
   ogImage: image,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
   twitterCard: 'summary_large_image',
   twitterImage: image,
 })
@@ -39,6 +41,7 @@ useHead(() => ({
     { rel: 'alternate', hreflang: 'ru', href: `https://kosarev.space${publicationPath(publication.value!)}` },
     { rel: 'alternate', hreflang: 'en', href: `https://kosarev.space/en${publicationPath(publication.value!)}` },
     { rel: 'alternate', hreflang: 'x-default', href: `https://kosarev.space${publicationPath(publication.value!)}` },
+    ...writingFeedLinks,
   ],
   script: [{
     type: 'application/ld+json',
@@ -50,7 +53,7 @@ useHead(() => ({
       'url': canonical.value,
       'inLanguage': language.value,
       'datePublished': publication.value!.publishedAt,
-      'image': image,
+      'image': image.value,
       'author': { '@type': 'Person', 'name': t('hero.name'), 'url': 'https://kosarev.space' },
       'mentions': publication.value!.relatedWork.map((work) => ({
         '@type': 'CreativeWork',

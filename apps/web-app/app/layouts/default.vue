@@ -7,3 +7,9 @@
     <SiteFooter />
   </div>
 </template>
+
+<script setup lang="ts">
+useHead({
+  link: writingFeedLinks,
+})
+</script>

@@ -20,6 +20,10 @@ is no public write endpoint, upload form, account system or CMS.
   show published records newest first, with slug order breaking same-date ties.
   [`/writing/[slug]`](../apps/web-app/app/pages/writing/[slug].vue) renders the
   selected revision in either language. Unknown and draft-only slugs return 404.
+- RSS feeds for the same published records are `/writing/feed.xml` (Russian)
+  and `/en/writing/feed.xml` (English). Pages in the default layout advertise
+  both with `rel="alternate"` links. Drafts are omitted. A content publish is
+  visible on the next feed request without a new build.
 - The [Markdown renderer](../apps/web-app/server/utils/publication-markdown.ts)
   disables raw HTML and uses Markdown-it's unsafe-link checks. Bodies are rendered
   on the server, never compiled as Vue. Code blocks, lists and source links work

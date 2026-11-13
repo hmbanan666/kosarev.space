@@ -58,7 +58,7 @@ test.describe('SEO meta tags', () => {
     await page.goto('/en')
 
     const ogImage = page.locator('meta[property="og:image"]')
-    await expect(ogImage).toHaveAttribute('content', /og-image\.png/)
+    await expect(ogImage).toHaveAttribute('content', /\/og\/en\/home\.png/)
   })
 
   test('English page has correct meta', async ({ page }) => {
@@ -72,7 +72,7 @@ test.describe('SEO meta tags', () => {
   test('has JSON-LD structured data', async ({ page }) => {
     await page.goto('/en')
 
-    const jsonLd = page.locator('script[type="application/ld+json"]')
+    const jsonLd = page.locator('script[type="application/ld+json"]').first()
     const content = await jsonLd.textContent()
     const data = JSON.parse(content!)
 

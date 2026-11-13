@@ -18,6 +18,7 @@ packages:
 allowBuilds:
   esbuild: true
   vue-demi: true
+  '@resvg/resvg-js': true
 
 catalog:
   markdown-it: 15.0.3
@@ -51,6 +52,7 @@ catalogs:
     '@vueuse/nuxt': ^15.0.0
     drizzle-orm: ^0.45.4
     nuxt-live-cursors: ^0.3.2
+    '@resvg/resvg-js': ^2.6.2
     pg: ^8.23.1
   test:
     '@playwright/test': ^1.64.1

@@ -22,10 +22,12 @@ the earlier direction that explicitly deprioritized employment.
   and technical context available through native disclosure controls.
 - Case pages with challenge/result summaries, expandable implementation details,
   context-preserving navigation and direct contact through the shared footer.
-- A project section with K39 and Woodlands above the retained historical list.
-  Current products have public destination links, bilingual implementation
-  summaries and actual interface captures. Woodlands uses a labelled demo
-  capture; its private repository is not linked.
+- A project section with Context, K39 and Woodlands in active development.
+  Dostigus is listed separately as paused experience, above the retained
+  historical list. Context and Dostigus link to their public repositories and
+  do not use interface captures. K39 and Woodlands keep public destination
+  links, bilingual implementation summaries and actual interface captures.
+  Woodlands uses a labelled demo capture; its private repository is not linked.
 - A project archive retaining real visuals and source links. Startodel, Meloteka
   and ChatGame closed in 2026; individual closure months are not established.
   NextOrders has not been declared closed.

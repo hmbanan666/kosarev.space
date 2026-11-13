@@ -5,8 +5,9 @@ Russian is the default locale; English pages use the `/en` prefix.
 
 The application uses a dark-only black and amber interface with an original
 color portrait. It includes a portfolio, database-backed case studies,
-a CV with printable pages and downloadable PDFs, current K39/Woodlands product
-entries and a historical project archive, a unified bilingual Writing feed,
+a CV with printable pages and downloadable PDFs, current Context, K39 and
+Woodlands product entries, a paused Dostigus entry and a historical project
+archive, a unified bilingual Writing feed,
 direct contact links,
 the native live-cursor module and bottom profile pill on desktop, and optional
 Yandex Metrika tracking. The
@@ -155,8 +156,10 @@ preview, check the migration-directory contract in the [deployment guide](docs/d
 
 ## Routes and repository layout
 
-Pages are `/`, `/cases/[key]`, `/writing`, `/writing/[slug]`, `/cv` and `/cv/print`, with English equivalents
-under `/en`. Download routes are `/cv.pdf` and `/cv-en.pdf`.
+Pages are `/`, `/projects/[key]`, `/cases/[key]`, `/writing`, `/writing/[slug]`, `/cv` and `/cv/print`, with English equivalents
+under `/en`. Writing feeds are `/writing/feed.xml` and `/en/writing/feed.xml`.
+Download routes are `/cv.pdf` and `/cv-en.pdf`. Generated Open Graph images
+are served from `/og/{ru|en}/...png`.
 
 Writing reads published revisions from the existing PostgreSQL database. Notes,
 digests and articles use one model and shared reading page. RU/EN Markdown,
