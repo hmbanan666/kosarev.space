@@ -51,7 +51,52 @@
       "work": "I built the web app and its editorial workflow. Pages are server-rendered from PostgreSQL; AI agents have a separate draft-only access level without publishing rights.",
       "visit": "Explore K39 (in Russian)",
       "imageAlt": "K39 map of Kaliningrad Oblast with marked destinations",
-      "caption": "K39 map"
+      "caption": "K39 map",
+      "sections": {
+        "problem": "A visitor needs to know where they can get in, when it is open, what it costs and how to get there. I want to gather this on one site where every place has its own page with sources, and to get visitors from search.",
+        "built": "k39.online has place pages (forts, castles, beaches, resorts, food), a map, routes, collections and quests, a venue catalog with hours and prices, and site search. Editors work in an admin area; venue owners edit their listing in a cabinet. The first version in 2025 was a social product with follows and a feed. On 10 October 2026 I reset the repository into a content site, and it has had 263 commits since. Work is tracked in GitHub Issues, Cursor and Codex agents write the code, and decisions are recorded in ADRs.",
+        "decisions": [
+          {
+            "title": "All content in Postgres, admin inside the app",
+            "why": "Place copy used to live in markdown and sync into the database, and the copies drifted. Now there is one database, and published pages are server-rendered, which SEO needs."
+          },
+          {
+            "title": "Agents propose, a person publishes",
+            "why": "Agents write through the site's own MCP server with a separate token. Their edits to a live page go into a review queue, and the page stays unchanged until an editor publishes. Details are in the article on draft permissions."
+          },
+          {
+            "title": "Facts apart from prose",
+            "why": "Opening hours, prices and phone numbers are stored as separate facts with a source and check date. One fact can be checked without rereading the whole page, and \"open now\" comes from schedules, not from text."
+          },
+          {
+            "title": "Cookieless first-party analytics",
+            "why": "The script is under 2 KB, IPs are not stored, and visitors are identified by a hash that changes daily. The reasons: Russian personal data law (152-FZ) and keeping traffic away from outside services."
+          }
+        ],
+        "stack": [
+          "Nuxt 4",
+          "Vue",
+          "Reka UI",
+          "PostgreSQL",
+          "Drizzle ORM",
+          "MapLibre GL and PMTiles",
+          "sharp",
+          "Zod",
+          "{'@'}nuxtjs/mcp-toolkit",
+          "Docker on Dokploy"
+        ],
+        "statusNext": "The site is live. Partner offers already show on pages, but there are no codes, bookings or payments. Next: move pages to read from the fact layer and test whether the site can earn money.",
+        "links": [
+          {
+            "label": "Site",
+            "href": "https://k39.online"
+          },
+          {
+            "label": "Source",
+            "href": "https://github.com/hmbanan666/k39"
+          }
+        ]
+      }
     },
     "woodlands": {
       "kind": "Solitaire in Telegram",
@@ -65,13 +110,91 @@
       "kind": "Personal memory for AI agents",
       "description": "A self-hosted memory service for AI agents, reached over MCP.",
       "work": "I run the service myself. Agents call it over MCP with search, remember, read and timeline. On 60 synthetic notes, 10 of 12 questions got complete answers.",
-      "caption": "Self-hosted MCP memory service."
+      "caption": "Self-hosted MCP memory service.",
+      "sections": {
+        "problem": "I work with several AI agents: ChatGPT, Codex and my own bots. Each keeps its own memory, and that memory is lost when I switch client or provider. I kept re-explaining project decisions. I needed one memory that belongs to me, runs on my server and is open to any agent.",
+        "built": "Context is an MIT-licensed service for a single owner. One container, one SQLite database, standard MCP. Agents see four tools: search, remember, read and timeline. A note saved by one agent can be found by another. Archives can be imported from GitHub and Codex sessions. Every night the service verifies a database snapshot, collapses near-identical records and sorts the inbox with Codex.",
+        "decisions": [
+          {
+            "title": "Keep originals and build understanding separately",
+            "why": "Each source is stored unchanged, with date and checksum, after secrets are redacted. In a synthetic experiment on 60 notes, 10 of 12 questions got complete answers, and background knowledge extraction did not improve them. There was no semantic search yet. So agents answer from originals, and summaries stay secondary."
+          },
+          {
+            "title": "Replace facts only explicitly",
+            "why": "At first the nightly tidy decided by itself which note was outdated. I removed automatic replacement. Now an agent passes supersedes itself when it knows a fact has changed."
+          },
+          {
+            "title": "Search without paid services",
+            "why": "SQLite full-text search with Russian and English stemming, plus a small embedding model on the same server. If the model is unavailable, plain search still works."
+          },
+          {
+            "title": "Built-in sign-in instead of a separate service",
+            "why": "Keycloak with its own database handled auth at first. I replaced it with built-in OAuth 2.1, password and passkey. Headless agents get tokens limited to specific areas."
+          }
+        ],
+        "stack": [
+          "TypeScript",
+          "Node.js",
+          "SQLite",
+          "MCP SDK",
+          "OAuth 2.1 and WebAuthn",
+          "Transformers.js with multilingual-e5-small",
+          "Docker",
+          "Model steps run through an OpenAI-compatible API or Codex."
+        ],
+        "statusNext": "Runs on my server as shared memory for my agents. Next: an owner web UI for search, inbox and deletion, ChatGPT and Telegram imports, hard delete.",
+        "links": [
+          {
+            "label": "Source",
+            "href": "https://github.com/hmbanan666/context"
+          }
+        ]
+      }
     },
     "dostigus": {
       "kind": "A platform for your own AI bots",
       "description": "A self-hosted platform for your own AI bots.",
       "work": "I built it to run my own bots and host it myself. Development is paused.",
-      "caption": "Paused."
+      "caption": "Paused.",
+      "sections": {
+        "problem": "Ready-made agents run on someone else's server, or on a laptop that has to stay awake. I wanted a different shape: my server, my database and my model keys. Bots run on schedules and talk with people in one chat, for a family or a small team.",
+        "built": "A Nuxt host that starts with one docker compose command. It has a chat for people and bots, and bots have skills, schedules and files. The owner adds keys: OpenRouter, OpenAI or any compatible API. A bot can be exported as a Pack, a portable recipe, and applied on another host from a file, a zip URL or a git repository. The first finished Pack was Mailer, a mail bot over IMAP and SMTP. Between 21 September and 3 October 2026 the project got 48 ADRs and 159 commits, 147 of them co-authored with Cursor Agent. I set the tasks, made the decisions in ADRs and reviewed the results.",
+        "decisions": [
+          {
+            "title": "MCP as the only data contract",
+            "why": "Bots and the UI reach the database through the same MCP tools. I rejected a separate REST API for the UI: two contracts drift apart over time."
+          },
+          {
+            "title": "Model tiers instead of a model list",
+            "why": "The code knows only cheap, strong, code and toy, and the owner binds them to their providers. Switching provider changes no code, and after a failed call the host can escalate to a higher tier."
+          },
+          {
+            "title": "Declarative modules before a sandbox",
+            "why": "I postponed running arbitrary user code: sandbox security would have taken all the time before the core worked."
+          },
+          {
+            "title": "A turn journal without content",
+            "why": "Each bot turn records model, tokens and call count, but not message text or prompts. Failures can be debugged without screenshots and without reading conversations."
+          }
+        ],
+        "stack": [
+          "Nuxt 4",
+          "Vue",
+          "Reka UI",
+          "TypeScript",
+          "SQLite and Drizzle ORM",
+          "{'@'}nuxtjs/mcp-toolkit",
+          "Docker",
+          "image on GHCR"
+        ],
+        "statusNext": "Development is paused; the last commit is from 3 October 2026. The code is open under MIT.",
+        "links": [
+          {
+            "label": "Source",
+            "href": "https://github.com/dostigus/dostigus"
+          }
+        ]
+      }
     }
   },
   "skills": {

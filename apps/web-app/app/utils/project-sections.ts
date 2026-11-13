@@ -23,17 +23,22 @@ export interface ProjectSectionMessages {
   resolve?: (message: unknown) => string
 }
 
+function present(value: string): string | undefined {
+  // vue-i18n compiles "{'@'}" on the client and leaves it literal in tm() strings
+  // during SSR. Always show the character the copy intends.
+  const trimmed = value.replaceAll('{\'@\'}', '@').trim()
+  return trimmed || undefined
+}
+
 function readLeaf(value: unknown, resolve?: (message: unknown) => string): string | undefined {
   if (typeof value === 'string') {
-    const trimmed = value.trim()
-    return trimmed || undefined
+    return present(value)
   }
   if (!value || typeof value !== 'object' || !resolve) {
     return undefined
   }
   try {
-    const trimmed = resolve(value).trim()
-    return trimmed || undefined
+    return present(resolve(value))
   } catch {
     return undefined
   }
@@ -110,10 +115,17 @@ export function readProjectSections(source: unknown, resolve?: (message: unknown
   }
 }
 
+function isSectionRecord(source: unknown): source is Record<string, unknown> {
+  return !!source && typeof source === 'object' && !Array.isArray(source) && Object.keys(source).length > 0
+}
+
 export function projectSectionsFor(key: string, messages: ProjectSectionMessages): ProjectSections | null {
   const path = `projects.${key}.sections`
-  if (!messages.te(path)) {
+  const source = messages.tm(path)
+  // vue-i18n te() is true only for string messages. Object section payloads
+  // still count; a missing key comes back empty.
+  if (!messages.te(path) && !isSectionRecord(source)) {
     return null
   }
-  return readProjectSections(messages.tm(path), messages.resolve)
+  return readProjectSections(source, messages.resolve)
 }
