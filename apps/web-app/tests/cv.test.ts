@@ -62,19 +62,20 @@ describe('machine-readable CV parity', () => {
     })))
     expect(profile.experience[0]?.description).toContain('27.04.2026–27.10.2026 (6 месяцев)')
     expect(profile.title).toBe(ru.cv.subtitle)
-    expect(profile.bio).toContain(ru.cv.summary)
+    expect(profile.bio).toBe(ru.cv.summary)
     expect(profile).not.toHaveProperty('experience_years')
     expect(profile).not.toHaveProperty('salary')
     expect(profile).not.toHaveProperty('relocate')
   })
 
-  it('preserves education, public contacts and C1 using the profile schema vocabulary', () => {
+  it('preserves education, public contacts and the English level', () => {
     expect(profile.education[0]).toEqual({ institution: ru.cv.educationTitle, degree: ru.cv.educationText })
     expect(profile.contacts.email).toBe(cvContactLinks[0]?.href.replace('mailto:', ''))
     expect(cvContactLinks).toContainEqual({ label: 't.me/hmbanan666', href: `https://t.me/${profile.contacts.telegram.slice(1)}` })
     expect(profile.links.github).toBe(cvContactLinks[2]?.href)
     expect(profile.languages).toContainEqual({ language: 'en', level: 'advanced' })
-    expect(profile.bio).toContain('C1')
+    expect(ru.cv.languageText).toContain('C1')
+    expect(en.cv.languageText).toContain('C1')
   })
 
   it('labels closed-project case descriptions with canonical archive years', () => {

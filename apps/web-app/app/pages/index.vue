@@ -51,8 +51,8 @@ useHead({
         '@type': 'Person',
         'name': t('hero.name'),
         'url': 'https://kosarev.space',
-        'jobTitle': 'Fullstack Developer / Tech Lead',
-        'knowsAbout': ['Vue.js', 'Nuxt', 'TypeScript', 'PostgreSQL', 'Node.js'],
+        'jobTitle': 'AI Product Engineer / Fullstack Engineer',
+        'knowsAbout': ['Vue.js', 'Nuxt', 'TypeScript', 'PostgreSQL', 'Node.js', 'AI agents', 'Model Context Protocol', 'LLM integration'],
         'sameAs': [
           'https://github.com/hmbanan666',
           'https://t.me/hmbanan666',
