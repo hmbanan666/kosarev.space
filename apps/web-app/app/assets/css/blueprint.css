@@ -111,3 +111,6 @@
 
 .canvas-target-blocked { border-color: #dc8585; background: #dc858520; }
 .canvas-target-blocked span { background: #dc8585; }
+/* Keep long publication titles inside their desktop cell; full text stays in HTML. */
+.canvas-enabled .canvas-latest .canvas-footnote { margin-top: 0 !important; }
+.canvas-enabled .canvas-latest a { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
