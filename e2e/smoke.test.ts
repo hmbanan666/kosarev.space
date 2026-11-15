@@ -4,6 +4,7 @@ test.describe('homepage', () => {
   test('renders all sections', async ({ page }) => {
     await page.goto('/')
 
+    await page.locator('.home-catalog > summary').click()
     await expect(page.locator('#projects')).toBeVisible()
     await expect(page.locator('#experience')).toBeVisible()
     await expect(page.locator('#contacts')).toBeVisible()
@@ -33,6 +34,7 @@ test.describe('English locale (/en)', () => {
     await page.goto('/en')
 
     await expect(page).toHaveTitle(/Kosarev/)
+    await page.locator('.home-catalog > summary').click()
     await expect(page.locator('#projects')).toBeVisible()
     await expect(page.locator('#experience')).toBeVisible()
   })
@@ -41,7 +43,7 @@ test.describe('English locale (/en)', () => {
     await page.goto('/en')
 
     await expect(page.getByRole('heading', { name: 'Projects', level: 2, exact: true })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Experience' })).toBeVisible()
+    await expect(page.locator('[data-block="cv"] .canvas-eyebrow')).toBeVisible()
   })
 
   test('shows English footer', async ({ page }) => {

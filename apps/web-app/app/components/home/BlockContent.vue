@@ -1,0 +1,168 @@
+<template>
+  <template v-if="id === 'hero'">
+    <div class="canvas-intro">
+      <img
+        src="/photo.jpg"
+        :alt="t('hero.name')"
+        width="112"
+        height="132"
+        fetchpriority="high"
+      >
+      <div>
+        <p class="canvas-eyebrow">
+          {{ t('hero.badge') }}
+        </p>
+        <h1>{{ t('hero.name') }}</h1>
+      </div>
+    </div>
+    <p class="canvas-role">
+      {{ t('cv.subtitle') }}
+    </p>
+    <p class="canvas-description">
+      {{ t('hero.description') }}
+    </p>
+    <div class="canvas-links">
+      <NuxtLink class="site-button" :to="localePath('/cv')">
+        {{ t('site.viewCv') }}
+      </NuxtLink>
+      <a class="site-text-link" href="#skills">{{ t('site.exploreWork') }}</a>
+    </div>
+    <p class="canvas-footnote">
+      {{ t('cv.location') }} · {{ t('cv.since') }}
+    </p>
+  </template>
+  <template v-else-if="product">
+    <p class="canvas-eyebrow">
+      {{ t(id === 'dostigus' ? 'projects.statusPaused' : 'projects.statusActive') }}
+    </p>
+    <h2>
+      <NuxtLink v-if="product.page" :to="localePath(product.page)">
+        {{ product.title }}
+      </NuxtLink><a
+        v-else
+        :href="product.link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >{{ product.title }}</a>
+    </h2>
+    <p class="canvas-description">
+      {{ t(`projects.${id}.kind`) }}
+    </p>
+    <figure v-if="id === 'k39'" class="canvas-map">
+      <img
+        src="/projects/k39.png"
+        :alt="t('projects.k39.imageAlt')"
+        width="1000"
+        height="700"
+      >
+      <figcaption>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://protomaps.com">Protomaps</a></figcaption>
+    </figure>
+    <p v-else-if="id !== 'woodlands'" class="canvas-description">
+      {{ t(`projects.${id}.description`) }}
+    </p>
+    <a
+      v-if="product.source"
+      class="canvas-source"
+      :href="product.source"
+      target="_blank"
+      rel="noopener noreferrer"
+    >{{ t('site.source') }} ↗</a>
+    <a
+      v-else
+      class="canvas-source"
+      :href="product.link"
+      target="_blank"
+      rel="noopener noreferrer"
+    >{{ t(`projects.${id}.visit`) }} ↗</a>
+  </template>
+  <template v-else-if="id === 'writing'">
+    <p class="canvas-eyebrow">
+      {{ t('canvas.reading') }}
+    </p>
+    <h2>
+      <NuxtLink :to="localePath('/writing')">
+        {{ t('writing.title') }} ↗
+      </NuxtLink>
+    </h2>
+    <div v-if="latest" class="canvas-latest">
+      <p class="canvas-footnote">
+        {{ t(`writing.types.${latest.type}`) }} · {{ latest.publishedAt }}
+      </p>
+      <NuxtLink :to="localePath(`/writing/${latest.slug}`)">
+        {{ latest.locales[language].title }}
+      </NuxtLink>
+    </div>
+    <p v-else class="canvas-description">
+      {{ t('writing.description') }}
+    </p>
+    <a class="canvas-source" :href="language === 'en' ? '/en/writing/feed.xml' : '/writing/feed.xml'">RSS ↗</a>
+  </template>
+  <template v-else-if="id === 'cv'">
+    <p class="canvas-eyebrow">
+      {{ t('site.experience') }}
+    </p>
+    <h2 id="experience">
+      <NuxtLink :to="localePath('/cv')">
+        {{ t('nav.cv') }} ↗
+      </NuxtLink>
+    </h2>
+    <a
+      class="canvas-source"
+      :href="language === 'en' ? '/cv-en.pdf' : '/cv.pdf'"
+      download
+    >{{ t('cv.downloadPdf') }}</a>
+  </template>
+  <template v-else-if="id === 'contacts'">
+    <p class="canvas-eyebrow">
+      {{ t('hero.contact') }}
+    </p>
+    <h2 class="canvas-email">
+      <a href="mailto:nick@kosarev.space">nick@kosarev.space ↗</a>
+    </h2>
+    <div class="canvas-links">
+      <a href="https://t.me/hmbanan666">Telegram ↗</a><a href="https://github.com/hmbanan666">GitHub ↗</a>
+    </div>
+  </template>
+  <template v-else-if="id === 'live'">
+    <p class="canvas-eyebrow">
+      Live
+    </p>
+    <h2>
+      <NuxtLink :to="localePath('/cases/kosarev-live-cursors')">
+        {{ t('site.presenceTitle') }} ↗
+      </NuxtLink>
+    </h2>
+    <p class="canvas-footnote">
+      nuxt-live-cursors · WebSocket
+    </p>
+  </template>
+  <template v-else-if="id === 'archive'">
+    <p class="canvas-eyebrow">
+      {{ t('canvas.archive') }}
+    </p>
+    <h2><a href="#projects">{{ t('projects.title') }} ↗</a></h2>
+    <p class="canvas-footnote">
+      {{ projects.map(project => project.title).join(' · ') }}
+    </p>
+    <a class="canvas-source" href="#skills">{{ t('nav.cases') }} ↗</a>
+  </template>
+  <template v-else-if="id === 'now'">
+    <p class="canvas-eyebrow">
+      {{ t('canvas.now') }}
+    </p>
+    <h2>{{ t('projects.activeTitle') }}</h2>
+    <p class="canvas-footnote">
+      {{ activeProducts.map(product => product.title).join(' · ') }}
+    </p>
+  </template>
+</template>
+
+<script setup lang="ts">
+import type { PublicationSummary } from '~~/shared/publications'
+
+const props = defineProps<{ id: string, latest?: PublicationSummary }>()
+const { t, locale } = useI18n()
+const localePath = useLocalePath()
+const language = computed(() => locale.value === 'en' ? 'en' : 'ru')
+const product = computed(() => [...activeProducts, ...pausedProjects].find((product) => product.key === props.id) as { title: string, page?: string, link?: string, source?: string } | undefined)
+</script>

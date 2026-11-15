@@ -16,8 +16,10 @@ the earlier direction that explicitly deprioritized employment.
 
 ## Implemented structure
 
-- A compact introduction with role, location, CV, PDF, work and email links.
-- Recent EXPI responsibility sourced from the same localized facts as the CV.
+- A server-rendered home with role, location, CV, PDF, work and email links.
+  Desktop and tablet enhance the blocks into a bounded 17 by 9 cell canvas.
+  Below 768px and without JavaScript, the same HTML uses a grouped list.
+  The home links to the CV for the full career history.
 - A case finder with shareable URL filters, search, a visible path to all cases,
   and technical context available through native disclosure controls.
 - Case pages with challenge/result summaries, expandable implementation details,
@@ -52,6 +54,9 @@ the earlier direction that explicitly deprioritized employment.
   actions slot. Hide/show changes cursor visibility while keeping the connection
   active; the module retains that visibility choice during the app session.
   There is no custom header switch, pointer renderer or connection counter.
+  The home uses an optional coordinate target through a pinned package patch:
+  peers share canvas coordinates across pan, zoom and locales while retaining
+  the native face renderer. Other pages retain page coordinates.
   Coarse pointers, reduced motion and CV/print keep the component unmounted.
   The bottom UI respects safe areas and reserves space above footer controls.
 
@@ -65,8 +70,8 @@ website. Print pages remain white.
 
 The original color portrait and deliberate typography carry the introduction;
 do not desaturate the portrait or replace it with a decorative diagram. A fine
-amber offset frame gives the portrait depth, while real project screenshots
-use a warm matte presentation. Short action/reading responses support the
+amber corner frame gives the introduction depth, while real project screenshots
+retain their original colors. Short action/reading responses support the
 same visual language without entrance animations across every section. Noto
 Sans serves interface and body text, while Lora distinguishes the name, with
 Cyrillic and Latin coverage. Align content to shared left edges, keep body
@@ -74,11 +79,50 @@ lines below 80 characters and resolve control heights, labels and spacing as
 one system. The case finder enhances native GET controls with accessible
 select menus; native controls remain available without JavaScript.
 
-Avoid decorative responsibility maps, technology tag walls, vanity counters,
-repeated identical cards, motion-dependent content and unnecessary overlays.
-Use visible focus and deliberate responsive layouts, including balanced filter
-actions at intermediate widths. Print CV styling remains separate: two A4
+### Restrained engineering details
+
+Keep surfaces angular, with zero or near-zero radii across controls, images,
+frames and reading pages. The live-cursor faces and native profile pill retain
+their familiar shapes. Noto Sans and Lora remain the primary typography;
+`--font-mono` uses the system monospace stack for short technical labels only.
+Body copy remains proportional and readable.
+
+The shared tokens and components are defined in
+[`blueprint.css`](../apps/web-app/app/assets/css/blueprint.css) and
+[`components/blueprint`](../apps/web-app/app/components/blueprint/).
+The canvas uses a 96px cell and 16px gap. Its blueprint grid is barely visible.
+Frames may carry a part number or gold corner marks, but neither is required
+on every block. Zone labels, dimension lines, crosshairs, rulers, title blocks
+and hatching are available as small reusable marks. Keep them at edges and in
+empty gaps, with one or two details per zone. Decorative marks are hidden from
+assistive technology. Never turn project cards into densely annotated diagrams.
+
+The home uses mixed block sizes and deliberate gaps. Pan by dragging empty
+space, scrolling or focusing the viewport and pressing arrow keys. Native
+scroll bounds prevent getting lost, with a short resistance zone during drag.
+Zoom stays between 80 and 125 percent. The minimap shows the current viewport;
+its click target navigates and its keyboard action returns to the beginning.
+Recenter returns to the introduction. Tab focus reveals off-screen blocks.
+
+Move blocks with the grip or its arrow keys. Positions snap to cells and
+colliding neighbours move to nearby free positions. If no placement is possible,
+the move is rejected. Escape cancels a drag. Versioned localStorage keeps only
+this device's layout; invalid or inaccessible data falls back to defaults.
+Undo retains up to 30 changes in the current session, including reset. Layouts
+are never sent to the server. The common canvas coordinate system describes
+positions, not a shared arrangement of blocks.
+
+The complete case finder and project archive remain in a native disclosure
+below the canvas. Navigation hashes open the disclosure; query filters also
+open it in SSR. Mobile follows semantic zone order and has no canvas controls.
+Inner pages keep their normal reading layout with angular surfaces, readable
+line lengths and visible focus. Print CV styling remains separate: two A4
 pages per language, selectable text and clickable contact/source links.
+
+Avoid technology tag walls, vanity counters, repeated identical cards,
+motion-dependent content and unnecessary overlays. Do not invent live activity
+or metrics. Respect reduced motion; no content depends on animation. The case
+finder keeps native GET controls when JavaScript is unavailable.
 
 ## Accuracy and boundaries
 

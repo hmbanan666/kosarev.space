@@ -7,6 +7,9 @@ export default defineConfig({
   testDir: './e2e',
   globalSetup: './e2e/publication-fixture.mjs',
   timeout: 30000,
+  workers: 2,
+  // Nuxt dev can take more than five seconds to hydrate on a constrained runner.
+  expect: { timeout: 10000 },
   use: {
     baseURL: `http://localhost:${port}`,
   },
