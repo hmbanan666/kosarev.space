@@ -102,7 +102,7 @@ for (const locale of ['en', 'ru']) {
           expect(controls.leftWidth).toBeCloseTo(controls.rightWidth, 1)
           const face = page.locator('[data-live-cursors-bar] img').first()
           await expect(face).toBeVisible()
-          expect((await face.boundingBox())!.width).toBe(24)
+          await expect.poll(async () => (await face.boundingBox())?.width).toBe(24)
           await expect(page.locator('[data-live-cursors-bar]')).toHaveCSS('border-radius', '9999px')
         }
         expect(await page.locator('[data-block]').evaluateAll((blocks) => blocks.filter((block) => block.scrollHeight > block.clientHeight + 2 || block.scrollWidth > block.clientWidth + 2).map((block) => block.getAttribute('data-block')))).toEqual([])
