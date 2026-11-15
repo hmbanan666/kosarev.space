@@ -1,5 +1,8 @@
 <template>
   <template v-if="id === 'hero'">
+    <p class="canvas-eyebrow">
+      {{ t('hero.badge') }}
+    </p>
     <div class="canvas-intro">
       <img
         src="/photo.jpg"
@@ -9,9 +12,6 @@
         fetchpriority="high"
       >
       <div>
-        <p class="canvas-eyebrow">
-          {{ t('hero.badge') }}
-        </p>
         <h1>{{ t('hero.name') }}</h1>
       </div>
     </div>
@@ -21,15 +21,15 @@
     <p class="canvas-description">
       {{ heroIntro }}
     </p>
+    <p class="canvas-footnote">
+      {{ t('cv.location') }} · {{ t('cv.since') }}
+    </p>
     <div class="canvas-links">
       <NuxtLink class="site-button" :to="localePath('/cv')">
         {{ t('site.viewCv') }}
       </NuxtLink>
       <a class="site-text-link" href="#skills">{{ t('site.exploreWork') }}</a>
     </div>
-    <p class="canvas-footnote">
-      {{ t('cv.location') }} · {{ t('cv.since') }}
-    </p>
   </template>
   <template v-else-if="product">
     <p class="canvas-eyebrow">
@@ -49,12 +49,14 @@
       {{ t(`projects.${id}.${id === 'context' || id === 'dostigus' ? 'description' : 'kind'}`) }}
     </p>
     <figure v-if="id === 'k39'" class="canvas-map">
-      <img
-        src="/projects/k39.png"
-        :alt="t('projects.k39.imageAlt')"
-        width="1000"
-        height="700"
-      >
+      <div class="canvas-map-image">
+        <img
+          src="/projects/k39.png"
+          :alt="t('projects.k39.imageAlt')"
+          width="1000"
+          height="700"
+        >
+      </div>
       <figcaption>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · <a href="https://protomaps.com">Protomaps</a></figcaption>
     </figure>
     <a

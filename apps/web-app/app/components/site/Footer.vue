@@ -1,6 +1,12 @@
 <template>
   <footer id="contacts" class="site-footer">
     <div class="site-wrap">
+      <div class="site-footer-heading">
+        <BlueprintMark kind="zone">
+          02 / {{ t('hero.contact') }}
+        </BlueprintMark>
+        <span>kosarev.space</span>
+      </div>
       <div class="contact-layout">
         <div>
           <h2>{{ t('site.contactTitle') }}</h2>
