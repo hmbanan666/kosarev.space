@@ -7,6 +7,7 @@ LABEL org.opencontainers.image.licenses=MIT
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches ./patches
 COPY packages ./packages
 COPY apps/web-app ./apps/web-app
 
