@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ key: 'portfolio', colorMode: 'dark' })
+definePageMeta({ key: 'portfolio', colorMode: 'dark', canvasPresence: true })
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()

@@ -17,7 +17,7 @@ the earlier direction that explicitly deprioritized employment.
 ## Implemented structure
 
 - A server-rendered home with role, location, CV, PDF, work and email links.
-  Desktop and tablet enhance the blocks into a bounded 17 by 8 cell canvas.
+  Desktop and tablet enhance the blocks into a bounded 17 by 9 cell canvas.
   Below 768px and without JavaScript, the same HTML uses a grouped list.
   The home links to the CV for the full career history.
 - A case finder with shareable URL filters, search, a visible path to all cases,
@@ -58,7 +58,8 @@ the earlier direction that explicitly deprioritized employment.
   peers share canvas coordinates across pan, zoom and locales while retaining
   the native face renderer. Other pages retain page coordinates.
   Coarse pointers, reduced motion and CV/print keep the component unmounted.
-  The bottom UI respects safe areas and reserves space above footer controls.
+  The home docks the native pill in the middle of its canvas control bar.
+  Other pages keep the fixed pill, respect safe areas and reserve footer space.
 
 
 ## Visual principles
@@ -97,19 +98,69 @@ and hatching are available as small reusable marks. Keep them at edges and in
 empty gaps, with one or two details per zone. Decorative marks are hidden from
 assistive technology. Never turn project cards into densely annotated diagrams.
 
-The home packs all default cells into one rectangle, with a large introduction,
-a wide Context strip, tall reading/product blocks and compact contact/CV tiles.
-The 16px gutters carry a few part numbers and dimension lines that follow block
-positions. Corner crosshairs and a small title block frame the board. The home
-K39 preview applies a dark gold CSS duotone to the existing capture, keeping its
-map attribution and adding no image bytes. Its project page keeps the original.
-Blocks lift by 2px on hover and ease into snapped positions over 240ms; reduced
-motion disables the lift and transitions. Shared color, cell and gap tokens are
-unchanged. Pan by dragging empty space, scrolling or focusing the viewport and pressing arrow keys. Native
-scroll bounds prevent getting lost, with a short resistance zone during drag.
-Zoom stays between 80 and 125 percent. The minimap shows the current viewport;
-its click target navigates and its keyboard action returns to the beginning.
-Recenter returns to the introduction. Tab focus reveals off-screen blocks.
+### Spacing and canvas geometry
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--site-gutter` | `clamp(20px, 3.125vw, 48px)` | Equal page side gutters |
+| `--site-max-width` | `1664px` | Shared header, canvas, catalog and footer container |
+| `--grid-cell` | `96px` | Canvas coordinate pitch |
+| `--grid-gap` | `16px` | All block gaps and frame padding |
+| `--block-inset` | `24px` | Card padding and bottom link inset |
+| `--grip-inset` | `8px` | Every drag handle's top/right inset |
+| `--control-height` | `44px` | Minimap, buttons and native online pill |
+
+Page tokens live in [`portfolio.css`](../apps/web-app/app/assets/css/portfolio.css).
+Canvas coordinate values come from
+[`home-canvas.ts`](../apps/web-app/app/utils/home-canvas.ts); the home supplies
+its gap to CSS as well. Insets are measured inside the 1px card border.
+Canvas dimensions are `columns × cell − gap` and `rows × cell − gap`, so
+there is no trailing empty strip. Default cells fill one 17 by 9 rectangle.
+The extra row gives Contacts the same label, title and bottom action spacing
+as the other cards. The introduction retains its portrait and name composition.
+Status labels share a baseline within each row, and all links end at the same
+bottom inset. Part numbers stay inside the upper corner, away from the grips.
+Four crosshairs sit symmetrically on the board corners; internal gaps contain
+no divider fragments or plates.
+
+Initial load, resize while fitted, reset and recenter fit the whole board,
+with equal frame margins. The fitted scale is capped at 100%; zoom ranges from
+the smaller of the fitted scale and 80% up to 125%. Coordinate-space gaps,
+text and insets scale together. At narrower desktop widths the default is a
+board overview; zoom enlarges the content for reading. Pan by dragging empty
+space, scrolling or focusing the viewport and pressing arrow keys after
+zooming. Native scroll bounds prevent getting lost. The minimap navigates the
+zoomed board; fitted mode lets wheel scrolling reach the footer normally. The
+minimap's keyboard action fits and recenters. Tab focus reveals
+off-screen blocks. The canvas grows with its fitted contents rather than
+clipping the last row to a fixed viewport height.
+
+The control bar uses equal left/right grid tracks around a centered native
+online pill, including the original face renderer and profile actions. One
+presence instance moves between the dock and the page shell, preserving its
+connection across route changes. The footer is in normal document flow below
+the catalog disclosure, with a quiet
+contact label, existing contact copy, direct links and a mono copyright row.
+Inner pages share this footer and horizontal container while retaining their
+reading line-length limits. Mobile uses 20px side gutters and consistent mono
+section labels; the grouped list and footer remain accessible without scripts.
+
+The home K39 preview crops the existing capture to the map area and applies
+the dark gold CSS duotone. Small linked attribution remains visible; no image
+bytes are added and the project page keeps the original. Blocks lift by 2px
+on hover and ease into snapped positions over 240ms; reduced motion disables
+both. Colors remain unchanged.
+
+Browser geometry regressions in
+[`canvas-precision.test.ts`](../e2e/canvas-precision.test.ts) cover 1024, 1280,
+1440, 1920 and 390px in RU/EN. They check shared edges, equal frame margins,
+gaps, padding, link insets, centered controls, native faces, overflow and
+hydration. The unit packing check ensures every default cell is occupied
+exactly once. Review captures are in [`images/canvas-precision`](images/canvas-precision).
+With the test database configured as in the README, refresh the home captures
+using `CANVAS_SCREENSHOTS=after pnpm exec playwright test e2e/canvas-precision.test.ts`.
+These screenshots are review evidence; geometry assertions run in CI without
+platform-dependent font rasterization comparisons.
 
 Move blocks with the grip or its arrow keys. Positions snap to cells and
 colliding neighbours move to nearby free positions. If no placement is possible,
