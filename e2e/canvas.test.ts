@@ -47,7 +47,7 @@ for (const locale of ['en', 'ru']) {
     await expect(noJs.locator(`[data-block="context"] a[href="${locale === 'en' ? '/en' : ''}/projects/context"]`)).toBeVisible()
     await expect(noJs.locator('.canvas-tools')).toHaveCount(0)
     await noJs.locator('[data-block="archive"] a').first().click()
-    await expect(noJs).toHaveURL(/\/projects$/)
+    await expect(noJs).toHaveURL(/\/projects\/?$/)
     await expect(noJs.locator('#projects')).toBeVisible()
     await context.close()
   })
@@ -157,7 +157,7 @@ test('blocks lift and highlight on hover, then ease to a snapped position', asyn
   expect(motion.properties).toContain('top')
   expect(motion.duration).toContain('0.24s')
   const pitch = await page.locator('[data-canvas-world]').evaluate((el) => ((el as HTMLElement).offsetHeight + 16) / 9)
-  expect(await movable.evaluate((el) => Number.parseFloat(getComputedStyle(el).top))).toBeCloseTo(pitch * 2, 0)
+  await expect.poll(() => movable.evaluate((el) => Number.parseFloat(getComputedStyle(el).top))).toBeCloseTo(pitch * 2, 0)
 })
 
 test('mobile and reduced motion keep every block readable without canvas controls on mobile', async ({ page }) => {

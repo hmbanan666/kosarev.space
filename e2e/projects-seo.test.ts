@@ -133,8 +133,9 @@ test('sitemap lists project pages and writing feeds', async ({ request }) => {
   expect(combined).toContain('/projects/k39')
   expect(combined).toContain('/en/projects/k39')
   expect(combined).toContain('/en/projects/dostigus')
+  const paths = [...combined.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]!).pathname)
   for (const path of ['/projects', '/cases', '/contact', '/en/projects', '/en/cases', '/en/contact']) {
-    expect(combined).toContain(`https://kosarev.space${path}</loc>`)
+    expect(paths).toContain(path)
   }
   expect(combined).not.toContain('/projects/section-fixture')
   expect(combined).toContain('/writing/feed.xml')

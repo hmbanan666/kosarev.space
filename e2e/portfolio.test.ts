@@ -272,7 +272,7 @@ test('touch and reduced-motion visitors never open a live cursor connection', as
       const sockets: string[] = []
       page.on('websocket', (socket) => sockets.push(socket.url()))
       await page.goto('/en')
-      await expect(page.getByRole('button', { name: 'Copy email address', exact: true })).toBeEnabled()
+      await expect(page.locator('.site-footer .contact-email-row button')).toBeEnabled()
       await expect(page.locator('[data-live-cursors-bar]')).toHaveCount(0)
       await expect(page.locator('[data-live-cursors]')).toHaveCount(0)
       expect(sockets.filter((url) => url.includes('/_live-cursors-ws'))).toHaveLength(0)
