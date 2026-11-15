@@ -32,7 +32,7 @@ for (const locale of ['en', 'ru']) {
         // Opt-in, reviewable evidence on the same browser path as the assertions.
         if (process.env.CANVAS_SCREENSHOTS) {
           await page.evaluate(() => Promise.all([...document.images].filter((img) => img.complete).map((img) => img.decode().catch(() => {}))))
-          await page.screenshot({ path: `docs/images/canvas-precision/${process.env.CANVAS_SCREENSHOTS}-${locale}-${width}.png`, fullPage: true, animations: 'disabled' })
+          await page.screenshot({ path: `docs/images/canvas-fullscreen/${process.env.CANVAS_SCREENSHOTS}-${locale}-${width}.png`, fullPage: true, animations: 'disabled' })
         }
         const edges = await page.locator(width >= 768 ? '.site-header-inner, .canvas-tools' : '.site-header-inner, .canvas-heading, .canvas-viewport, .site-footer > .site-wrap').evaluateAll((elements) => elements.map((element) => {
           const rect = element.getBoundingClientRect()

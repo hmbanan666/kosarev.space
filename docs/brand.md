@@ -97,7 +97,8 @@ Body copy remains proportional and readable.
 The shared tokens and components are defined in
 [`blueprint.css`](../apps/web-app/app/assets/css/blueprint.css) and
 [`components/blueprint`](../apps/web-app/app/components/blueprint/).
-The canvas uses a 96px cell and 16px gap. Its blueprint grid is barely visible.
+The canvas starts with a 96px logical cell and 16px gap; cells expand to
+use the viewport before the board is uniformly scaled. Its blueprint grid is barely visible.
 Frames may carry a part number or gold corner marks, but neither is required
 on every block. Zone labels, dimension lines, crosshairs, rulers, title blocks
 and hatching are available as small reusable marks. Keep them at edges and in
