@@ -30,14 +30,14 @@
         </p>
         <div class="paused-links">
           <NuxtLink :to="localePath(project.page)">
-            {{ t('projects.pageLink') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+            {{ t('projects.pageLink') }}<SiteLinkIcon />
           </NuxtLink>
           <a
             :href="project.source"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {{ t('site.source') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+            {{ t('site.source') }}<SiteLinkIcon external />
           </a>
         </div>
       </div>

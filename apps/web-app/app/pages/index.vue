@@ -1,18 +1,5 @@
 <template>
-  <UPage>
-    <HomeCanvas />
-    <details
-      ref="catalog"
-      class="home-catalog"
-      :open="hasCatalogQuery"
-    >
-      <summary class="site-wrap">
-        {{ t('nav.cases') }} / {{ t('projects.archiveTitle') }}
-      </summary>
-      <SkillsShowcaseSection />
-      <ProjectsSection />
-    </details>
-  </UPage>
+  <HomeCanvas />
 </template>
 
 <script setup lang="ts">
@@ -21,20 +8,24 @@ definePageMeta({ key: 'portfolio', colorMode: 'dark', canvasPresence: true })
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
-const catalog = useTemplateRef<HTMLDetailsElement>('catalog')
-const hasCatalogQuery = computed(() => ['q', 'focus', 'tech', 'all'].some((key) => route.query[key]))
-function openCatalog() {
+function redirectLegacyAnchor() {
   const hash = window.location.hash
-  if (hash === '#skills' || hash === '#projects' || hash.startsWith('#project-')) {
-    if (catalog.value) {
-      catalog.value.open = true
-    }
-    nextTick(() => document.getElementById(hash.slice(1))?.scrollIntoView())
+  const path = hash === '#skills'
+    ? '/cases'
+    : hash === '#projects' || hash.startsWith('#project-')
+      ? '/projects'
+      : hash === '#experience'
+        ? '/cv'
+        : hash === '#contacts' ? '/contact' : undefined
+  if (path) {
+    void navigateTo({ path: localePath(path), query: route.query, hash: hash.startsWith('#project-') || hash === '#experience' ? hash : '' }, { replace: true })
+  } else if (!hash && ['q', 'focus', 'tech', 'all'].some((key) => route.query[key])) {
+    void navigateTo({ path: localePath('/cases'), query: route.query }, { replace: true })
   }
 }
-onMounted(openCatalog)
-watch(() => route.fullPath, () => nextTick(openCatalog))
-useEventListener('hashchange', openCatalog)
+onMounted(redirectLegacyAnchor)
+watch(() => route.fullPath, () => nextTick(redirectLegacyAnchor))
+useEventListener('hashchange', redirectLegacyAnchor)
 
 const canonicalUrl = computed(() => {
   const base = 'https://kosarev.space'
@@ -61,12 +52,6 @@ useSeoMeta({
 })
 
 useHead(() => {
-  let projectList = '{}'
-  try {
-    projectList = JSON.stringify(portfolioItemList(language.value, t)).replace(/</g, '\\u003c')
-  } catch (error) {
-    console.error('portfolio json-ld failed', error)
-  }
   return {
     link: [
       { rel: 'canonical', href: canonicalUrl.value },
@@ -93,8 +78,8 @@ useHead(() => {
       },
       {
         type: 'application/ld+json',
-        key: 'portfolio-projects',
-        innerHTML: projectList,
+        key: 'website',
+        innerHTML: JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', 'name': t('hero.name'), 'url': 'https://kosarev.space', 'inLanguage': ['ru', 'en'] }),
       },
     ],
   }

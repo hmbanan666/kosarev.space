@@ -28,7 +28,9 @@
       <NuxtLink class="site-button" :to="localePath('/cv')">
         {{ t('site.viewCv') }}
       </NuxtLink>
-      <a class="site-text-link" href="#skills">{{ t('site.exploreWork') }}</a>
+      <NuxtLink class="site-text-link" :to="localePath('/cases')">
+        {{ t('site.exploreWork') }}<SiteLinkIcon />
+      </NuxtLink>
     </div>
   </template>
   <template v-else-if="product">
@@ -65,14 +67,14 @@
       :href="product.source"
       target="_blank"
       rel="noopener noreferrer"
-    >{{ t('site.source') }} ↗</a>
+    >{{ t('site.source') }}<SiteLinkIcon external /></a>
     <a
       v-else
       class="canvas-source"
       :href="product.link"
       target="_blank"
       rel="noopener noreferrer"
-    >{{ t(`projects.${id}.visit`) }} ↗</a>
+    >{{ t(`projects.${id}.visit`) }}<SiteLinkIcon external /></a>
   </template>
   <template v-else-if="id === 'writing'">
     <p class="canvas-eyebrow">
@@ -80,7 +82,7 @@
     </p>
     <h2>
       <NuxtLink :to="localePath('/writing')">
-        {{ t('writing.title') }} ↗
+        {{ t('writing.title') }}<SiteLinkIcon />
       </NuxtLink>
     </h2>
     <div v-if="latest" class="canvas-latest">
@@ -94,15 +96,15 @@
     <p v-else class="canvas-description">
       {{ t('writing.description') }}
     </p>
-    <a class="canvas-source" :href="language === 'en' ? '/en/writing/feed.xml' : '/writing/feed.xml'">RSS ↗</a>
+    <a class="canvas-source" :href="language === 'en' ? '/en/writing/feed.xml' : '/writing/feed.xml'">RSS<SiteLinkIcon /></a>
   </template>
   <template v-else-if="id === 'cv'">
     <p class="canvas-eyebrow">
       {{ t('site.experience') }}
     </p>
-    <h2 id="experience">
+    <h2>
       <NuxtLink :to="localePath('/cv')">
-        {{ t('nav.cv') }} ↗
+        {{ t('nav.cv') }}<SiteLinkIcon />
       </NuxtLink>
     </h2>
     <a
@@ -113,13 +115,15 @@
   </template>
   <template v-else-if="id === 'contacts'">
     <p class="canvas-eyebrow">
-      {{ t('hero.contact') }}
+      <NuxtLink :to="localePath('/contact')">
+        {{ t('hero.contact') }}<SiteLinkIcon />
+      </NuxtLink>
     </p>
     <h2 class="canvas-email">
-      <a href="mailto:nick@kosarev.space">nick@kosarev.space ↗</a>
+      <a href="mailto:nick@kosarev.space">nick@kosarev.space<SiteLinkIcon external /></a>
     </h2>
     <div class="canvas-links">
-      <a href="https://t.me/hmbanan666">Telegram ↗</a><a href="https://github.com/hmbanan666">GitHub ↗</a>
+      <a href="https://t.me/hmbanan666">Telegram<SiteLinkIcon external /></a><a href="https://github.com/hmbanan666">GitHub<SiteLinkIcon external /></a>
     </div>
   </template>
   <template v-else-if="id === 'live'">
@@ -128,7 +132,7 @@
     </p>
     <h2>
       <NuxtLink :to="localePath('/cases/kosarev-live-cursors')">
-        {{ t('site.presenceTitle') }} ↗
+        {{ t('site.presenceTitle') }}<SiteLinkIcon />
       </NuxtLink>
     </h2>
     <p class="canvas-footnote">
@@ -139,11 +143,17 @@
     <p class="canvas-eyebrow">
       {{ t('canvas.archive') }}
     </p>
-    <h2><a href="#projects">{{ t('projects.title') }} ↗</a></h2>
+    <h2>
+      <NuxtLink :to="localePath('/projects')">
+        {{ t('projects.title') }}<SiteLinkIcon />
+      </NuxtLink>
+    </h2>
     <p class="canvas-footnote">
       {{ projects.map(project => project.title).join(' · ') }}
     </p>
-    <a class="canvas-source" href="#skills">{{ t('nav.cases') }} ↗</a>
+    <NuxtLink class="canvas-source" :to="localePath('/cases')">
+      {{ t('nav.cases') }}<SiteLinkIcon />
+    </NuxtLink>
   </template>
   <template v-else-if="id === 'now'">
     <p class="canvas-eyebrow">

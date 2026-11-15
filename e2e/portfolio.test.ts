@@ -74,10 +74,10 @@ test('area and technology filters combine, explain no results, and can reset', a
   await expect(page.locator('.case-preview')).toHaveCount(1)
   await expect(page.locator('.case-preview')).toContainText('Build infrastructure reference')
   await page.getByRole('link', { name: 'Русский', exact: true }).click()
-  await expect.poll(() => new URL(page.url()).pathname).toBe('/')
+  await expect.poll(() => new URL(page.url()).pathname).toBe('/cases')
   expect(new URL(page.url()).searchParams.get('focus')).toBe('delivery')
   await page.getByRole('link', { name: 'English', exact: true }).click()
-  await expect.poll(() => new URL(page.url()).pathname).toBe('/en')
+  await expect.poll(() => new URL(page.url()).pathname).toBe('/en/cases')
   expect(new URL(page.url()).searchParams.get('focus')).toBe('delivery')
   await page.getByRole('combobox', { name: 'Technology', exact: true }).click()
   await page.getByRole('option', { name: 'Nuxt', exact: true }).click()
@@ -89,21 +89,21 @@ test('area and technology filters combine, explain no results, and can reset', a
 
 test('contact copy confirms success and preserves a visible mail link', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-  await page.goto('/en')
-  await page.getByRole('button', { name: 'Copy email address', exact: true }).click()
-  await expect(page.getByText('Email address copied.', { exact: true })).toBeVisible()
+  await page.goto('/en/contact')
+  await page.locator('main').getByRole('button', { name: 'Copy email address', exact: true }).click()
+  await expect(page.locator('main').getByText('Email address copied.', { exact: true })).toBeVisible()
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('nick@kosarev.space')
   await expect(page.locator('footer a[href="mailto:nick@kosarev.space"]')).toBeVisible()
 })
 
 test('clipboard failure offers a focused manually selectable address', async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('Unavailable')) } }))
-  await page.goto('/en')
-  await page.getByRole('button', { name: 'Copy email address', exact: true }).click()
+  await page.goto('/en/contact')
+  await page.locator('main').getByRole('button', { name: 'Copy email address', exact: true }).click()
   const email = page.getByRole('textbox', { name: 'Email address', exact: true })
   await expect(email).toBeFocused()
   await expect(email).toHaveValue('nick@kosarev.space')
-  await expect(page.getByText('Copy unavailable. Select the address below or use the email link.')).toBeVisible()
+  await expect(page.locator('main').getByText('Copy unavailable. Select the address below or use the email link.')).toBeVisible()
 })
 
 test('mobile navigation supports keyboard and keeps native contact and locale links', async ({ page }) => {
@@ -146,7 +146,7 @@ test('case filters and critical content work without JavaScript', async ({ brows
   const page = await context.newPage()
   await page.goto('/en')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Nick Kosarev')
-  await page.locator('.home-catalog > summary').click()
+  await page.goto('/en/cases')
   await page.getByRole('searchbox', { name: 'Search work', exact: true }).fill('cache')
   await page.getByRole('combobox', { name: 'Area of work', exact: true }).selectOption('delivery')
   await page.getByRole('button', { name: 'Find cases', exact: true }).click()
@@ -179,7 +179,7 @@ test('native cursor pill starts by default, exposes profile actions and keeps CV
   const peerContext = await browser.newContext()
   try {
     const peer = await peerContext.newPage()
-    await peer.goto('/en')
+    await peer.goto('/en/cases')
     await expect(peer.locator('[data-live-cursors-bar]')).toBeVisible()
     await peer.mouse.move(320, 300)
     await expect(page.locator('[data-live-cursors] > div').first()).toBeVisible()

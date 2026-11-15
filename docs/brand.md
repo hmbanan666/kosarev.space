@@ -18,6 +18,9 @@ the earlier direction that explicitly deprioritized employment.
 
 - A server-rendered home with role, location, CV, PDF, work and email links.
   Desktop and tablet enhance the blocks into a bounded 17 by 9 cell canvas.
+  The home contains only this canvas; `/projects`, `/cases` and `/contact`
+  provide the catalogs and contact page, alongside `/writing` and `/cv`.
+  The header uses real localized routes and marks their active route.
   Below 768px and without JavaScript, the same HTML uses a grouped list.
   The home links to the CV for the full career history.
 - A case finder with shareable URL filters, search, a visible path to all cases,
@@ -55,8 +58,11 @@ the earlier direction that explicitly deprioritized employment.
   active; the module retains that visibility choice during the app session.
   There is no custom header switch, pointer renderer or connection counter.
   The home uses an optional coordinate target through a pinned package patch:
-  peers share canvas coordinates across pan, zoom and locales while retaining
-  the native face renderer. Other pages retain page coordinates.
+  peers share normalized canvas coordinates across viewport aspect ratios,
+  pan, zoom and locales while retaining
+  the native face renderer. The `#coordinates-v2` room suffix separates this protocol from older open
+  tabs; Y uses 10,000 integer units to preserve precision in the native transport.
+  Other pages retain page coordinates.
   Coarse pointers, reduced motion and CV/print keep the component unmounted.
   The home docks the native pill in the middle of its canvas control bar.
   Other pages keep the fixed pill, respect safe areas and reserve footer space.
@@ -103,8 +109,8 @@ assistive technology. Never turn project cards into densely annotated diagrams.
 | Token | Value | Use |
 | --- | --- | --- |
 | `--site-gutter` | `clamp(20px, 3.125vw, 48px)` | Equal page side gutters |
-| `--site-max-width` | `1664px` | Shared header, canvas, catalog and footer container |
-| `--grid-cell` | `96px` | Canvas coordinate pitch |
+| `--site-max-width` | `1664px` | Inner-page header, catalog and footer container; fullscreen home is uncapped |
+| `--grid-cell` | `96px` | Minimum logical cell pitch before viewport fitting |
 | `--grid-gap` | `16px` | All block gaps and frame padding |
 | `--block-inset` | `24px` | Card padding and bottom link inset |
 | `--grip-inset` | `8px` | Every drag handle's top/right inset |
@@ -123,27 +129,41 @@ bottom inset. Part numbers stay inside the upper corner, away from the grips.
 Four crosshairs sit symmetrically on the board corners; internal gaps contain
 no divider fragments or plates.
 
-Initial load, resize while fitted, reset and recenter fit the whole board,
-with equal frame margins. The fitted scale is capped at 100%; zoom ranges from
-the smaller of the fitted scale and 80% up to 125%. Coordinate-space gaps,
-text and insets scale together. At narrower desktop widths the default is a
-board overview; zoom enlarges the content for reading. Pan by dragging empty
-space, scrolling or focusing the viewport and pressing arrow keys after
-zooming. Native scroll bounds prevent getting lost. The minimap navigates the
-zoomed board; fitted mode lets wheel scrolling reach the footer normally. The
-minimap's keyboard action fits and recenters. Tab focus reveals
-off-screen blocks. The canvas grows with its fitted contents rather than
-clipping the last row to a fixed viewport height.
+On desktop the sticky header and slim bottom chrome surround one edge-to-edge
+viewport. The enhanced home is exactly `100dvh` tall with no document scroll.
+The board's four outer gutters use `--site-gutter`; its first column aligns
+with the header text. The 17 by 9 layout remains completely packed. Logical
+cell widths and heights expand independently to match the available aspect
+ratio, while a uniform display scale keeps text, card padding and gaps in
+proportion. Saved layout coordinates remain unchanged across window sizes.
+Corner ticks, quiet rulers and coordinates sit symmetrically at viewport edges.
 
-The control bar uses equal left/right grid tracks around a centered native
-online pill, including the original face renderer and profile actions. One
-presence instance moves between the dock and the page shell, preserving its
-connection across route changes. The footer is in normal document flow below
-the catalog disclosure, with a quiet
-contact label, existing contact copy, direct links and a mono copyright row.
-Inner pages share this footer and horizontal container while retaining their
-reading line-length limits. Mobile uses 20px side gutters and consistent mono
-section labels; the grouped list and footer remain accessible without scripts.
+Initial load, fitted resize, reset and recenter fit both dimensions. The fitted
+scale is capped at 100%; zoom ranges from the smaller of fitted scale and 80%
+up to 125%. Pan by dragging empty space, scrolling or focusing the viewport
+and pressing arrow keys after zooming. Native scroll bounds prevent getting
+lost; the document does not scroll through the canvas. The minimap navigates
+the zoomed board; its keyboard action fits and recenters. Tab focus reveals
+off-screen blocks.
+
+The slim chrome combines minimap, recenter, zoom, undo/reset and the centered
+native online pill, with copyright and three small contact links beneath.
+One presence instance moves between the dock and the page shell, preserving
+its connection across route changes. Inner pages retain the full contact footer
+from PR #31 and their reading line-length limits. Below 768px, blocks form a
+vertical grouped list with the normal footer and no canvas controls. The same
+readable fallback remains available without JavaScript.
+
+### Link icons
+
+Text-link arrows use [`SiteLinkIcon`](../apps/web-app/app/components/site/LinkIcon.vue):
+Lucide `arrow-right` for internal destinations and `arrow-up-right` for external
+ones (including email). Both are 14px, vertically centered, separated from the
+label by 8px, and gold on hover or keyboard focus. Direction icons follow the
+label, including back links. Header navigation and plain prose links may omit
+an arrow; never use text arrow glyphs. Action controls retain their semantic
+icons, such as copy, download and grip. Mobile keeps the same rule; on the
+zoomable board icons scale with its text.
 
 The home K39 preview crops the existing capture to the map area and applies
 the dark gold CSS duotone. Small linked attribution remains visible; no image
@@ -156,7 +176,8 @@ Browser geometry regressions in
 1440, 1920 and 390px in RU/EN. They check shared edges, equal frame margins,
 gaps, padding, link insets, centered controls, native faces, overflow and
 hydration. The unit packing check ensures every default cell is occupied
-exactly once. Review captures are in [`images/canvas-precision`](images/canvas-precision).
+exactly once. Fullscreen review captures are in [`images/canvas-fullscreen`](images/canvas-fullscreen);
+[`images/canvas-precision`](images/canvas-precision) retains the earlier baseline.
 With the test database configured as in the README, refresh the home captures
 using `CANVAS_SCREENSHOTS=after pnpm exec playwright test e2e/canvas-precision.test.ts`.
 These screenshots are review evidence; geometry assertions run in CI without
@@ -170,9 +191,15 @@ Undo retains up to 30 changes in the current session, including reset. Layouts
 are never sent to the server. The common canvas coordinate system describes
 positions, not a shared arrangement of blocks.
 
-The complete case finder and project archive remain in a native disclosure
-below the canvas. Navigation hashes open the disclosure; query filters also
-open it in SSR. Mobile follows semantic zone order and has no canvas controls.
+The project archive lives at `/projects`; the case finder at `/cases` retains
+its `q`, `focus`, `tech` and `all` query filters, including native GET controls.
+`/contact` reuses the existing contact text and email-copy/manual-selection UI.
+All three routes have RU/EN metadata, canonicals and sitemap entries. The
+portfolio ItemList lives on `/projects`; Person and WebSite stay on home.
+Legacy home hashes redirect on the client, preserving locale and query:
+`#projects` and `#project-*` to `/projects` (retaining project hashes), `#skills`
+to `/cases`, `#experience` to `/cv#experience`, and `#contacts` to `/contact`.
+A bare home URL carrying case filters also redirects to `/cases`. Mobile follows semantic zone order and has no canvas controls.
 Inner pages keep their normal reading layout with angular surfaces, readable
 line lengths and visible focus. Print CV styling remains separate: two A4
 pages per language, selectable text and clickable contact/source links.

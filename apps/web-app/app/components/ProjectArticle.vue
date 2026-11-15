@@ -1,8 +1,8 @@
 <template>
   <div class="site-wrap project-page">
     <nav class="project-breadcrumb" :aria-label="t('site.caseNavigation')">
-      <NuxtLink :to="`${localePath('/')}#projects`">
-        <UIcon name="i-lucide-arrow-left" aria-hidden="true" />{{ t('writing.backToProducts') }}
+      <NuxtLink :to="localePath('/projects')">
+        {{ t('writing.backToProducts') }}<SiteLinkIcon />
       </NuxtLink>
     </nav>
     <article :data-project-page="pageKey">
@@ -26,7 +26,7 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          {{ linkLabel }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+          {{ linkLabel }}<SiteLinkIcon external />
         </a>
         <a
           v-if="source"
@@ -34,7 +34,7 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          {{ t('site.source') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+          {{ t('site.source') }}<SiteLinkIcon external />
         </a>
       </div>
       <div
@@ -105,7 +105,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {{ item.label }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+                {{ item.label }}<SiteLinkIcon external />
               </a>
               <NuxtLink v-else :to="localePath(item.href)">
                 {{ item.label }}

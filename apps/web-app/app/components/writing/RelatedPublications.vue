@@ -5,7 +5,7 @@
       :key="publication.slug"
       :to="localePath(publicationPath(publication))"
     >
-      {{ publication.locales[language].title }}<UIcon name="i-lucide-arrow-right" aria-hidden="true" />
+      {{ publication.locales[language].title }}<SiteLinkIcon />
     </NuxtLink>
   </span>
 </template>

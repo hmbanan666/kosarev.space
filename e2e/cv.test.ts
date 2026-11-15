@@ -53,9 +53,8 @@ test('website stays dark with a saved light preference while print stays white',
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)')
 })
 
-test('homepage archives closed projects without advertising their old live services', async ({ page }) => {
-  await page.goto('/en')
-  await page.locator('.home-catalog > summary').click()
+test('project index archives closed projects without advertising their old live services', async ({ page }) => {
+  await page.goto('/en/projects')
   const projects = page.locator('#projects')
   await expect(projects.locator('[data-project-archive]')).toHaveCount(3)
   await expect(projects.locator('a[href="https://startodel.ru"]')).toHaveCount(0)

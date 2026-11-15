@@ -6,14 +6,14 @@
   >
     <div class="site-wrap">
       <div class="section-intro">
-        <h2 id="case-catalog-title">
+        <h1 id="case-catalog-title">
           {{ t('cases.title') }}
-        </h2>
+        </h1>
         <p>{{ t('cases.description') }}</p>
       </div>
       <form
         class="case-filters"
-        :action="`${localePath('/')}#skills`"
+        :action="localePath('/cases')"
         method="get"
         @submit.prevent="applyFilters"
       >
@@ -51,7 +51,7 @@
         </p>
         <NuxtLink
           v-if="hasFilters"
-          :to="`${localePath('/')}#skills`"
+          :to="localePath('/cases')"
           class="site-text-link"
         >
           {{ t('site.reset') }}
@@ -87,13 +87,13 @@
       </div>
       <div v-else class="case-empty">
         <p>{{ t('cases.noResults') }}</p>
-        <NuxtLink :to="`${localePath('/')}#skills`" class="site-text-link">
+        <NuxtLink :to="localePath('/cases')" class="site-text-link">
           {{ t('site.reset') }}
         </NuxtLink>
       </div>
       <NuxtLink
         v-if="showMore"
-        :to="{ path: localePath('/'), query: { ...caseContextQuery(route.query), all: '1' }, hash: '#skills' }"
+        :to="{ path: localePath('/cases'), query: { ...caseContextQuery(route.query), all: '1' } }"
         class="site-button site-button-secondary case-show-all"
       >
         {{ t('site.showAll', { count: matchingCases.length }) }}
@@ -126,7 +126,7 @@ const hasFilters = computed(() => Boolean(filters.value.q || filters.value.tech 
 const visibleCases = computed(() => hasFilters.value || filters.value.all ? matchingCases.value : selectFeaturedCases(matchingCases.value))
 const showMore = computed(() => visibleCases.value.length < matchingCases.value.length)
 function applyFilters() {
-  navigateTo({ path: localePath('/'), query: caseContextQuery({ ...form, all: '1' }), hash: '#skills' })
+  navigateTo({ path: localePath('/cases'), query: caseContextQuery({ ...form, all: '1' }) })
 }
 </script>
 

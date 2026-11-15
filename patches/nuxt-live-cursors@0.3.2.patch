@@ -35,11 +35,11 @@ index c957fe9e829b861e90fdcb3bf99c24e417cf309d..7c7a3600e287b1b224fd457462985ae9
  function userName(user) {
    return resolveName(user.nameKey);
  }
-+// Optional transformed coordinate surface. Default page positioning stays unchanged.
++// Both canvas axes are normalized (Y uses 10000 units for integer transport).
 +const geometryVersion = ref(0);
 +function cursorPosition(cursor) {
 +  void geometryVersion.value;
-+  if (!cursor.page.endsWith("#coordinates")) {
++  if (!cursor.page.endsWith("#coordinates-v2")) {
 +    return { left: `${cursor.x * viewportWidth.value}px`, top: `${cursor.y - scrollY.value}px` };
 +  }
 +  const element = props.coordinateTarget ? document.querySelector(props.coordinateTarget) : null;
@@ -47,7 +47,7 @@ index c957fe9e829b861e90fdcb3bf99c24e417cf309d..7c7a3600e287b1b224fd457462985ae9
 +  if (!rect?.width) return { display: "none" };
 +  const clip = element.closest("[data-live-cursors-viewport]")?.getBoundingClientRect() || rect;
 +  const x = rect.left + cursor.x * rect.width;
-+  const y = rect.top + cursor.y * rect.width / element.offsetWidth;
++  const y = rect.top + cursor.y * rect.height / 10000;
 +  return { left: `${x}px`, top: `${y}px`, visibility: x < clip.left || x > clip.right || y < clip.top || y > clip.bottom ? "hidden" : "visible" };
 +}
  const scrollY = ref(0);
@@ -114,7 +114,7 @@ index ff7ee8cb231ef9d38f0aed8bc2e59d41dbfd27ba..983a025b4523d1808572ccfb3e80a3f2
            const myPage = normalizePath(route.path);
            cursors.value = msg.cursors.filter(
 -            (c) => c.id !== myId.value && c.page === myPage
-+            (c) => c.id !== myId.value && (c.page === myPage || (options.coordinateTarget?.() && c.page === `${myPage}#coordinates`))
++            (c) => c.id !== myId.value && (c.page === myPage || (options.coordinateTarget?.() && c.page === `${myPage}#coordinates-v2`))
            );
          } else if (msg.type === "online") {
            onlineCount.value = msg.count;
@@ -141,7 +141,7 @@ index ff7ee8cb231ef9d38f0aed8bc2e59d41dbfd27ba..983a025b4523d1808572ccfb3e80a3f2
        x,
        y: Math.round(y),
 -      page: normalizePath(route.path)
-+      page: normalizePath(route.path) + (coordinates ? "#coordinates" : "")
++      page: normalizePath(route.path) + (coordinates ? "#coordinates-v2" : "")
      }));
    }
 +  function sendPointer() {
@@ -150,7 +150,7 @@ index ff7ee8cb231ef9d38f0aed8bc2e59d41dbfd27ba..983a025b4523d1808572ccfb3e80a3f2
 +    const rect = element?.getBoundingClientRect();
 +    const clip = element?.closest("[data-live-cursors-viewport]")?.getBoundingClientRect() || rect;
 +    if (rect?.width && clip && lastClientX >= clip.left && lastClientX <= clip.right && lastClientY >= clip.top && lastClientY <= clip.bottom) {
-+      sendPosition((lastClientX - rect.left) / rect.width, (lastClientY - rect.top) * element.offsetWidth / rect.width, true);
++      sendPosition((lastClientX - rect.left) / rect.width, (lastClientY - rect.top) / rect.height * 10000, true);
 +    } else {
 +      sendPosition(lastClientX / window.innerWidth, lastClientY + window.scrollY);
 +    }

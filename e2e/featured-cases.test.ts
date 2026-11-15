@@ -17,7 +17,7 @@ for (const locale of ['ru', 'en']) {
     await page.route(/\/api\/cases\/expi-billing\/view/, (route) => route.fulfill({ status: 204 }))
     await page.goto(local('/cv'))
     await expect(page.getByRole('button', { name: locale === 'en' ? 'Copy email address' : 'Скопировать email', exact: true })).toBeEnabled()
-    await page.locator(`header a[href="${local('')}#skills"]`).first().click()
+    await page.locator(`header a[href="${local('/cases')}"]`).first().click()
     await expect(page.locator('.case-preview')).toHaveCount(6)
     const first = page.locator('.case-preview').first()
     await expect(first.locator('h3 a')).toHaveAttribute('href', local('/cases/expi-billing'))

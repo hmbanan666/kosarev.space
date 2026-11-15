@@ -36,6 +36,7 @@
               v-for="link in links"
               :key="link.label"
               :to="link.to"
+              :aria-current="link.current ? 'page' : undefined"
               @click="closeMenu()"
             >
               {{ link.label }}
@@ -61,13 +62,12 @@ onMounted(() => {
 })
 const pdfPath = computed(() => locale.value === 'en' ? '/cv-en.pdf' : '/cv.pdf')
 const links = computed(() => [
-  { label: t('nav.cases'), to: `${localePath('/')}#skills`, current: route.path.includes('/cases/') },
-  { label: t('projects.title'), to: `${localePath('/')}#projects`, current: route.path.includes('/projects/') },
-  { label: t('writing.title'), to: localePath('/writing'), current: route.path === localePath('/writing') || route.path.startsWith(`${localePath('/writing')}/`) },
-  { label: t('site.experience'), to: `${localePath('/')}#experience`, current: false },
-  { label: t('nav.cv'), to: localePath('/cv'), current: route.path === localePath('/cv') },
-  { label: t('hero.contact'), to: '#contacts', current: false },
-])
+  { label: t('projects.title'), path: '/projects' },
+  { label: t('nav.cases'), path: '/cases' },
+  { label: t('writing.title'), path: '/writing' },
+  { label: t('nav.cv'), path: '/cv' },
+  { label: t('nav.contact'), path: '/contact' },
+].map((link) => ({ ...link, to: localePath(link.path), current: route.path === localePath(link.path) || route.path.startsWith(`${localePath(link.path)}/`) })))
 function closeMenu(restoreFocus = false) {
   if (menu.value) {
     menu.value.open = false
