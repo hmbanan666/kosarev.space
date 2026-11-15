@@ -138,9 +138,7 @@
           </button>
         </div>
       </div>
-      <div class="canvas-presence">
-        <SitePresence />
-      </div>
+      <div ref="presenceDock" class="canvas-presence" />
       <div class="canvas-tool-group canvas-layout-tools">
         <span class="canvas-local">{{ t('canvas.local') }}</span>
         <span class="sr-only" role="status">{{ feedback ? t(`canvas.${feedback}`) : '' }}</span>
@@ -166,6 +164,16 @@ import { homeCanvas } from '~/utils/home-canvas'
 const { t } = useI18n()
 const viewport = useTemplateRef<HTMLElement>('viewport')
 const { enabled, blocks, canUndo, feedback, zoom, fitZoom, minZoom, view, width, height, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position, reset, undo } = useHomeCanvas(viewport)
+const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
+const presenceDocked = useState('canvas-presence-docked', () => false)
+// Move the existing presence instance after its dock exists. Route changes
+// preserve the connection and profile instead of mounting a second instance.
+watch(presenceDock, (element) => {
+  presenceDocked.value = !!element
+}, { flush: 'post' })
+onBeforeUnmount(() => {
+  presenceDocked.value = false
+})
 const { data } = await usePublications()
 const parts: Record<string, string> = { hero: 'A / 01', context: 'B / 01', k39: 'B / 02', writing: 'C / 01' }
 const latest = computed(() => sortPublications(data.value ?? [])[0])

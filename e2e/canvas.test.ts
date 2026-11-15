@@ -180,6 +180,9 @@ test('cursor faces align across locales with different canvas pan and zoom', asy
     const peer = await peerContext.newPage()
     await peer.goto('/')
     await expect(peer.locator('[data-live-cursors-bar]')).toBeVisible()
+    await peer.locator('[data-live-cursors-bar]').click()
+    const peerAvatar = await peer.locator('[data-live-cursors-profile] img').getAttribute('src')
+    await peer.locator('[data-live-cursors-bar]').click()
     await expect(page.locator('[data-live-cursors-bar]')).toBeVisible()
     await zoomInFully(page)
     await page.locator('.canvas-viewport').evaluate((el) => el.scrollTo(150, 90))
@@ -188,7 +191,8 @@ test('cursor faces align across locales with different canvas pan and zoom', asy
     const x = sender!.x + 600 * senderScale
     const y = sender!.y + 200 * senderScale
     await peer.mouse.move(x, y)
-    const cursor = page.locator('[data-live-cursors] > div').first()
+    // Other parallel browser tests can share this room. Follow our own peer.
+    const cursor = page.locator('[data-live-cursors] > div').filter({ has: page.locator(`img[src="${peerAvatar}"]`) })
     await expect(cursor.locator('img')).toBeVisible()
     await expect.poll(async () => {
       const receiver = await page.locator('[data-canvas-world]').boundingBox()

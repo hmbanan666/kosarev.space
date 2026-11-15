@@ -58,7 +58,7 @@ the earlier direction that explicitly deprioritized employment.
   peers share canvas coordinates across pan, zoom and locales while retaining
   the native face renderer. Other pages retain page coordinates.
   Coarse pointers, reduced motion and CV/print keep the component unmounted.
-  The home mounts the native pill in the middle of its canvas control bar.
+  The home docks the native pill in the middle of its canvas control bar.
   Other pages keep the fixed pill, respect safe areas and reserve footer space.
 
 
@@ -135,7 +135,9 @@ off-screen blocks. The canvas grows with its fitted contents rather than
 clipping the last row to a fixed viewport height.
 
 The control bar uses equal left/right grid tracks around a centered native
-online pill, including the original face renderer and profile actions. The
+online pill, including the original face renderer and profile actions. One presence instance
+moves between the dock and the page shell, preserving its connection across
+route changes. The
 footer is in normal document flow below the catalog disclosure, with a quiet
 contact label, existing contact copy, direct links and a mono copyright row.
 Inner pages share this footer and horizontal container while retaining their
