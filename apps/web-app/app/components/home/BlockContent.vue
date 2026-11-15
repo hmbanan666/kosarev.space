@@ -55,7 +55,7 @@
         width="1000"
         height="700"
       >
-      <figcaption>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://protomaps.com">Protomaps</a></figcaption>
+      <figcaption>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · <a href="https://protomaps.com">Protomaps</a></figcaption>
     </figure>
     <a
       v-if="product.source"
