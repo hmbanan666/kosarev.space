@@ -1,0 +1,193 @@
+diff --git a/dist/runtime/components/LiveCursors.vue b/dist/runtime/components/LiveCursors.vue
+index c957fe9e829b861e90fdcb3bf99c24e417cf309d..7c7a3600e287b1b224fd457462985ae923d3a152 100644
+--- a/dist/runtime/components/LiveCursors.vue
++++ b/dist/runtime/components/LiveCursors.vue
+@@ -17,8 +17,7 @@
+         :style="{
+   position: 'absolute',
+   transition: 'all 150ms ease-out',
+-  left: `${cursor.x * viewportWidth}px`,
+-  top: `${cursor.y - scrollY}px`
++  ...cursorPosition(cursor)
+ }"
+       >
+         <svg
+@@ -272,7 +271,8 @@ import { useLiveCursors } from "../composables/useLiveCursors";
+ import { getLocale } from "../locales";
+ const props = defineProps({
+   locale: { type: String, required: false, default: "en" },
+-  position: { type: String, required: false, default: "bottom-center" }
++  position: { type: String, required: false, default: "bottom-center" },
++  coordinateTarget: { type: String, required: false, default: "" }
+ });
+ const barPosition = computed(() => {
+   const [vertical, horizontal] = props.position.split("-");
+@@ -310,7 +310,7 @@ const profilePosition = computed(() => {
+ });
+ const l = computed(() => getLocale(props.locale));
+ const labels = computed(() => l.value.ui);
+-const { cursors, cursorsHidden, onlineUsers, onlineCount, myNameKey, myColor, myAvatar, shuffle } = useLiveCursors();
++const { cursors, cursorsHidden, onlineUsers, onlineCount, myNameKey, myColor, myAvatar, shuffle } = useLiveCursors({ coordinateTarget: () => props.coordinateTarget });
+ function resolveName(nameKey) {
+   return l.value.names[nameKey] || nameKey;
+ }
+@@ -320,15 +320,32 @@ function cursorName(cursor) {
+ function userName(user) {
+   return resolveName(user.nameKey);
+ }
++// Optional transformed coordinate surface. Default page positioning stays unchanged.
++const geometryVersion = ref(0);
++function cursorPosition(cursor) {
++  void geometryVersion.value;
++  if (!cursor.page.endsWith("#coordinates")) {
++    return { left: `${cursor.x * viewportWidth.value}px`, top: `${cursor.y - scrollY.value}px` };
++  }
++  const element = props.coordinateTarget ? document.querySelector(props.coordinateTarget) : null;
++  const rect = element?.getBoundingClientRect();
++  if (!rect?.width) return { display: "none" };
++  const clip = element.closest("[data-live-cursors-viewport]")?.getBoundingClientRect() || rect;
++  const x = rect.left + cursor.x * rect.width;
++  const y = rect.top + cursor.y * rect.width / element.offsetWidth;
++  return { left: `${x}px`, top: `${y}px`, visibility: x < clip.left || x > clip.right || y < clip.top || y > clip.bottom ? "hidden" : "visible" };
++}
+ const scrollY = ref(0);
+ const viewportWidth = ref(0);
+ const showProfile = ref(false);
+ if (import.meta.client) {
+   const onScroll = () => {
+     scrollY.value = window.scrollY;
++    geometryVersion.value++;
+   };
+   const onResize = () => {
+     viewportWidth.value = window.innerWidth;
++    geometryVersion.value++;
+   };
+   const onClickOutside = (e) => {
+     const target = e.target;
+@@ -337,14 +354,16 @@ if (import.meta.client) {
+     }
+   };
+   onMounted(() => {
+-    window.addEventListener("scroll", onScroll, { passive: true });
++    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
++    window.addEventListener("live-cursors:coordinates", onScroll);
+     window.addEventListener("resize", onResize, { passive: true });
+     window.addEventListener("click", onClickOutside);
+     onScroll();
+     onResize();
+   });
+   onUnmounted(() => {
+-    window.removeEventListener("scroll", onScroll);
++    window.removeEventListener("scroll", onScroll, true);
++    window.removeEventListener("live-cursors:coordinates", onScroll);
+     window.removeEventListener("resize", onResize);
+     window.removeEventListener("click", onClickOutside);
+   });
+diff --git a/dist/runtime/composables/useLiveCursors.d.ts b/dist/runtime/composables/useLiveCursors.d.ts
+index b1931520c6bad9d88daaad38f61e4b7144945ba0..52244de9de10fd491fdf8b0803be340d413337eb 100644
+--- a/dist/runtime/composables/useLiveCursors.d.ts
++++ b/dist/runtime/composables/useLiveCursors.d.ts
+@@ -15,7 +15,7 @@ export interface OnlineUser {
+     color: string;
+     avatar: string;
+ }
+-export declare function useLiveCursors(): {
++export declare function useLiveCursors(options?: { coordinateTarget?: () => string }): {
+     cursors: import("vue").Ref<{
+         id: string;
+         x: number;
+diff --git a/dist/runtime/composables/useLiveCursors.js b/dist/runtime/composables/useLiveCursors.js
+index ff7ee8cb231ef9d38f0aed8bc2e59d41dbfd27ba..983a025b4523d1808572ccfb3e80a3f24c30a020 100644
+--- a/dist/runtime/composables/useLiveCursors.js
++++ b/dist/runtime/composables/useLiveCursors.js
+@@ -16,7 +16,7 @@ let lastSent = 0;
+ let lastClientX = 0;
+ let lastClientY = 0;
+ let mountCount = 0;
+-export function useLiveCursors() {
++export function useLiveCursors(options = {}) {
+   const route = useRoute();
+   const config = useRuntimeConfig();
+   const liveCursors = config.public.liveCursors || {};
+@@ -66,7 +66,7 @@ export function useLiveCursors() {
+         } else if (msg.type === "cursors") {
+           const myPage = normalizePath(route.path);
+           cursors.value = msg.cursors.filter(
+-            (c) => c.id !== myId.value && c.page === myPage
++            (c) => c.id !== myId.value && (c.page === myPage || (options.coordinateTarget?.() && c.page === `${myPage}#coordinates`))
+           );
+         } else if (msg.type === "online") {
+           onlineCount.value = msg.count;
+@@ -82,7 +82,7 @@ export function useLiveCursors() {
+       reconnectTimer = setTimeout(connect, 3e3);
+     };
+   }
+-  function sendPosition(x, y) {
++  function sendPosition(x, y, coordinates = false) {
+     if (!ws || ws.readyState !== WebSocket.OPEN) {
+       return;
+     }
+@@ -91,7 +91,7 @@ export function useLiveCursors() {
+       if (!throttleTimer) {
+         throttleTimer = setTimeout(() => {
+           throttleTimer = null;
+-          sendPosition(x, y);
++          sendPosition(x, y, coordinates);
+         }, throttleMs);
+       }
+       return;
+@@ -101,21 +101,27 @@ export function useLiveCursors() {
+       type: "move",
+       x,
+       y: Math.round(y),
+-      page: normalizePath(route.path)
++      page: normalizePath(route.path) + (coordinates ? "#coordinates" : "")
+     }));
+   }
++  function sendPointer() {
++    const selector = options.coordinateTarget?.();
++    const element = selector ? document.querySelector(selector) : null;
++    const rect = element?.getBoundingClientRect();
++    const clip = element?.closest("[data-live-cursors-viewport]")?.getBoundingClientRect() || rect;
++    if (rect?.width && clip && lastClientX >= clip.left && lastClientX <= clip.right && lastClientY >= clip.top && lastClientY <= clip.bottom) {
++      sendPosition((lastClientX - rect.left) / rect.width, (lastClientY - rect.top) * element.offsetWidth / rect.width, true);
++    } else {
++      sendPosition(lastClientX / window.innerWidth, lastClientY + window.scrollY);
++    }
++  }
+   function onMouseMove(e) {
+     lastClientX = e.clientX;
+     lastClientY = e.clientY;
+-    const xFraction = e.clientX / window.innerWidth;
+-    sendPosition(xFraction, e.clientY + window.scrollY);
++    sendPointer();
+   }
+   function onScroll() {
+-    if (lastClientX === 0 && lastClientY === 0) {
+-      return;
+-    }
+-    const xFraction = lastClientX / window.innerWidth;
+-    sendPosition(xFraction, lastClientY + window.scrollY);
++    if (lastClientX !== 0 || lastClientY !== 0) sendPointer();
+   }
+   function shuffle() {
+     if (ws && ws.readyState === WebSocket.OPEN) {
+@@ -127,14 +133,16 @@ export function useLiveCursors() {
+     if (mountCount === 1) {
+       connect();
+       window.addEventListener("mousemove", onMouseMove);
+-      window.addEventListener("scroll", onScroll, { passive: true });
++      window.addEventListener("scroll", onScroll, { passive: true, capture: true });
++      window.addEventListener("live-cursors:coordinates", onScroll);
+     }
+   });
+   onUnmounted(() => {
+     mountCount--;
+     if (mountCount === 0) {
+       window.removeEventListener("mousemove", onMouseMove);
+-      window.removeEventListener("scroll", onScroll);
++      window.removeEventListener("scroll", onScroll, true);
++      window.removeEventListener("live-cursors:coordinates", onScroll);
+       if (throttleTimer) {
+         clearTimeout(throttleTimer);
+       }

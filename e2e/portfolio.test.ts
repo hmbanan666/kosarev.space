@@ -144,6 +144,7 @@ test('case filters and critical content work without JavaScript', async ({ brows
   const page = await context.newPage()
   await page.goto('/en')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Nick Kosarev')
+  await page.locator('.home-catalog > summary').click()
   await page.getByRole('searchbox', { name: 'Search work', exact: true }).fill('cache')
   await page.getByRole('combobox', { name: 'Area of work', exact: true }).selectOption('delivery')
   await page.getByRole('button', { name: 'Find cases', exact: true }).click()

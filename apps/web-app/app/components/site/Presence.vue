@@ -4,6 +4,7 @@
       v-if="eligible"
       :locale="locale"
       position="bottom-center"
+      coordinate-target="[data-canvas-world]"
     >
       <template #profile-actions="{ shuffle, cursorsHidden, toggleCursors, labels }">
         <div class="native-cursor-actions">

@@ -14,6 +14,8 @@ packages:
   - apps/*
   - packages/*
 
+patchedDependencies:
+  nuxt-live-cursors@0.3.2: patches/nuxt-live-cursors@0.3.2.patch
 # Native esbuild binaries and Vue version selection used by transitive tooling.
 allowBuilds:
   '@resvg/resvg-js': true

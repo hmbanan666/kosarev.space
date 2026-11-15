@@ -13,6 +13,7 @@ for (const locale of ['ru', 'en'] as const) {
       await page.setViewportSize({ width, height: 900 })
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto(`${prefix}/`)
+      await page.locator('.home-catalog > summary').click()
       await page.locator('[data-active-product="k39"]').getByRole('link', {
         name: titles[locale],
       }).click()

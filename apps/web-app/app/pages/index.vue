@@ -1,10 +1,17 @@
 <template>
   <UPage>
-    <HeroSection />
-    <ExperienceSection />
-    <SkillsShowcaseSection />
-    <ProjectsSection />
-    <SitePresenceNote />
+    <HomeCanvas />
+    <details
+      ref="catalog"
+      class="home-catalog"
+      :open="hasCatalogQuery"
+    >
+      <summary class="site-wrap">
+        {{ t('nav.cases') }} / {{ t('projects.archiveTitle') }}
+      </summary>
+      <SkillsShowcaseSection />
+      <ProjectsSection />
+    </details>
   </UPage>
 </template>
 
@@ -13,6 +20,21 @@ definePageMeta({ key: 'portfolio', colorMode: 'dark' })
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
+const route = useRoute()
+const catalog = useTemplateRef<HTMLDetailsElement>('catalog')
+const hasCatalogQuery = computed(() => ['q', 'focus', 'tech', 'all'].some((key) => route.query[key]))
+function openCatalog() {
+  const hash = window.location.hash
+  if (hash === '#skills' || hash === '#projects' || hash.startsWith('#project-')) {
+    if (catalog.value) {
+      catalog.value.open = true
+    }
+    nextTick(() => document.getElementById(hash.slice(1))?.scrollIntoView())
+  }
+}
+onMounted(openCatalog)
+watch(() => route.fullPath, () => nextTick(openCatalog))
+useEventListener('hashchange', openCatalog)
 
 const canonicalUrl = computed(() => {
   const base = 'https://kosarev.space'

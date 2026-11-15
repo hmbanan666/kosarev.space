@@ -431,5 +431,25 @@
     },
     "empty": "No publications yet.",
     "feedTitle": "Writing by Nick Kosarev"
+  },
+  "canvas": {
+    "title": "Canvas",
+    "help": "Drag the background · Scroll · Arrow keys",
+    "reading": "Reading",
+    "archive": "Archive",
+    "now": "Now",
+    "engineer": "Engineer",
+    "move": "Move block",
+    "moveHelp": "Drag, or use arrow keys to move one cell. Escape cancels.",
+    "minimap": "Canvas map. Click to navigate, Enter to return to the start.",
+    "recenter": "Recenter",
+    "zoomOut": "Zoom out",
+    "zoomIn": "Zoom in",
+    "zoom": "Zoom",
+    "local": "Layout on this device",
+    "undo": "Undo",
+    "reset": "Reset layout",
+    "updated": "Layout updated",
+    "blocked": "No room for this move"
   }
 }

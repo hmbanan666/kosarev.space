@@ -2,6 +2,7 @@
 @plugin "tailwindcss-motion";
 @import "@nuxt/ui";
 @import "./portfolio.css";
+@import "./blueprint.css";
 
 @theme static {
   --font-sans: 'Noto Sans', sans-serif;
