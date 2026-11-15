@@ -10,7 +10,7 @@
 .site-shell :is(article, section, figure, img, input, select, button, summary, details, .site-button, .project-visual, .active-image-wrap, .case-filters, .paused-mark, pre, code),
 .case-select-menu, .case-select-option, .case-select-trigger, .native-cursor-action { border-radius: 0 !important; }
 .site-shell :is(.hero-portrait, .hero-portrait)::before { border-radius: 0; }
-.blueprint-frame { position: relative; border: 1px solid #35332e; background: #10100f; padding: 24px; min-width: 0; }
+.blueprint-frame { position: relative; border: 1px solid #35332e; background: #10100f; padding: calc(var(--grid-gap) * 1.5); min-width: 0; }
 .blueprint-frame-accent::before, .blueprint-frame-accent::after { content: ''; position: absolute; width: 15px; height: 15px; pointer-events: none; border-color: var(--ui-primary); }
 .blueprint-frame-accent::before { left: -1px; top: -1px; border-left: 2px solid; border-top: 2px solid; color: var(--ui-primary); }
 .blueprint-frame-accent::after { right: -1px; bottom: -1px; border-right: 2px solid; border-bottom: 2px solid; color: var(--ui-primary); }
@@ -27,7 +27,7 @@
 .canvas-heading { display: flex; align-items: center; gap: 24px; min-height: 40px; margin-bottom: 14px; }
 .canvas-heading p { font: .7rem/1.5 var(--font-mono); color: var(--ui-text-muted); }
 .canvas-heading .blueprint-title { margin-left: auto; }
-.canvas-viewport { position: relative; background-image: linear-gradient(var(--blueprint-grid) 1px, transparent 1px),linear-gradient(90deg,var(--blueprint-grid) 1px,transparent 1px); background-size: 24px 24px; }
+.canvas-viewport { position: relative; background-image: linear-gradient(var(--blueprint-grid) 1px, transparent 1px),linear-gradient(90deg,var(--blueprint-grid) 1px,transparent 1px); background-size: calc(var(--grid-cell) / 4) calc(var(--grid-cell) / 4); }
 .canvas-viewport:focus-visible { outline: 1px solid var(--ui-primary); outline-offset: 6px; }
 .canvas-world { position: relative; transform-origin: 0 0; }
 .canvas-enabled .canvas-viewport { height: clamp(480px, calc(100svh - 250px), 810px); overflow: auto; overscroll-behavior: contain; scrollbar-color: #665339 #10100f; scrollbar-width: thin; cursor: grab; touch-action: pan-x pan-y; }
@@ -42,8 +42,8 @@
 .canvas-intro img { width: 104px; height: 128px; object-fit: cover; border: 1px solid #665339; }
 .canvas-intro h1 { font: 500 2.45rem/1.13 var(--font-serif); letter-spacing: -.04em; }
 .canvas-intro .canvas-eyebrow { color: var(--ui-primary); font-size: .6rem; }
-.canvas-role { font: .7rem/1.7 var(--font-mono); color: var(--ui-primary); max-width: 40ch; margin-bottom: 12px !important; }
-.canvas-description { font-size: .82rem; line-height: 1.75; color: var(--ui-text-toned); margin-top: 10px !important; max-width: 65ch; }
+.canvas-role { font: .8rem/1.7 var(--font-mono); color: var(--ui-primary); max-width: 40ch; margin-bottom: 12px !important; }
+.canvas-description { font-size: .95rem; line-height: 1.75; color: var(--ui-text-toned); margin-top: 10px !important; max-width: 65ch; }
 .canvas-links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 16px; font-size: .85rem; }
 .canvas-links .site-button { min-height: 40px; font-size: .8rem; padding: .5rem .8rem; }
 .canvas-footnote { font-size: .72rem; line-height: 1.7; color: var(--ui-text-muted); margin-top: 16px !important; }

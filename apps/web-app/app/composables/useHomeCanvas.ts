@@ -42,7 +42,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
     measure()
   }
   function start(event: PointerEvent, id?: string) {
-    if (!enabled.value || event.button !== 0 || !viewport.value) {
+    if (gesture || !event.isPrimary || !enabled.value || event.button !== 0 || !viewport.value) {
       return
     }
     if (!id && (event.target as HTMLElement).closest('a, button, input, select, summary, article')) {
@@ -80,7 +80,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
     if (!gesture) {
       return
     }
-    if (!cancel && target.value) {
+    if (!cancel && target.value && (target.value.x !== gesture.block?.x || target.value.y !== gesture.block?.y)) {
       feedback.value = layout.move(target.value.id, target.value.x, target.value.y) ? 'updated' : 'blocked'
       sync()
     }

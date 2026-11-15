@@ -19,7 +19,7 @@
       {{ t('cv.subtitle') }}
     </p>
     <p class="canvas-description">
-      {{ t('hero.description') }}
+      {{ heroIntro }}
     </p>
     <div class="canvas-links">
       <NuxtLink class="site-button" :to="localePath('/cv')">
@@ -46,7 +46,7 @@
       >{{ product.title }}</a>
     </h2>
     <p class="canvas-description">
-      {{ t(`projects.${id}.kind`) }}
+      {{ t(`projects.${id}.${id === 'context' || id === 'dostigus' ? 'description' : 'kind'}`) }}
     </p>
     <figure v-if="id === 'k39'" class="canvas-map">
       <img
@@ -57,9 +57,6 @@
       >
       <figcaption>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://protomaps.com">Protomaps</a></figcaption>
     </figure>
-    <p v-else-if="id !== 'woodlands'" class="canvas-description">
-      {{ t(`projects.${id}.description`) }}
-    </p>
     <a
       v-if="product.source"
       class="canvas-source"
@@ -163,6 +160,8 @@ import type { PublicationSummary } from '~~/shared/publications'
 const props = defineProps<{ id: string, latest?: PublicationSummary }>()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
+// Use the existing introduction verbatim; the project blocks carry its examples.
+const heroIntro = computed(() => t('hero.description').match(/^[^.]+\./)?.[0] ?? t('hero.description'))
 const language = computed(() => locale.value === 'en' ? 'en' : 'ru')
 const product = computed(() => [...activeProducts, ...pausedProjects].find((product) => product.key === props.id) as { title: string, page?: string, link?: string, source?: string } | undefined)
 </script>
