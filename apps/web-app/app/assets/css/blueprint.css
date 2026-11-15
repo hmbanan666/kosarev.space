@@ -23,15 +23,17 @@
 .blueprint-ruler { display: block; height: 6px; background: repeating-linear-gradient(90deg,#d9ad6720 0 1px,transparent 1px 24px); }
 .blueprint-title { padding-left: 12px; border-left: 1px solid #d9ad6730; }
 .blueprint-hatching { display: block; height: 8px; background: repeating-linear-gradient(135deg, transparent 0 5px, #d9ad671a 5px 6px); }
-.home-canvas { padding: 20px 32px 0; }
+.home-canvas { padding: 20px 16px 0; }
 .canvas-heading { display: flex; align-items: center; gap: 24px; min-height: 40px; margin-bottom: 14px; }
 .canvas-heading p { font: .7rem/1.5 var(--font-mono); color: var(--ui-text-muted); }
-.canvas-heading .blueprint-title { margin-left: auto; }
+.canvas-heading .blueprint-title { margin-left: auto; display: flex; align-items: center; gap: 24px; border: 1px solid #d9ad6730; padding: 8px 12px; }
+.canvas-heading .blueprint-title span + span { border-left: 1px solid #d9ad6730; padding-left: 12px; color: var(--ui-primary); }
 .canvas-viewport { position: relative; background-image: linear-gradient(var(--blueprint-grid) 1px, transparent 1px),linear-gradient(90deg,var(--blueprint-grid) 1px,transparent 1px); background-size: calc(var(--grid-cell) / 4) calc(var(--grid-cell) / 4); }
 .canvas-viewport:focus-visible { outline: 1px solid var(--ui-primary); outline-offset: 6px; }
 .canvas-world { position: relative; transform-origin: 0 0; }
 .canvas-enabled .canvas-viewport { height: clamp(480px, calc(100svh - 250px), 810px); overflow: auto; overscroll-behavior: contain; scrollbar-color: #665339 #10100f; scrollbar-width: thin; cursor: grab; touch-action: pan-x pan-y; }
 .canvas-enabled .canvas-world { contain: layout; }
+.canvas-enabled .canvas-size { margin: 8px; }
 .canvas-enabled .blueprint-frame { position: absolute; display: flex; flex-direction: column; cursor: auto; }
 .canvas-enabled .is-dragging { cursor: grabbing; user-select: none; touch-action: none; }
 .canvas-enabled .is-dragging * { cursor: grabbing; }
@@ -50,7 +52,7 @@
 .canvas-block-hero .canvas-footnote { margin-top: auto !important; padding-top: 12px; }
 .canvas-source { align-self: start; font: .7rem/1.5 var(--font-mono); color: var(--ui-primary); margin-top: auto; padding-top: 12px; text-decoration: underline; }
 .canvas-map { margin: 16px -24px 0; position: relative; flex: 1; min-height: 0; overflow: hidden; }
-.canvas-map img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 44%; }
+.canvas-map img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 44%; filter: grayscale(1) invert(1) sepia(.7) saturate(1.3) brightness(.75) contrast(1.1); }
 .canvas-map figcaption { position: absolute; bottom: 0; right: 0; padding: 2px 6px; font-size: 9px; color: #f3f1eb; background: #080808da; }
 .canvas-map a { text-decoration: underline; }
 .canvas-block-k39 .canvas-source { display: none; }
@@ -67,9 +69,13 @@
 .canvas-target { position: absolute; pointer-events: none; border: 1px dashed var(--ui-primary); background: #d9ad6714; z-index: 2; }
 .canvas-target span { padding: 4px 8px; background: var(--ui-primary); color: #080808; font: .7rem var(--font-mono); }
 .canvas-moving { opacity: .45; }
-.canvas-divider { position: absolute; opacity: .6; }
-.canvas-crosshair { position: absolute; top: 816px; left: 1610px; }
-.canvas-ruler { position: absolute; top: 823px; left: 0; width: 1616px; }
+.canvas-divider { position: absolute; opacity: .85; pointer-events: none; }
+.canvas-crosshair { position: absolute; pointer-events: none; }
+.canvas-crosshair-top-left { top: -7px; left: -7px; }
+.canvas-crosshair-top-right { top: -7px; right: 9px; }
+.canvas-crosshair-bottom-left { bottom: 9px; left: -7px; }
+.canvas-crosshair-bottom-right { bottom: 9px; right: 9px; }
+.canvas-ruler { position: absolute; bottom: 3px; left: 0; right: 16px; pointer-events: none; }
 .canvas-tools { min-height: 88px; display: flex; gap: 20px; align-items: center; font: .7rem/1.4 var(--font-mono); color: var(--ui-text-muted); }
 .canvas-tools button { min-height: 40px; padding: 8px; }
 .canvas-tools button:hover:not(:disabled) { color: var(--ui-primary); }
@@ -114,3 +120,35 @@
 /* Keep long publication titles inside their desktop cell; full text stays in HTML. */
 .canvas-enabled .canvas-latest .canvas-footnote { margin-top: 0 !important; }
 .canvas-enabled .canvas-latest a { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+
+/* A few gutter labels establish the drawing; content keeps its own quiet space. */
+.canvas-world .blueprint-part { top: -11px; right: 40px; z-index: 1; padding: 2px 8px; background: var(--ui-bg); font-size: 9px; color: var(--ui-primary); }
+.home-canvas:not(.canvas-enabled) .blueprint-part { display: none; }
+.canvas-enabled .canvas-block-hero { background: linear-gradient(145deg, #d9ad670a, transparent 65%), #10100f; }
+.canvas-enabled .canvas-intro h1 { font-size: 2.85rem; }
+.canvas-enabled .canvas-block-context { display: grid; grid-template-columns: 1fr 1.6fr; column-gap: 28px; align-content: start; }
+.canvas-enabled .canvas-block-context .canvas-eyebrow { grid-column: 1; margin-bottom: 8px !important; }
+.canvas-enabled .canvas-block-context h2 { grid-column: 1; font-size: 2rem; }
+.canvas-enabled .canvas-block-context .canvas-description { grid-column: 2; grid-row: 1 / span 2; margin-top: 0 !important; padding-right: 8px; }
+.canvas-enabled .canvas-block-context .canvas-source { grid-column: 1 / -1; padding-top: 16px; }
+.canvas-enabled .canvas-block-k39 > :is(h2, .canvas-eyebrow, .canvas-description) { width: 40%; }
+.canvas-enabled .canvas-block-k39 .canvas-map { position: absolute; right: 0; top: 0; bottom: 0; width: 55%; margin: 0; border-left: 1px solid #d9ad6720; }
+.canvas-enabled .canvas-block-k39 .canvas-grip { z-index: 1; background: #10100fcc; }
+.canvas-enabled .canvas-block-contacts { padding: 12px 24px; justify-content: center; }
+.canvas-enabled .canvas-block-contacts .canvas-eyebrow { display: none; }
+.canvas-enabled .canvas-block-contacts .canvas-email { font-size: 1.3rem; }
+.canvas-enabled .canvas-block-contacts .canvas-links { margin-top: 6px; font-size: .75rem; }
+.canvas-enabled .canvas-block-writing h2 { font: 500 2.2rem/1.2 var(--font-serif); }
+.canvas-enabled .canvas-block-writing .canvas-latest { margin-top: 32px; }
+.canvas-enabled .canvas-block-writing .canvas-latest a { -webkit-line-clamp: 7; }
+.canvas-enabled .canvas-block-now { justify-content: flex-end; }
+.canvas-enabled .canvas-block-now .canvas-footnote { border-top: 1px solid #d9ad6730; padding-top: 16px; }
+.canvas-enabled .blueprint-frame { transition: left 240ms ease, top 240ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.canvas-target { transition: left 100ms ease-out, top 100ms ease-out; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .canvas-enabled .blueprint-frame:hover:not(.canvas-moving) { transform: translateY(-2px); }
+}
+.canvas-enabled .blueprint-frame:is(:hover, :focus-within) { border-color: #d9ad6790; box-shadow: 0 6px 24px #0003; z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .canvas-enabled .blueprint-frame, .canvas-target { transition: none; }
+}
