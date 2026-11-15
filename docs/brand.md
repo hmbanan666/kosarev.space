@@ -130,15 +130,16 @@ text and insets scale together. At narrower desktop widths the default is a
 board overview; zoom enlarges the content for reading. Pan by dragging empty
 space, scrolling or focusing the viewport and pressing arrow keys after
 zooming. Native scroll bounds prevent getting lost. The minimap navigates the
-zoomed board; its keyboard action fits and recenters. Tab focus reveals
+zoomed board; fitted mode lets wheel scrolling reach the footer normally. The
+minimap's keyboard action fits and recenters. Tab focus reveals
 off-screen blocks. The canvas grows with its fitted contents rather than
 clipping the last row to a fixed viewport height.
 
 The control bar uses equal left/right grid tracks around a centered native
-online pill, including the original face renderer and profile actions. One presence instance
-moves between the dock and the page shell, preserving its connection across
-route changes. The
-footer is in normal document flow below the catalog disclosure, with a quiet
+online pill, including the original face renderer and profile actions. One
+presence instance moves between the dock and the page shell, preserving its
+connection across route changes. The footer is in normal document flow below
+the catalog disclosure, with a quiet
 contact label, existing contact copy, direct links and a mono copyright row.
 Inner pages share this footer and horizontal container while retaining their
 reading line-length limits. Mobile uses 20px side gutters and consistent mono

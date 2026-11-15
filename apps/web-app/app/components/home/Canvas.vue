@@ -21,7 +21,7 @@
       ref="viewport"
       class="canvas-viewport"
       data-live-cursors-viewport
-      :class="{ 'is-dragging': dragging }"
+      :class="{ 'is-dragging': dragging, 'canvas-fitted': zoom <= fitZoom }"
       :tabindex="enabled ? 0 : undefined"
       :role="enabled ? 'region' : undefined"
       :aria-label="t('canvas.title')"

@@ -61,6 +61,14 @@ async function zoomInFully(page: Page) {
   await page.locator('.canvas-viewport').evaluate((el) => el.scrollTo(0, 0))
 }
 
+test('a fitted canvas lets wheel scrolling reach the shared footer', async ({ page }) => {
+  const viewport = await openCanvas(page)
+  await viewport.hover({ position: { x: 200, y: 200 } })
+  await page.mouse.wheel(0, 500)
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0)
+  await expect(page.locator('.site-footer')).toBeInViewport()
+})
+
 test('canvas pans by wheel, background drag and arrows after zoom, with bounded map and fit recenter', async ({ page }) => {
   const viewport = await openCanvas(page)
   const fittedZoom = await page.locator('.canvas-zoom output').textContent()

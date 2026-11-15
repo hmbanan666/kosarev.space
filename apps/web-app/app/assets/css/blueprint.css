@@ -35,6 +35,7 @@
 .canvas-viewport:focus-visible { outline: 1px solid var(--ui-primary); outline-offset: 4px; }
 .canvas-world { position: relative; transform-origin: 0 0; }
 .canvas-enabled .canvas-viewport { height: calc(var(--canvas-fit-height) + 2 * var(--grid-gap) + 2px); padding: var(--grid-gap); border: 1px solid var(--ui-border); overflow: auto; overscroll-behavior: contain; scrollbar-color: #665339 #10100f; scrollbar-width: thin; cursor: grab; touch-action: pan-x pan-y; }
+.canvas-enabled .canvas-fitted { overscroll-behavior: auto; }
 .canvas-enabled .canvas-world { contain: layout; }
 .canvas-enabled .canvas-size { margin-inline: auto; }
 .canvas-world .blueprint-frame { display: flex; flex-direction: column; padding: var(--block-inset); }
