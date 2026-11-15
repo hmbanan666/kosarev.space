@@ -12,7 +12,8 @@
         {{ t('canvas.help') }}
       </p>
       <BlueprintMark kind="title">
-        kosarev.space / 01
+        <span>kosarev.space</span>
+        <span>01 / {{ homeCanvas.columns }} × {{ homeCanvas.rows }}</span>
       </BlueprintMark>
     </div>
     <div
@@ -41,7 +42,13 @@
           :style="enabled ? { width: `${width}px`, height: `${height}px`, transform: `scale(${zoom})` } : undefined"
         >
           <BlueprintMark kind="ruler" class="canvas-ruler" />
-          <BlueprintMark kind="crosshair" class="canvas-crosshair" />
+          <BlueprintMark
+            v-for="corner in ['top-left', 'top-right', 'bottom-left', 'bottom-right']"
+            :key="corner"
+            kind="crosshair"
+            class="canvas-crosshair"
+            :class="`canvas-crosshair-${corner}`"
+          />
           <BlueprintMark
             v-for="divider in dividers"
             :key="divider.key"
@@ -57,6 +64,7 @@
               :data-block="block.id"
               :class="[`canvas-block-${block.id}`, { 'canvas-moving': target?.id === block.id }]"
               :accent="block.id === 'hero'"
+              :part="parts[block.id]"
               :style="enabled ? position(block) : undefined"
             >
               <button
@@ -160,14 +168,12 @@ const { t } = useI18n()
 const viewport = useTemplateRef<HTMLElement>('viewport')
 const { enabled, blocks, canUndo, feedback, zoom, view, width, height, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position, reset, undo } = useHomeCanvas(viewport)
 const { data } = await usePublications()
-const dividers = computed(() => [['writing', 'live'], ['k39', 'dostigus']].flatMap(([from, to]) => {
-  const a = blocks.value.find((block) => block.id === from)!
-  const b = blocks.value.find((block) => block.id === to)!
-  if (a.x !== b.x || a.y + a.h !== b.y) {
-    return []
-  }
-  return [{ key: from, style: { left: `${a.x * homeCanvas.cell}px`, top: `${b.y * homeCanvas.cell - 9}px`, width: `${Math.min(a.w, b.w) * homeCanvas.cell - 16}px` } }]
-}))
+// Follow the current block edges, including after a visitor rearranges the board.
+const dividers = computed(() => blocks.value.filter((block) => ['hero', 'context', 'k39', 'writing'].includes(block.id) && block.y + block.h < homeCanvas.rows).map((block) => ({
+  key: block.id,
+  style: { left: `${block.x * homeCanvas.cell}px`, top: `${(block.y + block.h) * homeCanvas.cell - 9}px`, width: `${block.w * homeCanvas.cell - 16}px` },
+})))
+const parts: Record<string, string> = { hero: 'A / 01', context: 'B / 01', k39: 'B / 02', writing: 'C / 01' }
 const latest = computed(() => sortPublications(data.value ?? [])[0])
 const mobileZones: Record<string, string> = { hero: 'canvas.engineer', context: 'projects.title', writing: 'canvas.reading', cv: 'site.experience', live: 'canvas.now' }
 function blockLabel(id: string) {

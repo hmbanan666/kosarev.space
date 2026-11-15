@@ -6,6 +6,15 @@ const blocks = [
   { id: 'large', x: 0, y: 0, w: 2, h: 2 },
   { id: 'small', x: 2, y: 0, w: 1, h: 1 },
 ]
+it('packs every default home cell exactly once, with no holes or ragged edges', () => {
+  const layout = createCanvasLayout(homeBlocks, homeCanvas)
+  for (let y = 0; y < homeCanvas.rows; y++) {
+    for (let x = 0; x < homeCanvas.columns; x++) {
+      const occupants = layout.blocks.filter((block) => x >= block.x && x < block.x + block.w && y >= block.y && y < block.y + block.h)
+      expect(occupants, `cell ${x},${y}`).toHaveLength(1)
+    }
+  }
+})
 describe('visitor canvas layout', () => {
   it('snaps a move to a cell and clamps it inside the board', () => {
     const layout = createCanvasLayout(blocks, { columns: 5, rows: 4 })
@@ -69,15 +78,15 @@ it('keeps a full board valid and tolerates blocked storage', () => {
 
 it('pushes a chain of differently sized neighbours on the actual home board', () => {
   const layout = createCanvasLayout(homeBlocks, homeCanvas)
-  expect(layout.move('context', 5, 3)).toBe(true)
-  expect(layout.move('context', 4, 3)).toBe(true)
+  expect(layout.move('context', 5, 2)).toBe(true)
+  expect(layout.move('context', 5, 4)).toBe(true)
   const current = layout.blocks
-  expect(current.find((block) => block.id === 'context')).toMatchObject({ x: 4, y: 3 })
+  expect(current.find((block) => block.id === 'context')).toMatchObject({ x: 5, y: 4 })
   for (const [index, a] of current.entries()) {
     expect(a.x).toBeGreaterThanOrEqual(0)
     expect(a.y).toBeGreaterThanOrEqual(0)
-    expect(a.x + a.w).toBeLessThanOrEqual(17)
-    expect(a.y + a.h).toBeLessThanOrEqual(9)
+    expect(a.x + a.w).toBeLessThanOrEqual(homeCanvas.columns)
+    expect(a.y + a.h).toBeLessThanOrEqual(homeCanvas.rows)
     for (const b of current.slice(index + 1)) {
       expect(a.x >= b.x + b.w || a.x + a.w <= b.x || a.y >= b.y + b.h || a.y + a.h <= b.y).toBe(true)
     }

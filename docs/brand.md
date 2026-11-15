@@ -17,7 +17,7 @@ the earlier direction that explicitly deprioritized employment.
 ## Implemented structure
 
 - A server-rendered home with role, location, CV, PDF, work and email links.
-  Desktop and tablet enhance the blocks into a bounded 17 by 9 cell canvas.
+  Desktop and tablet enhance the blocks into a bounded 17 by 8 cell canvas.
   Below 768px and without JavaScript, the same HTML uses a grouped list.
   The home links to the CV for the full career history.
 - A case finder with shareable URL filters, search, a visible path to all cases,
@@ -71,8 +71,8 @@ website. Print pages remain white.
 The original color portrait and deliberate typography carry the introduction;
 do not desaturate the portrait or replace it with a decorative diagram. A fine
 amber corner frame gives the introduction depth, while real project screenshots
-retain their original colors. Short action/reading responses support the
-same visual language without entrance animations across every section. Noto
+retain their original colors on project pages. Short action/reading responses
+support the same visual language without entrance animations across every section. Noto
 Sans serves interface and body text, while Lora distinguishes the name, with
 Cyrillic and Latin coverage. Align content to shared left edges, keep body
 lines below 80 characters and resolve control heights, labels and spacing as
@@ -97,8 +97,15 @@ and hatching are available as small reusable marks. Keep them at edges and in
 empty gaps, with one or two details per zone. Decorative marks are hidden from
 assistive technology. Never turn project cards into densely annotated diagrams.
 
-The home uses mixed block sizes and deliberate gaps. Pan by dragging empty
-space, scrolling or focusing the viewport and pressing arrow keys. Native
+The home packs all default cells into one rectangle, with a large introduction,
+a wide Context strip, tall reading/product blocks and compact contact/CV tiles.
+The 16px gutters carry a few part numbers and dimension lines that follow block
+positions. Corner crosshairs and a small title block frame the board. The home
+K39 preview applies a dark gold CSS duotone to the existing capture, keeping its
+map attribution and adding no image bytes. Its project page keeps the original.
+Blocks lift by 2px on hover and ease into snapped positions over 240ms; reduced
+motion disables the lift and transitions. Shared color, cell and gap tokens are
+unchanged. Pan by dragging empty space, scrolling or focusing the viewport and pressing arrow keys. Native
 scroll bounds prevent getting lost, with a short resistance zone during drag.
 Zoom stays between 80 and 125 percent. The minimap shows the current viewport;
 its click target navigates and its keyboard action returns to the beginning.
