@@ -41,7 +41,7 @@
           <div
             class="canvas-world"
             :data-canvas-world="enabled ? '' : undefined"
-            :style="enabled ? { width: `${width}px`, height: `${height}px`, transform: `scale(${zoom})` } : undefined"
+            :style="enabled ? { 'width': `${width}px`, 'height': `${height}px`, 'transform': `scale(${zoom})`, '--canvas-cell-width': `${cellWidth}px`, '--canvas-cell-height': `${cellHeight}px` } : undefined"
           >
             <BlueprintMark
               v-for="corner in ['top-left', 'top-right', 'bottom-left', 'bottom-right']"
@@ -183,7 +183,7 @@ const localePath = useLocalePath()
 const viewport = useTemplateRef<HTMLElement>('viewport')
 const { data: activity } = await useActivity()
 const defaults = computed(() => activityLayout(projectScores(activity.value)))
-const { enabled, blocks, feedback, zoom, fitZoom, minZoom, width, height, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, reveal, position, reset } = useHomeCanvas(viewport, defaults)
+const { enabled, blocks, feedback, zoom, fitZoom, minZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, reveal, position, reset } = useHomeCanvas(viewport, defaults)
 const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
 const presenceDocked = useState('canvas-presence-docked', () => false)
 // Move the existing presence instance after its dock exists. Route changes

@@ -125,7 +125,8 @@ Canvas dimensions are `columns × cell − gap` and `rows × cell − gap`, so
 there is no trailing empty strip. The 17 by 11 graph-paper board leaves empty
 cells between clusters. It is not a packed rectangle. The role and original
 portrait remain prominent at centre-left; contact is a small edge card.
-Four quiet crosshairs and coordinate marks frame the board.
+Grid lines share the cards' coordinate space during pan and zoom. Four quiet
+crosshairs and coordinate marks frame the board.
 
 The project layout is deterministic. For each project, the score is the sum of
 `max(0, 30 − floor(days since latest observed commit/PR))`, the number of observed

@@ -234,3 +234,7 @@ body:has(.activity-panel[open]) { overflow: hidden; }
 
 .canvas-enabled .canvas-intro img { width: 96px; height: 112px; }
 .canvas-enabled .canvas-source, .canvas-enabled .canvas-links { flex-shrink: 0; }
+
+/* Grid lines share the cards' coordinate space during fit, pan and zoom. */
+.canvas-enabled .canvas-viewport { background-image: none; }
+.canvas-enabled .canvas-world { background-image: linear-gradient(var(--blueprint-grid) 1px, transparent 1px), linear-gradient(90deg, var(--blueprint-grid) 1px, transparent 1px); background-size: calc(var(--canvas-cell-width) / 4) calc(var(--canvas-cell-height) / 4); }
