@@ -16,7 +16,11 @@ export function createOutputGuard(evidence: KnowledgeChunk[]) {
   let fence = ''
   let emitted = 0
   let received = 0
+  let filtered = false
   return {
+    get filtered() {
+      return filtered
+    },
     get empty() {
       return emitted === 0
     },
@@ -42,6 +46,8 @@ export function createOutputGuard(evidence: KnowledgeChunk[]) {
           const block = pending.slice(0, end)
           if (quotedSnippet(block, evidence)) {
             output += block
+          } else {
+            filtered = true
           }
           pending = pending.slice(end)
           fence = ''
@@ -61,6 +67,9 @@ export function createOutputGuard(evidence: KnowledgeChunk[]) {
         break
       }
       if (final) {
+        if (fence) {
+          filtered = true
+        }
         if (!fence) {
           output += pending
         }

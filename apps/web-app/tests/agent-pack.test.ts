@@ -23,3 +23,12 @@ it('retains long project descriptions, career chronology and public destinations
   expect(found[0]?.url).toBe('/projects/k39')
   expect(found.map((chunk) => chunk.text).join('')).toContain('https://k39.online')
 })
+
+it.each(['ru', 'en'])('always grounds unfamiliar skill questions in the public stack and CV (%s)', (locale) => {
+  const pack = publicKnowledge()
+  const found = retrieve(pack, locale === 'ru' ? 'умеешь в rust?' : 'can you do React Native?', '/', locale)
+  const stack = found.find((chunk) => chunk.url.endsWith('/cv#cv-skills'))
+  expect(stack?.text).toContain('TypeScript')
+  expect(stack?.text).toContain('PostgreSQL')
+  expect(found.some((chunk) => chunk.url.endsWith('/cv'))).toBe(true)
+})

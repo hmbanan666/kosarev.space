@@ -137,6 +137,9 @@
             <UIcon name="i-lucide-arrow-up" />{{ t('agent.send') }}
           </button>
         </div>
+        <p class="agent-privacy">
+          {{ t('agent.privacy') }}
+        </p>
       </form>
       <p
         class="sr-only"
@@ -303,5 +306,7 @@ button:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-vis
   .agent-composer textarea { font-size: 16px; }
   .agent-empty { padding-top: 20px; }
 }
+.agent-privacy { margin-top: 12px; font-size: 11px; color: #aaa8a2; }
+@media (any-pointer: coarse), (hover: none) { .agent-hint { display: none; } }
 @media print { .site-agent { display: none; } }
 </style>

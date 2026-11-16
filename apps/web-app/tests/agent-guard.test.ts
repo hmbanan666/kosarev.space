@@ -31,3 +31,12 @@ it('rejects questions over 600 characters and bounds retained history to three e
   expect(request?.messages[0]?.content).toBe('K39 2')
   expect(request?.messages.every((message) => message.content.length <= 600)).toBe(true)
 })
+
+it('accepts anonymous UUIDs and rejects arbitrary session identifiers', () => {
+  const messages = [{ role: 'user', content: 'K39?' }]
+  const sessionId = 'dcb07860-4c4b-40ed-90ba-ec4de6d405ad'
+  expect(validateAgentRequest({ messages, sessionId })?.sessionId).toBe(sessionId)
+  for (const invalid of ['visitor@example.com', 'x'.repeat(1000), null, {}, []]) {
+    expect(validateAgentRequest({ messages, sessionId: invalid })).toBeNull()
+  }
+})

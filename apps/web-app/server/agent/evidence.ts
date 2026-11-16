@@ -1,5 +1,6 @@
 import type { ActivitySnapshot } from '../../shared/activity'
 import type { KnowledgeChunk } from './knowledge'
+import { activeProducts } from '../../app/utils/data'
 import { chunkDocument } from './knowledge'
 
 export async function agentEvidence(): Promise<KnowledgeChunk[]> {
@@ -18,10 +19,23 @@ export async function agentEvidence(): Promise<KnowledgeChunk[]> {
     }
   }
   const activity = await useStorage('cache').getItem<ActivitySnapshot>('github-public-v1').catch(() => null)
-  if (activity?.fetchedAt && Date.now() - Date.parse(activity.fetchedAt) < 86400000) {
-    for (const locale of ['ru', 'en']) {
-      chunks.push(...chunkDocument('Recent public activity · Сейчас · Активность', locale === 'en' ? '/en' : '/', locale, `Public sample, not complete activity. Snapshot: ${activity.fetchedAt}. ${JSON.stringify(activity.items.slice(0, 12).map(({ repo, title, date }) => ({ repo, title, date })))}`))
-    }
+  const now = new Date().toISOString()
+  const fresh = activity?.fetchedAt && Date.parse(now) - Date.parse(activity.fetchedAt) >= 0 && Date.parse(now) - Date.parse(activity.fetchedAt) < 86400000
+  // The public snapshot's repository list is the allowlist. Never include subjects.
+  const allowed = new Set(activity?.repos.map(({ name }) => name))
+  const recent = fresh ? activity.items.filter(({ repo, date }) => allowed.has(repo) && Date.parse(date) <= Date.parse(now)).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3).map(({ repo, date }) => ({ repo, date })) : []
+  const latest = summaries[0]
+  for (const locale of ['ru', 'en'] as const) {
+    const prefix = locale === 'en' ? '/en' : ''
+    chunks.push({
+      title: 'Now · Сейчас', url: prefix || '/', locale,
+      text: JSON.stringify({
+        asOf: now,
+        activeProjects: activeProducts.map(({ title, page, key }) => ({ title, url: `${prefix}${page ?? `/projects#project-${key}`}` })),
+        publicActivity: { snapshot: fresh ? activity.fetchedAt : null, coverage: 'Public sample only; missing activity is unknown.', items: recent },
+        latestPublication: latest ? { title: latest.locales[locale].title, date: latest.publishedAt, url: `${prefix}/writing/${latest.slug}` } : null,
+      }),
+    })
   }
   return chunks
 }

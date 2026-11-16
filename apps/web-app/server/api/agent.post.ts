@@ -1,14 +1,16 @@
-import { createHmac, randomBytes } from 'node:crypto'
+import { createHmac, randomBytes, randomUUID } from 'node:crypto'
 import { readSse } from '../../shared/agent-stream'
 import { agentEvidence } from '../agent/evidence'
 import { createRateLimit, isBlockedQuestion, looksOnTopic, scopeRefusal, validateAgentRequest } from '../agent/guard'
 import { buildPrompt, retrieve } from '../agent/knowledge'
 import { createOutputGuard } from '../agent/output'
+import { createAnswerWording } from '../agent/wording'
 
 const limit = createRateLimit()
 const salt = randomBytes(32)
 
 export default defineEventHandler(async (event) => {
+  const started = Date.now()
   setHeader(event, 'Cache-Control', 'no-store')
   const config = useRuntimeConfig(event)
   if (!config.openrouterApiKey) {
@@ -64,18 +66,30 @@ export default defineEventHandler(async (event) => {
     return { code: 'invalid' }
   }
   const question = request.messages.at(-1)!.content
+  const sessionId = request.sessionId ?? randomUUID()
+  const persist = (content: string, sources: { title: string, url: string }[], reason: string | null = null) => {
+    const common = { sessionId, page: request.page, locale: request.locale, model: String(config.agentModel), filtered: reason === 'blocked_question' || reason === 'off_topic' || reason === 'output_guard', filteredReason: reason, latencyMs: Date.now() - started }
+    // Retain background work for the request lifecycle, never await it on the SSE path.
+    const write = Promise.resolve().then(() => repository.agentMessage.save([
+      { ...common, role: 'user', content: question, sources: [] },
+      { ...common, role: 'assistant', content, sources },
+    ])).catch(() => {})
+    event.waitUntil?.(write)
+  }
   const blocked = isBlockedQuestion(question)
   const chunks = blocked ? [] : await agentEvidence()
   const relevant = retrieve(chunks, question, '', request.locale, 6000, 0.35)
   if (blocked || (!relevant.length && !looksOnTopic(question, chunks))) {
     const stream = createEventStream(event)
     setHeader(event, 'X-Accel-Buffering', 'no')
+    const refusal = scopeRefusal(question, request.locale)
     const send = async () => {
       try {
-        await stream.push(JSON.stringify({ type: 'delta', text: scopeRefusal(question, request.locale) }))
+        await stream.push(JSON.stringify({ type: 'delta', text: refusal }))
         await stream.push(JSON.stringify({ type: 'sources', sources: [] }))
         await stream.push(JSON.stringify({ type: 'done' }))
       } finally {
+        persist(refusal, [], blocked ? 'blocked_question' : 'off_topic')
         await stream.close()
       }
     }
@@ -93,7 +107,18 @@ export default defineEventHandler(async (event) => {
     clearTimeout(timer)
   })
   setHeader(event, 'X-Accel-Buffering', 'no')
-  const push = (value: unknown) => stream.push(JSON.stringify(value))
+  let answer = ''
+  let savedSources: { title: string, url: string }[] = []
+  let reason: string | null = null
+  const push = (value: { type: string, text?: string, sources?: { title: string, url: string }[], code?: string }) => {
+    if (value.type === 'delta') {
+      answer += value.text ?? ''
+    }
+    if (value.sources) {
+      savedSources = value.sources
+    }
+    return stream.push(JSON.stringify(value))
+  }
   const run = async () => {
     try {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -103,10 +128,12 @@ export default defineEventHandler(async (event) => {
         body: JSON.stringify({ model: config.agentModel, messages: buildPrompt(evidence, request.messages, request.page, request.locale), stream: true, max_tokens: 2000, reasoning: { effort: 'low', exclude: true } }),
       })
       if (!response.ok || !response.body) {
+        reason = 'provider_unavailable'
         await push({ type: 'error', code: response.status === 429 ? 'rateLimit' : 'offline' })
         return
       }
       const output = createOutputGuard(evidence)
+      const wording = createAnswerWording()
       let length = 0
       let finished = false
       for await (const data of readSse(response.body)) {
@@ -121,7 +148,7 @@ export default defineEventHandler(async (event) => {
         const token = chunk.choices?.[0]?.delta?.content
         if (typeof token === 'string' && token) {
           length += token.length
-          const text = output.push(token)
+          const text = output.push(wording(token))
           if (text) {
             await push({ type: 'delta', text })
           }
@@ -134,9 +161,12 @@ export default defineEventHandler(async (event) => {
       if (!finished || !length) {
         throw new Error('Incomplete stream')
       }
-      const tail = output.push('', true)
+      const tail = output.push(wording('', true), true)
       if (tail) {
         await push({ type: 'delta', text: tail })
+      }
+      if (output.filtered) {
+        reason = 'output_guard'
       }
       if (output.empty) {
         await push({ type: 'delta', text: scopeRefusal(question, request.locale) })
@@ -144,8 +174,10 @@ export default defineEventHandler(async (event) => {
       await push({ type: 'sources', sources: output.empty ? [] : sources })
       await push({ type: 'done' })
     } catch {
+      reason = controller.signal.aborted ? 'interrupted' : 'provider_error'
       await push({ type: 'error', code: 'error' }).catch(() => {})
     } finally {
+      persist(answer, savedSources, reason)
       clearTimeout(timer)
       controller.abort()
       await stream.close()

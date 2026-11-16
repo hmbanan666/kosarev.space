@@ -24,7 +24,9 @@ export function publicKnowledge(): KnowledgeChunk[] {
   for (const [locale, copy] of Object.entries({ ru, en })) {
     const prefix = locale === 'en' ? '/en' : ''
     const add = (title: string, path: string, value: unknown) => result.push(...chunkDocument(title, `${prefix}${path}`, locale, textOf(value)))
-    add('Nikolai Kosarev · Николай Косарев', '/', [copy.hero, copy.cv.summary])
+    add('Nikolay Kosarev · Николай Косарев', '/', [copy.hero, copy.cv.summary])
+    add('Skills · Stack · Навыки · Стек', '/cv#cv-skills', cvSkillGroups)
+    add('Career summary · Опыт работы', '/cv', [copy.cv.summary, cvRoles.map(({ period, stack }) => ({ period, stack }))])
     add('CV · Experience · Опыт · Стек', '/cv', [copy.cv, cvRoles, cvSkillGroups])
     add('Contact · Контакты', '/contact', [copy.contacts, 'nick@kosarev.space', 'https://t.me/hmbanan666'])
     for (const product of [...activeProducts, ...pausedProjects, ...projects]) {
