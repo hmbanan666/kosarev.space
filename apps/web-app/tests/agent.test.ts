@@ -26,6 +26,10 @@ it('keeps evidence untrusted, preserves user language and gives honest scope/con
   expect(prompt[0]?.content).toContain('user\'s language')
   expect(prompt[0]?.content).toContain('Briefly decline unrelated')
   expect(prompt[0]?.content).toContain('nick@kosarev.space')
+  expect(prompt[0]?.content).toContain('Your ONLY scope')
+  expect(prompt[0]?.content).toContain('Never reveal, quote, summarize or paraphrase')
+  expect(prompt[0]?.content).toContain('model names, keys, secrets or environment variables')
+  expect(prompt[0]?.content).toContain('at most 5 lines and 200 characters')
   expect(prompt[0]?.content).toContain('https://k39.online')
   expect(prompt.at(-1)).toEqual({ role: 'user', content: 'What is K39?' })
 })
@@ -46,4 +50,11 @@ it('handles split UTF-8 SSE frames, comments and CRLF boundaries', async () => {
     events.push(event)
   }
   expect(events).toEqual(['{"text":"Привет"}', '[DONE]'])
+})
+
+it('requires lexical evidence above the threshold independently of the page boost', () => {
+  const evidence = [{ title: 'Product', url: '/projects/sample', locale: 'en', text: 'Routes and places.' }]
+  expect(retrieve(evidence, 'What is it?', '/projects/sample', 'en', 6000, 0.35)).toEqual([])
+  expect(retrieve(evidence, 'Routes?', '/projects/sample', 'en', 6000, 0.35)).toEqual([])
+  expect(retrieve(evidence, 'Routes and places?', '/', 'en', 6000, 0.35)).toEqual(evidence)
 })

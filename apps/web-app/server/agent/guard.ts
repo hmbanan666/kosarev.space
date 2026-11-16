@@ -1,4 +1,4 @@
-import type { AgentMessage } from './knowledge'
+import type { AgentMessage, KnowledgeChunk } from './knowledge'
 
 export function validateAgentRequest(value: unknown): { messages: AgentMessage[], page: string, locale: string } | null {
   if (!value || typeof value !== 'object') {
@@ -10,7 +10,7 @@ export function validateAgentRequest(value: unknown): { messages: AgentMessage[]
   }
   let length = 0
   for (const message of body.messages) {
-    if (!message || !['user', 'assistant'].includes(message.role) || typeof message.content !== 'string' || !message.content.trim() || message.content.length > (message.role === 'user' ? 2000 : 8000)) {
+    if (!message || !['user', 'assistant'].includes(message.role) || typeof message.content !== 'string' || !message.content.trim() || message.content.length > (message.role === 'user' ? 600 : 8000)) {
       return null
     }
     length += message.content.length
@@ -19,7 +19,7 @@ export function validateAgentRequest(value: unknown): { messages: AgentMessage[]
     return null
   }
   const page = typeof body.page === 'string' && /^\/(?:en(?:\/|$))?(?:projects(?:\/[\w-]+)?|cases(?:\/[\w-]+)?|writing(?:\/[\w-]+)?|cv|contact)?$/.test(body.page) ? body.page : '/'
-  return { messages: body.messages.map(({ role, content }) => ({ role, content })), page, locale: body.locale === 'en' ? 'en' : 'ru' }
+  return { messages: body.messages.slice(-7).map(({ role, content }) => ({ role, content: content.slice(0, 600) })), page, locale: body.locale === 'en' ? 'en' : 'ru' }
 }
 
 export function createRateLimit(now = Date.now) {
@@ -39,4 +39,36 @@ export function createRateLimit(now = Date.now) {
     counters.set(identity, entry)
     return 0
   }
+}
+
+export function isBlockedQuestion(question: string): boolean {
+  const text = question.normalize('NFKC').replace(/[\u200B-\u200D\uFEFF]/g, '').toLowerCase().replace(/\s+/g, ' ').replace(/\bcan (?:nick|nikolai) write code\b/g, '')
+  return [
+    /(?:ignore|disregard|forget).{0,50}(?:instructions|rules|prompt)|(?:игнорируй|забудь|забудьте).{0,50}(?:инструкци|правил|промпт)/,
+    /system\s*(?:prompt|message)|системн.{0,15}(?:промпт|инструкци|сообщени)|(?:reveal|show|print|dump|repeat|paraphrase).{0,40}(?:prompt|instructions|secret|api.?key|environment|knowledge pack)/,
+    /(?:покажи|раскрой|выведи|перескажи).{0,40}(?:промпт|инструкци|ключ|секрет|переменн|базу знаний)|model name|what model|which model|как(?:ая|ой|ую).{0,15}модел/,
+    /act as|pretend (?:to be|you)|role.?play|представь.{0,20}(?:ты|себя)|(?:играй|сыграй) роль|jailbreak|\bdan\b|developer mode|режим разработчика/,
+    /(?:напиши|создай|сгенерируй).{0,35}(?:код|скрипт|программ|функци)|(?:write|generate|create).{0,35}(?:code|script|program|function)/,
+    /translate|переведи|перевод.{0,15}(?:текст|фраз)|homework|домашн.{0,10}задани|solve.{0,20}(?:equation|problem)|реши.{0,20}(?:задач|уравнен)/,
+    /tell me a joke|расскажи анекдот|write.{0,15}(?:poem|essay)|напиши.{0,15}(?:стих|сочинени)|politic|политик|президент|weather|погод[ау]/,
+  ].some((pattern) => pattern.test(text))
+}
+
+export function scopeRefusal(question: string, locale: string): string {
+  const russian = /\p{Script=Cyrillic}/u.test(question) || (!/[a-z]/i.test(question) && locale !== 'en')
+  return russian
+    ? 'Извините, я отвечаю только о сайте и работе Ника — спросите о его проектах, опыте или способах связи.'
+    : 'Sorry, I only answer about this site and Nick’s work — ask about his projects, experience, or how to contact him.'
+}
+
+export function looksOnTopic(question: string, chunks: KnowledgeChunk[]): boolean {
+  const text = question.toLowerCase()
+  if (/\b(?:nick|nikolai|kosarev|k39|context|woodlands|dostigus|site|website|pages?|projects?|products?|experience|portfolio|cv|resume|stack|contact|hire|availability|publications?|cases?)\b|ник(?:а|у|ом)?(?:\s|$|[?,.!])|никола|косарев|[кk]39|контекст|вудланд|достигус|сайт|проект|продукт|стек|опыт|кейс|публикаци|стать[яию]|резюме|связаться|контакт|нанять|доступност|сотруднич/.test(text)) {
+    return true
+  }
+  // Include other public products without maintaining a second project catalog.
+  return chunks.some(({ url }) => {
+    const slug = url.match(/\/projects(?:\/|#project-)([\w-]+)/)?.[1]
+    return slug && text.split(/[^\p{L}\p{N}-]+/u).includes(slug)
+  })
 }

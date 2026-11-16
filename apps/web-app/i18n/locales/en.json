@@ -512,7 +512,7 @@
     "offline": "The agent is currently offline. You can contact Nikolai directly.",
     "rateLimit": "Message limit reached. Please try again later.",
     "error": "Could not finish the answer. Please try again.",
-    "invalid": "Keep your question under 2,000 characters.",
+    "invalid": "Keep your question under 600 characters.",
     "stopped": "Answer stopped.",
     "questions": {
       "now": "What is Nikolai working on now?",
