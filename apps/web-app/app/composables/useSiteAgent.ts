@@ -1,4 +1,4 @@
-import { readSse } from '../../shared/agent-stream'
+import { readSse } from '~~/shared/agent-stream'
 
 interface AgentSource { title: string, url: string }
 interface ConversationMessage { role: 'user' | 'assistant', content: string, sources?: AgentSource[], status?: string }
