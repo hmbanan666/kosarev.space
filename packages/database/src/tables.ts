@@ -2,7 +2,7 @@ import type { ForeignKeyBuilder } from 'drizzle-orm/pg-core'
 import type { PublicationContent } from './publication'
 import { createId } from '@paralleldrive/cuid2'
 import { relations } from 'drizzle-orm'
-import { date, foreignKey, index, jsonb, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
+import { boolean, date, foreignKey, index, integer, jsonb, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
 export const cases = pgTable('cases', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
@@ -86,3 +86,21 @@ export const publicationRevisions = pgTable('publication_revisions', {
   content: jsonb('content').$type<PublicationContent>().notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [unique('publication_revisions_slug_id_unique').on(t.slug, t.id)])
+
+export const agentMessages = pgTable('agent_messages', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  sessionId: text('session_id').notNull(),
+  role: text('role').$type<'user' | 'assistant'>().notNull(),
+  content: text('content').notNull(),
+  page: text('page').notNull(),
+  locale: text('locale').notNull(),
+  model: text('model').notNull(),
+  filtered: boolean('filtered').notNull().default(false),
+  filteredReason: text('filtered_reason'),
+  sources: jsonb('sources').$type<{ title: string, url: string }[]>().notNull().default([]),
+  latencyMs: integer('latency_ms').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index('agent_messages_created_at_idx').on(t.createdAt),
+  index('agent_messages_session_created_at_idx').on(t.sessionId, t.createdAt),
+])

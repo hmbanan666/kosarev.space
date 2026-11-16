@@ -88,8 +88,11 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     if (gesture || !event.isPrimary || !enabled.value || event.button !== 0 || !viewport.value) {
       return
     }
-    if (!id && (event.target as HTMLElement).closest('a, button, input, select, summary, article')) {
+    if (!id && (event.target as HTMLElement).closest('a, button, input, select, textarea, summary, article, [role="button"], [contenteditable="true"]')) {
       return
+    }
+    if (!id) {
+      window.getSelection()?.removeAllRanges()
     }
     event.preventDefault()
     const block = blocks.value.find((block) => block.id === id)

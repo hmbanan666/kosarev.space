@@ -3,7 +3,8 @@ import { useAgentConversation } from '../app/composables/useSiteAgent'
 
 let mount: () => void
 let stored: string | null
-let requests: { body: { messages: { role: string, content: string }[], page: string, locale: string }, stream: ReadableStreamDefaultController<Uint8Array> }[]
+let session: string | null
+let requests: { body: { sessionId: string, messages: { role: string, content: string }[], page: string, locale: string }, stream: ReadableStreamDefaultController<Uint8Array> }[]
 const encoder = new TextEncoder()
 function finish(index: number, text: string) {
   requests[index]!.stream.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'delta', text })}\n\ndata: {"type":"done"}\n\n`))
@@ -11,6 +12,7 @@ function finish(index: number, text: string) {
 }
 beforeEach(() => {
   stored = null
+  session = null
   requests = []
   const state = new Map()
   vi.stubGlobal('useState', (key: string, init: () => unknown) => {
@@ -24,6 +26,9 @@ beforeEach(() => {
   })
   vi.stubGlobal('onBeforeUnmount', vi.fn())
   vi.stubGlobal('window', { addEventListener: vi.fn(), removeEventListener: vi.fn() })
+  vi.stubGlobal('localStorage', { getItem: () => session, setItem: (_key: string, value: string) => {
+    session = value
+  } })
   vi.stubGlobal('sessionStorage', { getItem: () => stored, setItem: (_key: string, value: string) => {
     stored = value
   } })
@@ -46,7 +51,7 @@ it('shows pending questions immediately and sends them in order with completed h
   expect(requests).toHaveLength(1)
   finish(0, 'One')
   await vi.waitFor(() => expect(requests).toHaveLength(2))
-  expect(requests[1]!.body).toEqual({ page: '/en/projects/k39', locale: 'en', messages: [{ role: 'user', content: 'First' }, { role: 'assistant', content: 'One' }, { role: 'user', content: 'Second' }] })
+  expect(requests[1]!.body).toEqual({ sessionId: expect.any(String), page: '/en/projects/k39', locale: 'en', messages: [{ role: 'user', content: 'First' }, { role: 'assistant', content: 'One' }, { role: 'user', content: 'Second' }] })
   finish(1, 'Two')
   await vi.waitFor(() => expect(requests).toHaveLength(3))
   expect(requests[2]!.body.messages.at(-1)?.content).toBe('Third')
@@ -95,7 +100,7 @@ it('persists pending context and restores it after an interrupted answer', async
   const restored = useAgentConversation()
   mount()
   await vi.waitFor(() => expect(requests).toHaveLength(2))
-  expect(requests[1]!.body).toEqual({ page: '/en/projects/k39', locale: 'en', messages: [{ role: 'user', content: 'Second' }] })
+  expect(requests[1]!.body).toEqual({ sessionId: expect.any(String), page: '/en/projects/k39', locale: 'en', messages: [{ role: 'user', content: 'Second' }] })
   finish(1, 'Restored')
   await vi.waitFor(() => expect(restored.busy.value).toBe(false))
 })
@@ -112,4 +117,27 @@ it('enforces the length cap while busy and bounds successful history', async () 
   expect(requests[4]!.body.messages).toHaveLength(7)
   expect(requests[4]!.body.messages[0]?.content).toBe('Question 1')
   expect(requests[4]!.body.messages[1]?.content).toHaveLength(600)
+})
+
+it('keeps an anonymous session across reloads and drawer clear, rotating after storage is cleared', async () => {
+  const chat = useAgentConversation()
+  mount()
+  const first = chat.send('First', '/', 'ru')
+  finish(0, 'One')
+  await first
+  const id = requests[0]!.body.sessionId
+  expect(id).toMatch(/^[0-9a-f-]{36}$/)
+  expect(session).toBe(id)
+  chat.clear()
+  const reloaded = useAgentConversation()
+  mount()
+  const second = reloaded.send('Second', '/', 'ru')
+  finish(1, 'Two')
+  await second
+  expect(requests[1]!.body.sessionId).toBe(id)
+  session = null
+  const third = reloaded.send('Third', '/', 'ru')
+  finish(2, 'Three')
+  await third
+  expect(requests[2]!.body.sessionId).not.toBe(id)
 })

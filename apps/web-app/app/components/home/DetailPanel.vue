@@ -9,7 +9,7 @@
   >
     <header class="activity-panel-heading">
       <div>
-        <p class="canvas-eyebrow">
+        <p v-if="id !== 'contributions'" class="canvas-eyebrow">
           {{ t('activity.open', { name: title }) }}
         </p><h2 id="activity-panel-title">
           {{ title }}
@@ -57,6 +57,7 @@
         <a v-if="repo" :href="repo.url">{{ t('activity.source') }}<SiteLinkIcon external /></a>
       </nav>
     </template>
+    <HomeContributionDetails v-else-if="id === 'contributions'" :activity="activity" />
     <template v-else>
       <div class="activity-panel-content">
         <HomeBlockContent
@@ -80,8 +81,8 @@
         <a href="mailto:nick@kosarev.space">nick@kosarev.space</a><a href="https://t.me/hmbanan666">Telegram</a><a href="https://github.com/hmbanan666">GitHub</a>
       </nav>
     </template>
-    <p v-if="product || ['hero', 'feed', 'skills', 'contributions'].includes(id ?? '')" class="canvas-footnote">
-      {{ t(id === 'contributions' && activity.coverage === 'githubYear' ? 'activity.calendarPrivacy' : 'activity.partial') }} <template v-if="activity.fetchedAt">
+    <p v-if="product || ['hero', 'feed', 'skills'].includes(id ?? '')" class="canvas-footnote">
+      {{ t('activity.partial') }} <template v-if="activity.fetchedAt">
         {{ t('activity.updated', { time: relativeTime(activity.fetchedAt) }) }}
       </template>
     </p>

@@ -3,6 +3,7 @@ import { readSse } from '~~/shared/agent-stream'
 interface AgentSource { title: string, url: string }
 interface ConversationMessage { role: 'user' | 'assistant', content: string, sources?: AgentSource[], status?: string, request?: { page: string, locale: string } }
 const storageKey = 'site-agent-v1'
+const sessionKey = 'site-agent-session-v1'
 
 export function useSiteAgent() {
   const open = useState('site-agent-open', () => false)
@@ -18,6 +19,23 @@ export function useAgentConversation() {
   let controller: AbortController | undefined
   let draining: Promise<void> | undefined
   let disposed = false
+  let memorySession: string | undefined
+  function sessionId() {
+    try {
+      const saved = localStorage.getItem(sessionKey)
+      if (saved && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(saved)) {
+        memorySession = saved
+        return saved
+      }
+      const id = crypto.randomUUID()
+      localStorage.setItem(sessionKey, id)
+      memorySession = id
+      return id
+    } catch {
+      // Storage denial keeps a stable identity for this drawer's lifetime.
+      return memorySession ??= crypto.randomUUID()
+    }
+  }
   function retained() {
     const firstPending = messages.value.findIndex((message) => message.status === 'pending')
     const start = Math.max(0, (firstPending < 0 ? messages.value.length : firstPending) - 24)
@@ -107,7 +125,7 @@ export function useAgentConversation() {
     try {
       const response = await fetch('/api/agent', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: active.signal,
-        body: JSON.stringify({ messages: requestMessages, page, locale }),
+        body: JSON.stringify({ sessionId: sessionId(), messages: requestMessages, page, locale }),
       })
       if (!response.ok) {
         answer.status = response.status === 503 ? 'offline' : response.status === 429 ? 'rateLimit' : 'error'

@@ -17,7 +17,7 @@ for (const locale of ['ru', 'en']) {
       const english = locale === 'en'
       const label = 'AI Bot'
       const prefix = english ? '/en' : ''
-      const answer = english ? 'K39 is a map of places in Kaliningrad. Explore [K39](/en/projects/k39) or visit [k39.online](https://k39.online).' : 'K39 — карта мест Калининграда. Подробнее о [K39](/projects/k39) и на [k39.online](https://k39.online).'
+      const answer = english ? 'K39 is a map of places in Kaliningrad. Explore [K39](/en/projects/k39) or visit [k39.online](https://k39.online).' : 'K39. Карта мест Калининграда. Подробнее о [K39](/projects/k39) и на [k39.online](https://k39.online).'
       await page.route('**/api/agent', async (route) => {
         const body = route.request().postDataJSON()
         expect(body.messages.at(-1).role).toBe('user')
@@ -35,6 +35,7 @@ for (const locale of ['ru', 'en']) {
       await page.addStyleTag({ content: 'nuxt-devtools-frame {display:none!important}' })
       await openAgent(page, label)
       const dialog = page.getByRole('dialog')
+      await expect(dialog.locator('.agent-hint')).toBeVisible()
       await expect(dialog).toHaveClass(/ym-hide-content/)
       await expect(dialog.locator('textarea')).toHaveClass(/ym-disable-keys/)
       await expect(dialog.locator('form')).toHaveClass(/ym-disable-submit/)
@@ -106,3 +107,25 @@ test('rate-limit and interrupted stream are visible and history can be cleared',
   await dialog.getByRole('button', { name: 'Send', exact: true }).click()
   await expect(dialog.getByText('Could not finish the answer. Please try again.', { exact: true })).toBeVisible()
 })
+
+for (const locale of ['ru', 'en']) {
+  test.describe(`${locale} touch drawer`, () => {
+    test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 900 } })
+    test('hides keyboard hints and shows storage notice and linked contact', async ({ page }) => {
+      const { scopeRefusal } = await import('../apps/web-app/server/agent/guard')
+      const question = locale === 'ru' ? 'напиши код на go' : 'Write code in Go'
+      await page.route('**/api/agent', (route) => route.fulfill({ contentType: 'text/event-stream', body: `data: ${JSON.stringify({ type: 'delta', text: scopeRefusal(question, locale) })}\n\ndata: {"type":"done"}\n\n` }))
+      await page.goto(locale === 'en' ? '/en/contact' : '/contact')
+      await openAgent(page, 'AI Bot')
+      const dialog = page.getByRole('dialog')
+      await expect(dialog.locator('.agent-hint')).toBeHidden()
+      await expect(dialog.locator('.agent-privacy')).toHaveText(locale === 'ru' ? 'Вопросы к AI Bot сохраняются для улучшения ответов.' : 'Questions to AI Bot are stored to improve answers.')
+      await page.locator('#site-agent-input').fill(question)
+      await dialog.locator('button[type="submit"]').click()
+      const contact = dialog.locator('.agent-markdown a')
+      await expect(contact).toHaveAttribute('href', locale === 'en' ? '/en/contact' : '/contact')
+      await expect(contact).toHaveText(locale === 'en' ? 'contact Nikolay' : 'свяжитесь с Николаем')
+      await expect(dialog.locator('.agent-markdown')).not.toContainText('—')
+    })
+  })
+}

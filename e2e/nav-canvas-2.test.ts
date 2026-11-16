@@ -26,6 +26,18 @@ for (const locale of ['en', 'ru']) {
         await page.addStyleTag({ content: '#nuxt-devtools-container { display:none!important }' })
         await expect(page.locator('.site-header .site-language')).toBeVisible()
         expect((await page.locator('.site-header-inner').boundingBox())!.height).toBe(width === 1440 ? 64 : 56)
+        const brand = await page.locator('.site-brand').boundingBox()
+        const language = await page.locator('.site-header .site-language').boundingBox()
+        expect(language!.x - brand!.x - brand!.width).toBeGreaterThanOrEqual(0)
+        expect(language!.x - brand!.x - brand!.width).toBeLessThanOrEqual(12)
+        if (width === 390) {
+          const nameRight = await page.locator('.site-brand').evaluate((element) => {
+            const range = document.createRange()
+            range.selectNodeContents(element)
+            return Math.max(...Array.from(range.getClientRects(), (rect) => rect.right))
+          })
+          expect(language!.x - nameRight).toBeLessThanOrEqual(12)
+        }
         if (width === 1440) {
           const header = await page.locator('.site-header-inner').boundingBox()
           const button = await page.locator('.site-agent-trigger').boundingBox()

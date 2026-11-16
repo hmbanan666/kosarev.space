@@ -11,13 +11,31 @@
       :key="day.date"
       :style="index === 0 && !mini ? { gridRowStart: offset + 1 } : undefined"
       :class="`activity-level-${Math.min(4, day.count)}`"
-      :title="label(day)"
+      :title="mini ? label(day) : undefined"
+      :aria-describedby="tip?.date === day.date ? tooltipId : undefined"
       :aria-label="label(day)"
       :tabindex="mini ? undefined : index === activeDay ? 0 : -1"
       role="img"
       @keydown="moveFocus($event, index)"
+      @pointerenter="showTip($event, day)"
+      @pointerleave="leaveDay($event)"
+      @focus="activeDay = index; showTip($event, day)"
+      @blur="tip = undefined"
+      @click="selectDay($event, day)"
+      @keydown.esc.stop.prevent="tip = undefined"
     />
   </div>
+  <Teleport to="body">
+    <div
+      v-if="tip"
+      :id="tooltipId"
+      class="activity-day-tooltip"
+      role="tooltip"
+      :style="{ left: `${tip.x}px`, top: `${tip.y}px` }"
+    >
+      {{ tip.text }}
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -37,8 +55,51 @@ const visibleDays = computed(() => {
 })
 const offset = computed(() => props.mini || !visibleDays.value[0] ? 0 : new Date(`${visibleDays.value[0].date}T00:00:00Z`).getUTCDay())
 const activeDay = ref(0)
+const tooltipId = useId()
+const tip = ref<{ date: string, text: string, x: number, y: number }>()
+function showTip(event: Event, day: ActivityDay) {
+  if (props.mini) {
+    return
+  }
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  tip.value = {
+    date: day.date, text: label(day),
+    x: Math.max(8, Math.min(window.innerWidth - 268, rect.left + rect.width / 2 - 130)),
+    y: rect.top > 72 ? rect.top - 60 : rect.bottom + 8,
+  }
+}
+function leaveDay(event: PointerEvent) {
+  if (event.pointerType !== 'touch' && document.activeElement !== event.currentTarget) {
+    tip.value = undefined
+  }
+}
+function selectDay(event: MouseEvent, day: ActivityDay) {
+  if (!props.mini) {
+    event.stopPropagation()
+    ;(event.currentTarget as HTMLElement).focus({ preventScroll: true })
+    showTip(event, day)
+  }
+}
+// A teleported tip must not linger when the canvas pans or another control opens.
+onMounted(() => {
+  if (props.mini) {
+    return
+  }
+  useEventListener(window, 'scroll', () => {
+    tip.value = undefined
+  }, true)
+  useEventListener(window, 'resize', () => {
+    tip.value = undefined
+  })
+  useEventListener(document, 'pointerdown', (event) => {
+    if (!(event.target as HTMLElement).closest('.activity-graph')) {
+      tip.value = undefined
+    }
+  })
+})
 watch(visibleDays, () => {
   activeDay.value = 0
+  tip.value = undefined
 })
 function moveFocus(event: KeyboardEvent, index: number) {
   const steps: Record<string, number> = { ArrowRight: 7, ArrowLeft: -7, ArrowDown: 1, ArrowUp: -1, Home: -index, End: visibleDays.value.length - index - 1 }
