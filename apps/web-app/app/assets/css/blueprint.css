@@ -241,3 +241,5 @@ body:has(.activity-panel[open]) { overflow: hidden; }
 .canvas-edge-left { left: 0; }
 .canvas-edge-right { right: 0; }
 .canvas-viewport.is-dragging, .canvas-viewport.is-dragging * { cursor: grabbing !important; }
+/* Links stay tappable where the screen-sized edge bands overlap at low zoom. */
+.canvas-enabled .blueprint-frame a { position: relative; z-index: 3; }

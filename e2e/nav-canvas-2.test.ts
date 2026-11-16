@@ -59,7 +59,13 @@ for (const locale of ['en', 'ru']) {
             await expect(page.locator(`[data-block="${id}"]`)).toBeInViewport({ ratio: 1 })
           }
           expect(await page.locator('[data-block]').evaluateAll((blocks) => blocks.filter((block) => block.scrollHeight > block.clientHeight + 2 || block.scrollWidth > block.clientWidth + 2).map((block) => block.getAttribute('data-block')))).toEqual([])
+          expect(await page.locator('.canvas-source').evaluateAll((links) => links.every((link) => {
+            const rect = link.getBoundingClientRect()
+            return document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2)?.closest('a') === link
+          }))).toBe(true)
           await capture(page, `zoom-out-${locale}-${width}`)
+          await page.locator('[data-block="dostigus"] .canvas-source').click()
+          await expect(page).toHaveURL(new RegExp(`${prefix}/projects/dostigus$`))
         }
         await page.goto(`${prefix}/contact`)
         await expect(launcher).toBeVisible()
