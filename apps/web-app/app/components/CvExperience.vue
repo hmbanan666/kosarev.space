@@ -1,5 +1,9 @@
 <template>
-  <section :aria-labelledby="id" class="cv-section">
+  <section
+    :id="id === 'cv-experience' ? 'experience' : undefined"
+    :aria-labelledby="id"
+    class="cv-section"
+  >
     <h2 :id="id" class="cv-section-title">
       {{ title }}
     </h2>

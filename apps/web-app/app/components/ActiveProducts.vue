@@ -56,7 +56,7 @@
         </p>
         <div class="active-links">
           <NuxtLink v-if="product.page" :to="localePath(product.page)">
-            {{ t('projects.pageLink') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+            {{ t('projects.pageLink') }}<SiteLinkIcon />
           </NuxtLink>
           <a
             v-if="product.link"
@@ -64,7 +64,7 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            {{ t(`projects.${product.key}.visit`) }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+            {{ t(`projects.${product.key}.visit`) }}<SiteLinkIcon external />
           </a>
           <a
             v-if="product.source"
@@ -72,7 +72,7 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            {{ t('site.source') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+            {{ t('site.source') }}<SiteLinkIcon external />
           </a>
           <WritingRelatedPublications kind="project" :work-key="product.key" />
         </div>

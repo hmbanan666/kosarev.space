@@ -12,8 +12,7 @@ for (const locale of ['ru', 'en'] as const) {
     test(`K39 article is readable and linked to its product (${locale}, ${width}px)`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 })
       await page.emulateMedia({ reducedMotion: 'reduce' })
-      await page.goto(`${prefix}/`)
-      await page.locator('.home-catalog > summary').click()
+      await page.goto(`${prefix}/projects`)
       await page.locator('[data-active-product="k39"]').getByRole('link', {
         name: titles[locale],
       }).click()

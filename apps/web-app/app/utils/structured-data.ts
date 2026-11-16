@@ -108,7 +108,7 @@ function archiveEntity(locale: Locale, t: Translate, project: Project, authorNam
   return entity({
     name: project.titleKey ? t(project.titleKey) : project.title,
     description: descriptionFor(t, project.key),
-    url: repositoryUrl ?? `${localeUrl(locale, '/')}#project-${project.key}`,
+    url: repositoryUrl ?? `${localeUrl(locale, '/projects')}#project-${project.key}`,
     codeRepository: repositoryUrl,
     programmingLanguage: project.key === 'chatgame' ? 'TypeScript' : undefined,
     authorName,

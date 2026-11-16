@@ -155,7 +155,7 @@ preview, check the migration-directory contract in the [deployment guide](docs/d
 
 ## Routes and repository layout
 
-Pages are `/`, `/projects/[key]`, `/cases/[key]`, `/writing`, `/writing/[slug]`, `/cv` and `/cv/print`, with English equivalents
+Pages are `/`, `/projects`, `/projects/[key]`, `/cases`, `/cases/[key]`, `/contact`, `/writing`, `/writing/[slug]`, `/cv` and `/cv/print`, with English equivalents
 under `/en`. Writing feeds are `/writing/feed.xml` and `/en/writing/feed.xml`.
 Download routes are `/cv.pdf` and `/cv-en.pdf`. Generated Open Graph images
 are served from `/og/{ru|en}/...png`.
@@ -177,7 +177,7 @@ methods are not public CRUD endpoints. Case search supports shareable `q`,
 links are directly visible, with email copy/manual-selection feedback; there
 is no contact-submission endpoint or `/book` page.
 
-The unfiltered home page prioritizes the editorial keys in
+The unfiltered case index prioritizes the editorial keys in
 [`case-finder.ts`](apps/web-app/app/utils/case-finder.ts), fills remaining slots
 from available cases and shows at most six. Search and the full catalog keep
 their database order. The reviewed bilingual content bundle is in

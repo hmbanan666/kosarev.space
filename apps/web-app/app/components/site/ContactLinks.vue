@@ -33,12 +33,12 @@
         href="https://t.me/hmbanan666"
         target="_blank"
         rel="noopener noreferrer"
-      >Telegram <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" /></a>
+      >Telegram <SiteLinkIcon external /></a>
       <a
         href="https://github.com/hmbanan666"
         target="_blank"
         rel="noopener noreferrer"
-      >GitHub <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" /></a>
+      >GitHub <SiteLinkIcon external /></a>
     </div>
   </div>
 </template>

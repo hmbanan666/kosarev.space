@@ -1,13 +1,11 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('homepage', () => {
-  test('renders all sections', async ({ page }) => {
+  test('renders only the canvas on home', async ({ page }) => {
     await page.goto('/')
 
-    await page.locator('.home-catalog > summary').click()
-    await expect(page.locator('#projects')).toBeVisible()
-    await expect(page.locator('#experience')).toBeVisible()
-    await expect(page.locator('#contacts')).toBeVisible()
+    await expect(page.locator('[data-block]')).toHaveCount(11)
+    await expect(page.locator('.home-catalog')).toHaveCount(0)
   })
 
   test('has correct page title', async ({ page }) => {
@@ -34,14 +32,14 @@ test.describe('English locale (/en)', () => {
     await page.goto('/en')
 
     await expect(page).toHaveTitle(/Kosarev/)
-    await page.locator('.home-catalog > summary').click()
-    await expect(page.locator('#projects')).toBeVisible()
-    await expect(page.locator('#experience')).toBeVisible()
+    await expect(page.locator('[data-block="archive"]')).toBeVisible()
+    await expect(page.locator('[data-block="cv"]')).toBeVisible()
   })
 
   test('has correct section headings', async ({ page }) => {
     await page.goto('/en')
 
+    await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)
     await expect(page.getByRole('heading', { name: 'Projects', level: 2, exact: true })).toBeVisible()
     await expect(page.locator('[data-block="cv"] .canvas-eyebrow')).toBeVisible()
   })
@@ -49,7 +47,8 @@ test.describe('English locale (/en)', () => {
   test('shows English footer', async ({ page }) => {
     await page.goto('/en')
 
-    const footer = page.locator('footer')
+    await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)
+    const footer = page.locator('.canvas-chrome')
     await expect(footer).toContainText('Nick Kosarev')
     await expect(footer).toContainText(new Date().getFullYear().toString())
   })

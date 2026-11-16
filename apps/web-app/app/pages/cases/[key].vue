@@ -2,9 +2,11 @@
   <div v-if="data" class="site-wrap case-page">
     <nav class="case-breadcrumb" :aria-label="t('site.caseNavigation')">
       <NuxtLink :to="backLink">
-        <UIcon name="i-lucide-arrow-left" aria-hidden="true" />{{ hasContext ? t('site.backContext') : t('cases.backToAll') }}
+        {{ hasContext ? t('site.backContext') : t('cases.backToAll') }}<SiteLinkIcon />
       </NuxtLink>
-      <a href="#contacts">{{ t('hero.contact') }}</a>
+      <NuxtLink :to="localePath('/contact')">
+        {{ t('hero.contact') }}
+      </NuxtLink>
     </nav>
     <article>
       <header class="case-heading">
@@ -46,7 +48,9 @@
         <aside class="case-context">
           <h2>{{ t('site.techDetails') }}</h2>
           <p>{{ data.tags.join(', ') }}</p>
-          <a href="#contacts" class="site-text-link">{{ t('cases.ctaText') }}</a>
+          <NuxtLink :to="localePath('/contact')" class="site-text-link">
+            {{ t('cases.ctaText') }}
+          </NuxtLink>
           <WritingRelatedPublications kind="case" :work-key="String(route.params.key)" />
         </aside>
         <div class="case-body">
@@ -151,7 +155,7 @@ const localePath = useLocalePath()
 const closedYear = computed(() => closedProjectYearForCase(String(route.params.key)))
 const contextQuery = computed(() => caseContextQuery(route.query))
 const hasContext = computed(() => Object.keys(contextQuery.value).length > 0)
-const backLink = computed(() => ({ path: localePath('/'), query: contextQuery.value, hash: '#skills' }))
+const backLink = computed(() => ({ path: localePath('/cases'), query: contextQuery.value }))
 const technicalDetails = useTemplateRef<HTMLDetailsElement>('technicalDetails')
 function revealTechnical() {
   if (technicalDetails.value) {

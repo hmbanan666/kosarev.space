@@ -36,8 +36,7 @@ for (const locale of ['ru', 'en']) {
 test('product links and archive render without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false })
   const page = await context.newPage()
-  await page.goto('/')
-  await page.locator('.home-catalog > summary').click()
+  await page.goto('/projects')
   await expect(page.locator('#projects [data-active-product]')).toHaveCount(3)
   await expect(page.locator('#projects a[href="https://t.me/WoodlandsGameBot"]')).toBeVisible()
   await expect(page.locator('#projects [data-project-archive]')).toHaveCount(3)

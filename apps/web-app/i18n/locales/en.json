@@ -336,7 +336,8 @@
   "nav": {
     "home": "Home",
     "cases": "Cases",
-    "cv": "CV"
+    "cv": "CV",
+    "contact": "Contact"
   },
   "footer": {
     "copyright": "© {year} Nick Kosarev"

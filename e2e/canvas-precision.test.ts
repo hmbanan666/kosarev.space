@@ -8,7 +8,7 @@ for (const locale of ['en', 'ru']) {
     test.describe(`${width}px (${locale})`, () => {
       test.use({ hasTouch: width === 390, isMobile: width === 390 })
       test(`shared horizontal grid and centered default canvas at ${width}px (${locale})`, async ({ page }) => {
-        await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 })
+        await page.setViewportSize({ width, height: width === 390 ? 844 : width === 1920 ? 1080 : 800 })
         const errors: string[] = []
         page.on('pageerror', (error) => errors.push(error.message))
         page.on('console', (message) => {
@@ -32,9 +32,9 @@ for (const locale of ['en', 'ru']) {
         // Opt-in, reviewable evidence on the same browser path as the assertions.
         if (process.env.CANVAS_SCREENSHOTS) {
           await page.evaluate(() => Promise.all([...document.images].filter((img) => img.complete).map((img) => img.decode().catch(() => {}))))
-          await page.screenshot({ path: `docs/images/canvas-precision/${process.env.CANVAS_SCREENSHOTS}-${locale}-${width}.png`, fullPage: true, animations: 'disabled' })
+          await page.screenshot({ path: `docs/images/canvas-fullscreen/${process.env.CANVAS_SCREENSHOTS}-${locale}-${width}.png`, fullPage: true, animations: 'disabled' })
         }
-        const edges = await page.locator('.site-header-inner, .canvas-heading, .canvas-viewport, .canvas-tools, .site-footer > .site-wrap').evaluateAll((elements) => elements.map((element) => {
+        const edges = await page.locator(width >= 768 ? '.site-header-inner, .canvas-tools' : '.site-header-inner, .canvas-heading, .canvas-viewport, .site-footer > .site-wrap').evaluateAll((elements) => elements.map((element) => {
           const rect = element.getBoundingClientRect()
           return { name: element.className, left: rect.left, right: rect.right }
         }))
@@ -58,6 +58,8 @@ for (const locale of ['en', 'ru']) {
           expect(margins.right).toBeGreaterThanOrEqual(0)
           expect(Math.abs(margins.left - margins.right)).toBeLessThan(1)
           expect(Math.abs(margins.top - margins.bottom)).toBeLessThan(1)
+          expect(Math.abs(margins.left - margins.top)).toBeLessThan(1)
+          expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(width === 1920 ? 1080 : 800)
           const grid = await page.locator('[data-canvas-world]').evaluate((world) => {
             const scale = world.getBoundingClientRect().width / (world as HTMLElement).offsetWidth
             const blocks = [...world.querySelectorAll<HTMLElement>('[data-block]')]

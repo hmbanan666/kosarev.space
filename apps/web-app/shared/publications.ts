@@ -19,7 +19,7 @@ export function publicationsForWork(items: readonly PublicationSummary[], kind: 
 }
 
 export function relatedWorkPath(work: Pick<RelatedWork, 'kind' | 'key'>): string {
-  return work.kind === 'case' ? `/cases/${encodeURIComponent(work.key)}` : `/#project-${encodeURIComponent(work.key)}`
+  return work.kind === 'case' ? `/cases/${encodeURIComponent(work.key)}` : `/projects#project-${encodeURIComponent(work.key)}`
 }
 
 export function formatPublicationDate(date: string, locale: PublicationLocale): string {

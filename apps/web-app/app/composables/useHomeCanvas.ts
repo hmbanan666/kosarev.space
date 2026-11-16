@@ -16,8 +16,10 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
   const minZoom = computed(() => Math.min(0.8, fitZoom.value))
   let fitted = true
   const view = reactive({ x: 0, y: 0, width: 0, height: 0 })
-  const width = homeCanvas.columns * homeCanvas.cell - homeCanvas.gap
-  const height = homeCanvas.rows * homeCanvas.cell - homeCanvas.gap
+  const width = ref(homeCanvas.columns * homeCanvas.cell - homeCanvas.gap)
+  const height = ref(homeCanvas.rows * homeCanvas.cell - homeCanvas.gap)
+  const cellWidth = computed(() => (width.value + homeCanvas.gap) / homeCanvas.columns)
+  const cellHeight = computed(() => (height.value + homeCanvas.gap) / homeCanvas.rows)
   const target = ref<CanvasBlock | null>(null)
   const targetFits = computed(() => !target.value || layout.preview(target.value.id, target.value.x, target.value.y) !== null)
   const dragging = ref(false)
@@ -35,7 +37,13 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
   }
   function resize() {
     if (enabled.value && viewport.value) {
-      fitZoom.value = Math.min(1, (viewport.value.clientWidth - 2 * homeCanvas.gap) / width)
+      const gutter = Number.parseFloat(getComputedStyle(viewport.value).paddingLeft)
+      const availableWidth = Math.max(1, viewport.value.clientWidth - 2 * gutter)
+      const availableHeight = Math.max(1, viewport.value.clientHeight - 2 * gutter)
+      fitZoom.value = Math.min(1, availableWidth / (homeCanvas.columns * homeCanvas.cell - homeCanvas.gap), availableHeight / (homeCanvas.rows * homeCanvas.cell - homeCanvas.gap))
+      // Keep layout coordinates stable while using the full viewport in both axes.
+      width.value = availableWidth / fitZoom.value
+      height.value = availableHeight / fitZoom.value
       if (fitted) {
         zoom.value = fitZoom.value
       } else {
@@ -83,7 +91,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
     const dy = event.clientY - gesture.y
     if (gesture.block) {
       const block = gesture.block
-      const candidate = { ...block, x: Math.max(0, Math.min(homeCanvas.columns - block.w, block.x + Math.round(dx / zoom.value / homeCanvas.cell))), y: Math.max(0, Math.min(homeCanvas.rows - block.h, block.y + Math.round(dy / zoom.value / homeCanvas.cell))) }
+      const candidate = { ...block, x: Math.max(0, Math.min(homeCanvas.columns - block.w, block.x + Math.round(dx / zoom.value / cellWidth.value))), y: Math.max(0, Math.min(homeCanvas.rows - block.h, block.y + Math.round(dy / zoom.value / cellHeight.value))) }
       if (target.value?.x !== candidate.x || target.value?.y !== candidate.y) {
         target.value = candidate
       }
@@ -147,7 +155,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
   }
   function locate(event: MouseEvent) {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-    viewport.value?.scrollTo((event.clientX - rect.left) / rect.width * width * zoom.value - view.width * zoom.value / 2, (event.clientY - rect.top) / rect.height * height * zoom.value - view.height * zoom.value / 2)
+    viewport.value?.scrollTo((event.clientX - rect.left) / rect.width * width.value * zoom.value - view.width * zoom.value / 2, (event.clientY - rect.top) / rect.height * height.value * zoom.value - view.height * zoom.value / 2)
   }
   async function reveal(event: FocusEvent) {
     if (!enabled.value) {
@@ -160,17 +168,17 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
     }
     await nextTick()
     const el = viewport.value!
-    const left = block.x * homeCanvas.cell * zoom.value
-    const top = block.y * homeCanvas.cell * zoom.value
-    if (left < el.scrollLeft || left + block.w * homeCanvas.cell * zoom.value > el.scrollLeft + el.clientWidth) {
+    const left = block.x * cellWidth.value * zoom.value
+    const top = block.y * cellHeight.value * zoom.value
+    if (left < el.scrollLeft || left + block.w * cellWidth.value * zoom.value > el.scrollLeft + el.clientWidth) {
       el.scrollLeft = left
     }
-    if (top < el.scrollTop || top + block.h * homeCanvas.cell * zoom.value > el.scrollTop + el.clientHeight) {
+    if (top < el.scrollTop || top + block.h * cellHeight.value * zoom.value > el.scrollTop + el.clientHeight) {
       el.scrollTop = top
     }
   }
   function position(block: CanvasBlock) {
-    return { left: `${block.x * homeCanvas.cell}px`, top: `${block.y * homeCanvas.cell}px`, width: `${block.w * homeCanvas.cell - homeCanvas.gap}px`, height: `${block.h * homeCanvas.cell - homeCanvas.gap}px` }
+    return { left: `${block.x * cellWidth.value}px`, top: `${block.y * cellHeight.value}px`, width: `${block.w * cellWidth.value - homeCanvas.gap}px`, height: `${block.h * cellHeight.value - homeCanvas.gap}px` }
   }
   onMounted(() => {
     layout.restore()
@@ -188,7 +196,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
     }
   })
   onBeforeUnmount(() => end(true))
-  return { enabled, blocks, canUndo, feedback, zoom, fitZoom, minZoom, view, width, height, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position, reset: () => {
+  return { enabled, blocks, canUndo, feedback, zoom, fitZoom, minZoom, view, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position, reset: () => {
     layout.reset()
     feedback.value = 'updated'
     sync()

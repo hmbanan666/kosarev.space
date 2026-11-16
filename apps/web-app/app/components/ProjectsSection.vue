@@ -6,9 +6,9 @@
   >
     <div class="site-wrap">
       <div class="section-intro">
-        <h2 id="project-section-title">
+        <h1 id="project-section-title">
           {{ t('projects.title') }}
-        </h2>
+        </h1>
         <p>{{ t('projects.description') }}</p>
       </div>
       <ActiveProducts />
@@ -48,7 +48,7 @@
               {{ t(`projects.${project.key}.description`) }}
             </p>
             <div class="project-links">
-              <NuxtLink :to="{ path: localePath('/'), query: { q: project.key }, hash: '#skills' }">
+              <NuxtLink :to="{ path: localePath('/cases'), query: { q: project.key } }">
                 {{ t('site.projectCases') }}
               </NuxtLink>
               <a
@@ -56,7 +56,7 @@
                 :href="project.link"
                 target="_blank"
                 rel="noopener noreferrer"
-              >{{ t('site.source') }}<UIcon name="i-lucide-arrow-up-right" aria-hidden="true" /></a>
+              >{{ t('site.source') }}<SiteLinkIcon external /></a>
               <WritingRelatedPublications kind="project" :work-key="project.key" />
             </div>
           </div>

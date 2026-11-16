@@ -100,11 +100,13 @@ test('unknown project and generated images respond correctly', async ({ request 
   }
 })
 
-test('homepage structured data keeps the person first and describes projects', async ({ page }) => {
+test('structured data keeps Person and WebSite on home and the portfolio on projects', async ({ page }) => {
   await page.goto('/en')
   const scripts = await page.locator('script[type="application/ld+json"]').allTextContents()
   expect(JSON.parse(scripts[0]!)['@type']).toBe('Person')
-  const list = JSON.parse(scripts[1]!)
+  expect(JSON.parse(scripts[1]!)['@type']).toBe('WebSite')
+  await page.goto('/en/projects')
+  const list = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!)
   expect(list['@type']).toBe('ItemList')
   expect(list.itemListElement[0].item.name).toBe('Context')
   expect(list.itemListElement.find((entry: { item: { name: string } }) => entry.item.name === 'Woodlands').item.codeRepository).toBeUndefined()
@@ -131,6 +133,10 @@ test('sitemap lists project pages and writing feeds', async ({ request }) => {
   expect(combined).toContain('/projects/k39')
   expect(combined).toContain('/en/projects/k39')
   expect(combined).toContain('/en/projects/dostigus')
+  const paths = [...combined.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]!).pathname)
+  for (const path of ['/projects', '/cases', '/contact', '/en/projects', '/en/cases', '/en/contact']) {
+    expect(paths).toContain(path)
+  }
   expect(combined).not.toContain('/projects/section-fixture')
   expect(combined).toContain('/writing/feed.xml')
   expect(combined).toContain('/en/writing/feed.xml')

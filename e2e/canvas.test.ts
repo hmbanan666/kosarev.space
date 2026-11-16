@@ -46,7 +46,8 @@ for (const locale of ['en', 'ru']) {
     await expect(noJs.locator('h1')).toBeVisible()
     await expect(noJs.locator(`[data-block="context"] a[href="${locale === 'en' ? '/en' : ''}/projects/context"]`)).toBeVisible()
     await expect(noJs.locator('.canvas-tools')).toHaveCount(0)
-    await noJs.locator('.home-catalog > summary').click()
+    await noJs.locator('[data-block="archive"] a').first().click()
+    await expect(noJs).toHaveURL(/\/projects\/?$/)
     await expect(noJs.locator('#projects')).toBeVisible()
     await context.close()
   })
@@ -61,12 +62,12 @@ async function zoomInFully(page: Page) {
   await page.locator('.canvas-viewport').evaluate((el) => el.scrollTo(0, 0))
 }
 
-test('a fitted canvas lets wheel scrolling reach the shared footer', async ({ page }) => {
+test('a fitted canvas contains wheel scrolling and keeps its footer strip visible', async ({ page }) => {
   const viewport = await openCanvas(page)
   await viewport.hover({ position: { x: 200, y: 200 } })
   await page.mouse.wheel(0, 500)
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0)
-  await expect(page.locator('.site-footer')).toBeInViewport()
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0)
+  await expect(page.locator('.canvas-chrome')).toBeInViewport()
 })
 
 test('canvas pans by wheel, background drag and arrows after zoom, with bounded map and fit recenter', async ({ page }) => {
@@ -155,7 +156,8 @@ test('blocks lift and highlight on hover, then ease to a snapped position', asyn
   const motion = await movable.evaluate((el) => ({ properties: getComputedStyle(el).transitionProperty, duration: getComputedStyle(el).transitionDuration }))
   expect(motion.properties).toContain('top')
   expect(motion.duration).toContain('0.24s')
-  await expect(movable).toHaveCSS('top', '192px')
+  const pitch = await page.locator('[data-canvas-world]').evaluate((el) => ((el as HTMLElement).offsetHeight + 16) / 9)
+  await expect.poll(() => movable.evaluate((el) => Number.parseFloat(getComputedStyle(el).top))).toBeCloseTo(pitch * 2, 0)
 })
 
 test('mobile and reduced motion keep every block readable without canvas controls on mobile', async ({ page }) => {
@@ -183,7 +185,7 @@ test('mobile and reduced motion keep every block readable without canvas control
 
 test('cursor faces align across locales with different canvas pan and zoom', async ({ page, browser }) => {
   await openCanvas(page)
-  const peerContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } })
+  const peerContext = await browser.newContext({ viewport: { width: 1024, height: 1000 } })
   try {
     const peer = await peerContext.newPage()
     await peer.goto('/')
@@ -195,9 +197,8 @@ test('cursor faces align across locales with different canvas pan and zoom', asy
     await zoomInFully(page)
     await page.locator('.canvas-viewport').evaluate((el) => el.scrollTo(150, 90))
     const sender = await peer.locator('[data-canvas-world]').boundingBox()
-    const senderScale = await peer.locator('[data-canvas-world]').evaluate((el) => el.getBoundingClientRect().width / (el as HTMLElement).offsetWidth)
-    const x = sender!.x + 600 * senderScale
-    const y = sender!.y + 200 * senderScale
+    const x = sender!.x + sender!.width * 0.35
+    const y = sender!.y + sender!.height * 0.25
     await peer.mouse.move(x, y)
     // Other parallel browser tests can share this room. Follow our own peer.
     const cursor = page.locator('[data-live-cursors] > div').filter({ has: page.locator(`img[src="${peerAvatar}"]`) })
@@ -205,15 +206,13 @@ test('cursor faces align across locales with different canvas pan and zoom', asy
     await expect.poll(async () => {
       const receiver = await page.locator('[data-canvas-world]').boundingBox()
       const actual = await cursor.boundingBox()
-      const scale = await page.locator('[data-canvas-world]').evaluate((el) => el.getBoundingClientRect().width / (el as HTMLElement).offsetWidth)
-      return Math.abs(actual!.x - (receiver!.x + 600 * scale)) + Math.abs(actual!.y - (receiver!.y + 200 * scale))
+      return Math.abs(actual!.x - (receiver!.x + receiver!.width * 0.35)) + Math.abs(actual!.y - (receiver!.y + receiver!.height * 0.25))
     }).toBeLessThan(5)
     await page.getByRole('button', { name: 'Zoom out', exact: true }).click()
     await expect.poll(async () => {
       const receiver = await page.locator('[data-canvas-world]').boundingBox()
       const actual = await cursor.boundingBox()
-      const scale = await page.locator('[data-canvas-world]').evaluate((el) => el.getBoundingClientRect().width / (el as HTMLElement).offsetWidth)
-      return Math.abs(actual!.x - (receiver!.x + 600 * scale)) + Math.abs(actual!.y - (receiver!.y + 200 * scale))
+      return Math.abs(actual!.x - (receiver!.x + receiver!.width * 0.35)) + Math.abs(actual!.y - (receiver!.y + receiver!.height * 0.25))
     }).toBeLessThan(5)
     await expect(cursor.locator('img')).toHaveJSProperty('complete', true)
     expect(await cursor.locator('img').evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0)

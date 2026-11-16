@@ -2,9 +2,11 @@
   <div class="site-wrap writing-page">
     <nav class="writing-navigation" :aria-label="t('writing.navigation')">
       <NuxtLink :to="localePath('/writing')">
-        <UIcon name="i-lucide-arrow-left" aria-hidden="true" />{{ t('writing.backToWriting') }}
+        {{ t('writing.backToWriting') }}<SiteLinkIcon />
       </NuxtLink>
-      <a href="#contacts">{{ t('hero.contact') }}</a>
+      <NuxtLink :to="localePath('/contact')">
+        {{ t('hero.contact') }}
+      </NuxtLink>
     </nav>
     <article>
       <header class="writing-heading">
@@ -44,7 +46,7 @@
       <NuxtLink :to="localePath('/writing')">
         {{ t('writing.backToWriting') }}
       </NuxtLink>
-      <NuxtLink :to="`${localePath('/')}#projects`">
+      <NuxtLink :to="localePath('/projects')">
         {{ t('writing.backToProducts') }}
       </NuxtLink>
     </nav>

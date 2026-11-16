@@ -18,7 +18,7 @@
         <NuxtLink class="site-button" :to="localePath('/cv')">
           {{ t('site.viewCv') }}
         </NuxtLink>
-        <NuxtLink class="site-button site-button-secondary" :to="`${localePath('/')}#skills`">
+        <NuxtLink class="site-button site-button-secondary" :to="localePath('/cases')">
           {{ t('site.exploreWork') }}
         </NuxtLink>
       </div>

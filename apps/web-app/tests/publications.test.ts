@@ -24,7 +24,7 @@ describe('one publication feed', () => {
     expect(publicationsForWork(items, 'case', 'k39')).toEqual([])
     expect(publicationsForWork(items, 'project', 'woodlands')).toEqual([])
     expect(publicationPath(items[0]!)).toBe('/writing/example')
-    expect(relatedWorkPath({ kind: 'project', key: 'k39' })).toBe('/#project-k39')
+    expect(relatedWorkPath({ kind: 'project', key: 'k39' })).toBe('/projects#project-k39')
     expect(relatedWorkPath({ kind: 'case', key: 'expi-billing' })).toBe('/cases/expi-billing')
   })
 
