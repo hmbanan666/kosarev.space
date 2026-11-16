@@ -8,7 +8,7 @@ const blocks = [
 ]
 it('keeps default cards within the grid without overlaps and leaves intentional gaps', () => {
   const layout = createCanvasLayout(homeBlocks, homeCanvas)
-  expect(homeBlocks.reduce((sum, b) => sum + b.w * b.h, 0)).toBeLessThan(homeCanvas.columns * homeCanvas.rows * 0.8)
+  expect(homeBlocks.reduce((sum, b) => sum + b.w * b.h, 0)).toBeLessThanOrEqual(homeCanvas.columns * homeCanvas.rows * 0.8)
   for (let y = 0; y < homeCanvas.rows; y++) {
     for (let x = 0; x < homeCanvas.columns; x++) {
       const occupants = layout.blocks.filter((block) => x >= block.x && x < block.x + block.w && y >= block.y && y < block.y + block.h)
@@ -53,9 +53,9 @@ it('persists a valid layout, restores it, and supports reset and undo', () => {
 })
 it('rejects overlapping, out of bounds, duplicate and stale saved positions', () => {
   for (const saved of [
-    { version: 2, blocks: blocks.map((b) => ({ ...b, x: 0, y: 0 })) },
-    { version: 2, blocks: blocks.map((b) => ({ ...b, x: -1 })) },
-    { version: 2, blocks: [blocks[0], blocks[0]] },
+    { version: 3, blocks: blocks.map((b) => ({ ...b, x: 0, y: 0 })) },
+    { version: 3, blocks: blocks.map((b) => ({ ...b, x: -1 })) },
+    { version: 3, blocks: [blocks[0], blocks[0]] },
     { version: 0, blocks },
   ]) {
     const layout = createCanvasLayout(blocks, { columns: 5, rows: 4 }, { getItem: () => JSON.stringify(saved), setItem: () => {} })

@@ -17,7 +17,7 @@ the earlier direction that explicitly deprioritized employment.
 ## Implemented structure
 
 - A server-rendered home with role, location, CV, PDF, work and email links.
-  Desktop and tablet enhance the blocks into a bounded 17 by 11 cell canvas.
+  Desktop and tablet enhance the blocks into a bounded 20 by 12 cell canvas.
   The home contains only this canvas; `/projects`, `/cases` and `/contact`
   provide the catalogs and contact page, alongside `/writing` and `/cv`.
   The header uses real localized routes and marks their active route.
@@ -65,7 +65,7 @@ the earlier direction that explicitly deprioritized employment.
   Other pages retain page coordinates.
   Coarse pointers, reduced motion and CV/print keep the component unmounted.
   The home docks the native pill in the middle of its canvas control bar.
-  Other pages keep the fixed pill, respect safe areas and reserve footer space.
+  Other pages dock the pill in the normal page footer, below the contact links.
 
 
 ## Visual principles
@@ -122,7 +122,7 @@ Canvas coordinate values come from
 [`home-canvas.ts`](../apps/web-app/app/utils/home-canvas.ts); the home supplies
 its gap to CSS as well. Insets are measured inside the 1px card border.
 Canvas dimensions are `columns × cell − gap` and `rows × cell − gap`, so
-there is no trailing empty strip. The 17 by 11 graph-paper board leaves empty
+there is no trailing empty strip. The 20 by 12 graph-paper board leaves empty
 cells between clusters. It is not a packed rectangle. The role and original
 portrait remain prominent at centre-left; contact is a small edge card.
 Grid lines share the cards' coordinate space during pan and zoom. Four quiet
@@ -132,7 +132,8 @@ The project layout is deterministic. For each project, the score is the sum of
 `max(0, 30 − floor(days since latest observed commit/PR))`, the number of observed
 commits/PRs in 30 days, and the number in 14 days. Releases do not affect rank;
 future dates are excluded. Equal scores use project-key order. The highest
-rank occupies the central 6 by 3 slot; remaining projects use 4 by 3 edge slots.
+rank occupies the central 7 by 3 slot; remaining projects use staggered 4 by 3 and 5 by 3
+edge slots.
 The same rank orders the mobile list. The algorithm is in
 [`home-canvas.ts`](../apps/web-app/app/utils/home-canvas.ts), with scoring in
 [`activity.ts`](../apps/web-app/shared/activity.ts).
@@ -144,21 +145,24 @@ header. Logical cells expand to match the available aspect ratio; uniform
 scaling preserves geometry. A text scale floor improves readability at fitted
 zoom. Saved positions and sizes survive activity updates and viewport changes.
 
-Initial load, fitted resize, reset and recenter fit both dimensions. The fitted
+Initial load and fitted resize fit both dimensions. The fitted
 scale is capped at 100%; zoom ranges from the smaller of fitted scale and 80%
 up to 125%. Pan by dragging empty space, scrolling or focusing the viewport
 and pressing arrow keys after zooming. Native scroll bounds prevent getting
-lost; the document does not scroll through the canvas. The zoom percentage
-button fits and recenters the board. Tab focus reveals off-screen blocks.
+lost; the document does not scroll through the canvas. Pinch or Ctrl/Meta-wheel adjusts zoom; zooming down to the minimum fits
+the board. Tab focus reveals off-screen blocks.
 
-The bottom strip is one 58px row: a compact zoom control and reset icon on
-the left, the native online/profile pill in the centre, and copyright plus
-Contact, Telegram and GitHub on the right. Reset has an accessible label and
-tooltip. There is no layout block, undo button, separate recenter label or
-minimap. One presence instance moves between the dock and page shell,
-preserving its connection across route changes. Inner pages retain the contact
-footer. Below 768px, blocks form a vertical list with the normal footer and no
-canvas controls. This readable fallback also works without JavaScript.
+The bottom strip is one permanent 48px row: copyright on the left, the native
+online/profile pill in the centre, and Contact, Telegram and GitHub on the right.
+There are no zoom, percentage or reset controls. One presence instance moves
+between the canvas dock and the normal page footer, preserving its connection
+across route changes. Below 768px, blocks form a vertical list with the normal
+footer. This readable fallback also works without JavaScript.
+
+The sticky 64px desktop header uses a compact name mark, monospace navigation,
+a gold active-route segment and small edge ticks. Its controls leave room on the
+right for future navigation work. Mobile uses a 56px header and compact menu
+sheet. No agent interface is implemented here.
 
 Every card opens a detail panel from its surface or its keyboard action.
 Inner links keep their destinations; movement beyond six pixels suppresses a
@@ -186,11 +190,11 @@ Blocks lift by 2px on hover with a gold border and ease into snapped positions
 over 240ms; reduced motion disables both.
 
 Browser regressions cover RU/EN at 1024, 1280, 1440, 1920 and 390px, shared
-edges, equal world margins, non-overlap, readable content, the one-row strip,
+edges, equal world margins, non-overlap, readable content, the slim strip,
 native faces, overflow and hydration. Activity tests use a recorded public
-snapshot and check panel history, focus, dismissal and drag separation. Unit
+snapshot and a synthetic year calendar, and check panel history, focus, dismissal and drag separation. Unit
 tests cover ranking, empty cells, public filtering and cache behavior. Review
-captures live in [`images/activity-canvas`](images/activity-canvas); historical
+captures live in [`images/canvas-polish`](images/canvas-polish); historical
 fullscreen and precision captures remain unchanged. With the local test database
 configured, refresh the activity captures using
 `CANVAS_SCREENSHOTS=after pnpm exec playwright test e2e/activity-canvas.test.ts`.
@@ -200,7 +204,7 @@ Move blocks with the grip or its arrow keys. Positions snap to cells and
 colliding neighbours move to nearby free positions. If no placement is possible,
 the move is rejected. Escape cancels a drag. Versioned localStorage keeps only
 this device's layout, including card sizes; invalid or inaccessible data falls
-back to current activity defaults. Reset returns to those defaults. Layouts are
+back to current activity defaults. Incompatible older saved sizes fall back to the new defaults. Layouts are
 never sent to the server. The common presence coordinate system describes
 positions, not a shared arrangement of blocks.
 
@@ -230,12 +234,16 @@ unobserved activity is invented. Skills combine returned language bytes with
 technology tags already present in portfolio content.
 
 The optional server-only token increases the API budget and enables a 365-day
-public commit/PR calendar through GraphQL `contributionsCollection`. It uses
-repository-level contributions checked against the public allowlist, never the
-aggregate calendar or restricted contribution counts. Up to 40 repositories and
-100 contribution nodes per connection are observed; labels still say public
-sample. A GraphQL failure retains REST coverage. The token is never serialized
-into a response. See [README](../README.md#public-github-activity) for configuration.
+GitHub profile calendar through `contributionsCollection.contributionCalendar`.
+Only aggregate dates, counts and the year total are returned, including anonymous
+private contributions when enabled on the profile. The query requests no
+repository metadata. Desktop shows all 53 week columns, aligned to weekdays;
+mobile shows the latest 26 weeks. The total remains the full year on both.
+Feed rows, per-project graphs, panel commits and language bytes remain public
+only. A feed PR and its squash commit with the same repository/PR number appear
+as one row, without altering the underlying observations used for ranking and
+mini graphs. GraphQL failure retains the labelled 90-day REST sample. The token
+is never serialized into a response. See [README](../README.md#public-github-activity).
 
 The project archive lives at `/projects`; the case finder at `/cases` retains
 its `q`, `focus`, `tech` and `all` query filters, including native GET controls.

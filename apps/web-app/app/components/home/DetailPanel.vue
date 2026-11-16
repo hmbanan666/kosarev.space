@@ -69,7 +69,7 @@
       <p v-if="id === 'live'">
         {{ t('site.presenceDescription') }}
       </p>
-      <p v-if="id === 'cv' || id === 'hero'">
+      <p v-if="id === 'cv'">
         {{ t('hero.description') }}
       </p>
       <nav
@@ -81,7 +81,7 @@
       </nav>
     </template>
     <p v-if="product || ['hero', 'feed', 'skills', 'contributions'].includes(id ?? '')" class="canvas-footnote">
-      {{ t('activity.partial') }} <template v-if="activity.fetchedAt">
+      {{ t(id === 'contributions' && activity.coverage === 'githubYear' ? 'activity.calendarPrivacy' : 'activity.partial') }} <template v-if="activity.fetchedAt">
         {{ t('activity.updated', { time: relativeTime(activity.fetchedAt) }) }}
       </template>
     </p>

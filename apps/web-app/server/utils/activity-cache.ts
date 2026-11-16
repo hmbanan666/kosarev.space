@@ -6,11 +6,11 @@ export function createActivityCache(storage: ActivityStorage, refresh: () => Pro
   let pending: Promise<void> | undefined
   let retryAt = 0
   return async (waitUntil: (promise: Promise<void>) => void) => {
-    const saved = await storage.getItem('github-public-v1').catch(() => null)
+    const saved = await storage.getItem('github-activity-v2').catch(() => null)
     const age = saved?.fetchedAt ? now() - Date.parse(saved.fetchedAt) : Infinity
     if (age >= 30 * 60 * 1000 && now() >= retryAt && !pending) {
       retryAt = now() + 60 * 1000
-      pending = refresh().then((value) => storage.setItem('github-public-v1', value)).then(() => {}).catch(() => {}).finally(() => {
+      pending = refresh().then((value) => storage.setItem('github-activity-v2', value)).then(() => {}).catch(() => {}).finally(() => {
         pending = undefined
       })
       waitUntil(pending)

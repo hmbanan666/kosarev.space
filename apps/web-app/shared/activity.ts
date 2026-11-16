@@ -7,7 +7,8 @@ export interface ActivitySnapshot {
   repos: ActivityRepo[]
   items: ActivityItem[]
   calendar: ActivityDay[]
-  coverage: 'unavailable' | 'rest90' | 'publicYear'
+  calendarTotal?: number
+  coverage: 'unavailable' | 'rest90' | 'githubYear'
   partial: boolean
 }
 export function emptyActivity(): ActivitySnapshot {
@@ -30,4 +31,19 @@ export function calendarDays(items: Pick<ActivityItem, 'kind' | 'date'>[], now: 
 }
 export function projectScores(snapshot: ActivitySnapshot): Record<string, number> {
   return Object.fromEntries(snapshot.repos.filter((repo) => repo.project).map((repo) => [repo.project!, activityScore(snapshot.items.filter((item) => item.repo === repo.name), snapshot.fetchedAt ?? '')]))
+}
+
+// Keep raw observations for project graphs/ranking; collapse only feed rows.
+export function activityFeedItems(items: ActivityItem[]): ActivityItem[] {
+  const pulls = new Map(items.filter((item) => item.kind === 'pr').map((item) => [`${item.repo}:${item.url.match(/\/pull\/(\d+)$/)?.[1]}`, item]))
+  const seen = new Set<string>()
+  return items.flatMap((item) => {
+    const number = item.kind === 'commit' ? item.title.match(/\(#(\d+)\)$/)?.[1] : undefined
+    const row = number ? pulls.get(`${item.repo}:${number}`) ?? item : item
+    if (seen.has(row.id)) {
+      return []
+    }
+    seen.add(row.id)
+    return [row]
+  })
 }

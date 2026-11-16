@@ -54,11 +54,8 @@ for (const locale of ['en', 'ru']) {
 }
 
 async function zoomInFully(page: Page) {
-  const zoomIn = page.getByRole('button', { name: 'Zoom in', exact: true })
-  while (await zoomIn.isEnabled()) {
-    await zoomIn.click()
-  }
-  await expect(page.locator('.canvas-zoom output')).toHaveText('125%')
+  await page.locator('.canvas-viewport').dispatchEvent('wheel', { deltaY: -1000, ctrlKey: true })
+  await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', 'matrix(1.25, 0, 0, 1.25, 0, 0)')
   await page.locator('.canvas-viewport').evaluate((el) => el.scrollTo(0, 0))
 }
 
@@ -70,36 +67,36 @@ test('a fitted canvas contains wheel scrolling and keeps its footer strip visibl
   await expect(page.locator('.canvas-chrome')).toBeInViewport()
 })
 
-test('canvas pans by wheel, background drag and arrows after zoom, with bounded map and fit recenter', async ({ page }) => {
+test('canvas pans by wheel, background drag and arrows after pinch zoom, with bounded scrolling', async ({ page }) => {
   const viewport = await openCanvas(page)
-  const fittedZoom = await page.locator('.canvas-zoom output').textContent()
+  const fittedZoom = await page.locator('[data-canvas-world]').evaluate((el) => getComputedStyle(el).transform)
   await zoomInFully(page)
   await viewport.hover({ position: { x: 450, y: 450 } })
   await page.mouse.wheel(220, 160)
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBeGreaterThan(100)
-  await page.getByRole('button', { name: 'Recenter', exact: true }).click()
+  await viewport.dispatchEvent('wheel', { deltaY: 1000, ctrlKey: true })
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBe(0)
-  await expect(page.locator('.canvas-zoom output')).toHaveText(fittedZoom!)
+  await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', fittedZoom)
   await zoomInFully(page)
   await viewport.focus()
   await page.keyboard.press('ArrowRight')
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBe(96)
   await viewport.evaluate((el) => el.scrollTo(0, 0))
-  const hero = await page.locator('[data-block="hero"]').boundingBox()
-  const gap = hero!.x + hero!.width + 20
-  await page.mouse.move(gap, hero!.y + 100)
+  const bounds = await viewport.boundingBox()
+  const gap = { x: bounds!.x + 500, y: bounds!.y + 10 }
+  await page.mouse.move(gap.x, gap.y)
   await page.mouse.down()
-  await page.mouse.move(gap - 200, hero!.y + 50, { steps: 8 })
+  await page.mouse.move(gap.x - 200, gap.y, { steps: 8 })
   await page.mouse.up()
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBeGreaterThan(100)
   await viewport.evaluate((el) => el.scrollTo(1e6, 1e6))
   expect(await viewport.evaluate((el) => el.scrollLeft <= el.scrollWidth - el.clientWidth && el.scrollTop <= el.scrollHeight - el.clientHeight)).toBe(true)
-  await page.getByRole('button', { name: 'Recenter', exact: true }).click()
+  await viewport.dispatchEvent('wheel', { deltaY: 1000, ctrlKey: true })
   expect(await viewport.evaluate((el) => [el.scrollLeft, el.scrollTop])).toEqual([0, 0])
-  await expect(page.locator('.canvas-zoom output')).toHaveText(fittedZoom!)
+  await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', fittedZoom)
 })
 
-test('block moves show a target, survive reload and reset locally', async ({ page }) => {
+test('block moves show a target, survive reload and support keyboard cancellation', async ({ page }) => {
   await openCanvas(page)
   const block = page.locator('[data-block="context"]')
   const grip = block.getByRole('button', { name: 'Move block: Context' })
@@ -117,8 +114,6 @@ test('block moves show a target, survive reload and reset locally', async ({ pag
   const moved = await block.getAttribute('style')
   await page.reload()
   await expect(block).toHaveAttribute('style', moved!)
-  await page.getByRole('button', { name: 'Reset layout', exact: true }).click()
-  await expect(block).toHaveAttribute('style', original!)
   // The edge project has room to move one cell upwards.
   const movable = page.locator('[data-block="space"]')
   const handleButton = movable.locator('.canvas-grip')
@@ -146,13 +141,14 @@ test('blocks lift and highlight on hover, then ease to a snapped position', asyn
   await movable.hover()
   await expect.poll(() => movable.evaluate((el) => getComputedStyle(el).transform)).toBe('matrix(1, 0, 0, 1, 0, -2)')
   expect(await movable.evaluate((el) => getComputedStyle(el).borderTopColor)).not.toBe(border)
+  const originalTop = await movable.evaluate((el) => Number.parseFloat((el as HTMLElement).style.top))
   await movable.locator('.canvas-grip').focus()
   await page.keyboard.press('ArrowUp')
   const motion = await movable.evaluate((el) => ({ properties: getComputedStyle(el).transitionProperty, duration: getComputedStyle(el).transitionDuration }))
   expect(motion.properties).toContain('top')
   expect(motion.duration).toContain('0.24s')
-  const pitch = await page.locator('[data-canvas-world]').evaluate((el) => ((el as HTMLElement).offsetHeight + 16) / 11)
-  await expect.poll(() => movable.evaluate((el) => Number.parseFloat(getComputedStyle(el).top))).toBeCloseTo(pitch * 3, 0)
+  const pitch = await page.locator('[data-canvas-world]').evaluate((el) => Number.parseFloat(getComputedStyle(el).getPropertyValue('--canvas-cell-height')))
+  await expect.poll(() => movable.evaluate((el) => Number.parseFloat(getComputedStyle(el).top))).toBeCloseTo(originalTop - pitch, 0)
 })
 
 test('mobile and reduced motion keep every block readable without canvas controls on mobile', async ({ page }) => {
@@ -184,6 +180,7 @@ test('cursor faces align across locales with different canvas pan and zoom', asy
   try {
     const peer = await peerContext.newPage()
     await peer.goto('/')
+    await peer.addStyleTag({ content: '#nuxt-devtools-container { display: none !important; }' })
     await expect(peer.locator('[data-live-cursors-bar]')).toBeVisible()
     await peer.locator('[data-live-cursors-bar]').click()
     const peerAvatar = await peer.locator('[data-live-cursors-profile] img').getAttribute('src')
@@ -203,7 +200,7 @@ test('cursor faces align across locales with different canvas pan and zoom', asy
       const actual = await cursor.boundingBox()
       return Math.abs(actual!.x - (receiver!.x + receiver!.width * 0.35)) + Math.abs(actual!.y - (receiver!.y + receiver!.height * 0.25))
     }).toBeLessThan(5)
-    await page.getByRole('button', { name: 'Zoom out', exact: true }).click()
+    await page.locator('.canvas-viewport').dispatchEvent('wheel', { deltaY: 25, ctrlKey: true })
     await expect.poll(async () => {
       const receiver = await page.locator('[data-canvas-world]').boundingBox()
       const actual = await cursor.boundingBox()

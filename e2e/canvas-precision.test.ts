@@ -28,7 +28,7 @@ for (const locale of ['en', 'ru']) {
         }
         await page.evaluate(() => document.fonts.ready)
         await page.mouse.move(0, 0)
-        await page.addStyleTag({ content: 'nuxt-devtools-frame { display: none !important; }' })
+        await page.addStyleTag({ content: '#nuxt-devtools-container { display: none !important; }' })
         // Opt-in, reviewable evidence on the same browser path as the assertions.
         if (process.env.CANVAS_SCREENSHOTS) {
           await page.evaluate(() => Promise.all([...document.images].filter((img) => img.complete).map((img) => img.decode().catch(() => {}))))
@@ -85,7 +85,7 @@ for (const locale of ['en', 'ru']) {
           }
           const controls = await page.locator('.canvas-tools').evaluate((tools) => {
             const bar = tools.querySelector('[data-live-cursors-bar]')!.getBoundingClientRect()
-            const left = tools.querySelector('.canvas-navigation')!.getBoundingClientRect()
+            const left = tools.querySelector('.canvas-copyright')!.getBoundingClientRect()
             const right = tools.querySelector('.canvas-credits')!.getBoundingClientRect()
             const frame = tools.getBoundingClientRect()
             return { center: bar.left + bar.width / 2, middle: bar.top + bar.height / 2, frameMiddle: frame.top + frame.height / 2, leftHeight: left.height, rightHeight: right.height, leftWidth: left.width, rightWidth: right.width }

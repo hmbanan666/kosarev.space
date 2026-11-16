@@ -62,8 +62,8 @@ it('retains honest partial results when GitHub rate limits a repository', async 
   expect(result.items).toEqual([])
 })
 
-it('excludes private, fork and unverified contributions from a token-backed year', async () => {
-  const result = await fetchPublicActivity(async (path) => {
+it('uses the profile calendar including anonymous counts without repository details', async () => {
+  const result = await fetchPublicActivity(async (path, body) => {
     if (path.includes('/events/')) {
       return []
     }
@@ -71,15 +71,19 @@ it('excludes private, fork and unverified contributions from a token-backed year
       return [repo]
     }
     if (path === '/graphql') {
+      expect(body?.query).toContain('from: "2025-11-17T00:00:00Z"')
+      expect(body?.query).not.toMatch(/repository|first:/)
+
       return { data: { user: { contributionsCollection: {
-        commitContributionsByRepository: [
-          { repository: { nameWithOwner: repo.full_name, isPrivate: false, isFork: false }, contributions: { nodes: [{ occurredAt: '2026-01-15T12:00:00Z', commitCount: 3 }], pageInfo: { hasNextPage: false } } },
-          { repository: { nameWithOwner: 'hmbanan666/secret', isPrivate: true, isFork: false }, contributions: { nodes: [{ occurredAt: '2026-01-15T12:00:00Z', commitCount: 999 }], pageInfo: { hasNextPage: false } } },
-        ],
-        pullRequestContributions: { nodes: [{ occurredAt: '2026-01-15T12:00:00Z', pullRequest: { repository: { nameWithOwner: 'hmbanan666/unverified', isPrivate: false, isFork: false } } }], pageInfo: { hasNextPage: false } },
+        contributionCalendar: { totalContributions: 1002, weeks: [{ contributionDays: [
+          { date: '2026-01-15', contributionCount: 1002 },
+        ] }] },
       } } } }
     }
-    if (path.includes('/commits') || path.includes('/pulls')) {
+    if (path.includes('/commits')) {
+      return commits
+    }
+    if (path.includes('/pulls')) {
       return []
     }
     if (path.endsWith('/languages')) {
@@ -87,10 +91,15 @@ it('excludes private, fork and unverified contributions from a token-backed year
     }
     return repo
   }, '2026-11-16T12:00:00Z', true)
-  expect(result.coverage).toBe('publicYear')
+  expect(result.coverage).toBe('githubYear')
+  expect(result.calendarTotal).toBe(1002)
   expect(result.calendar).toHaveLength(365)
-  expect(result.calendar.find((day) => day.date === '2026-01-15')?.count).toBe(3)
-  expect(JSON.stringify(result)).not.toMatch(/secret|unverified|999/)
+  expect(result.calendar[0]?.date).toBe('2025-11-17')
+  expect(result.calendar.at(-1)?.date).toBe('2026-11-16')
+  expect(result.items).toHaveLength(3)
+  expect(result.items.every((item) => item.repo === repo.full_name)).toBe(true)
+  expect(result.calendar.find((day) => day.date === '2026-01-15')?.count).toBe(1002)
+  expect(JSON.stringify(result)).not.toMatch(/secret|unverified/)
 })
 
 it('fails refresh when every repository visibility request fails, preserving the stale cache', async () => {
@@ -100,4 +109,29 @@ it('fails refresh when every repository visibility request fails, preserving the
     }
     throw new Error('unavailable')
   }, '2026-11-16T12:00:00Z')).rejects.toThrow('Public activity unavailable')
+})
+
+it('keeps the 90-day public calendar when the profile calendar fails', async () => {
+  const result = await fetchPublicActivity(async (path) => {
+    if (path === '/graphql') {
+      return { errors: [{ message: 'unavailable' }] }
+    }
+    if (path.includes('/events/') || path.includes('/pulls')) {
+      return []
+    }
+    if (path.startsWith('/users/')) {
+      return [repo]
+    }
+    if (path.includes('/commits')) {
+      return commits
+    }
+    if (path.endsWith('/languages')) {
+      return { TypeScript: 500 }
+    }
+    return repo
+  }, '2026-11-16T12:00:00Z', true)
+  expect(result.coverage).toBe('rest90')
+  expect(result.calendar).toHaveLength(90)
+  expect(result.calendarTotal).toBeUndefined()
+  expect(result.items).toHaveLength(3)
 })
