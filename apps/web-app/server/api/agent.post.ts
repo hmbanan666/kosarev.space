@@ -80,7 +80,7 @@ export default defineEventHandler(async (event) => {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${config.openrouterApiKey}`, 'Content-Type': 'application/json' },
         signal: controller.signal,
-        body: JSON.stringify({ model: config.agentModel, messages: buildPrompt(evidence, request.messages, request.page, request.locale), stream: true, max_tokens: 1000 }),
+        body: JSON.stringify({ model: config.agentModel, messages: buildPrompt(evidence, request.messages, request.page, request.locale), stream: true, max_tokens: 2000, reasoning: { effort: 'low', exclude: true } }),
       })
       if (!response.ok || !response.body) {
         await push({ type: 'error', code: response.status === 429 ? 'rateLimit' : 'offline' })
@@ -98,7 +98,7 @@ export default defineEventHandler(async (event) => {
           throw new Error('Provider stream failed')
         }
         const token = chunk.choices?.[0]?.delta?.content
-        if (typeof token === 'string') {
+        if (typeof token === 'string' && token) {
           length += token.length
           if (length > 8000) {
             throw new Error('Answer too large')
