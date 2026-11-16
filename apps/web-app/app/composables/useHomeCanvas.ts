@@ -13,8 +13,9 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
   const feedback = ref('')
   const zoom = ref(1)
   const fitZoom = ref(1)
-  const minZoom = computed(() => Math.min(0.8, fitZoom.value))
-  let fitted = true
+  const initialZoom = ref(1)
+  const minZoom = ref(0.25)
+  let defaultView = true
   const view = reactive({ x: 0, y: 0, width: 0, height: 0 })
   const width = ref(homeCanvas.columns * homeCanvas.cell - homeCanvas.gap)
   const height = ref(homeCanvas.rows * homeCanvas.cell - homeCanvas.gap)
@@ -55,12 +56,13 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
       const gutter = Number.parseFloat(getComputedStyle(viewport.value).paddingLeft)
       const availableWidth = Math.max(1, viewport.value.clientWidth - 2 * gutter)
       const availableHeight = Math.max(1, viewport.value.clientHeight - 2 * gutter)
-      fitZoom.value = Math.min(1, availableWidth / (homeCanvas.columns * homeCanvas.cell - homeCanvas.gap), availableHeight / (homeCanvas.rows * homeCanvas.cell - homeCanvas.gap))
-      // Keep layout coordinates stable while using the full viewport in both axes.
-      width.value = availableWidth / fitZoom.value
-      height.value = availableHeight / fitZoom.value
-      if (fitted) {
-        zoom.value = fitZoom.value
+      // Start on the main cluster; the wider finite board extends beyond it.
+      initialZoom.value = Math.min(1, availableWidth / (19 * homeCanvas.cell - homeCanvas.gap), availableHeight / (11 * homeCanvas.cell - homeCanvas.gap))
+      width.value = (availableWidth / initialZoom.value + homeCanvas.gap) / 19 * homeCanvas.columns - homeCanvas.gap
+      height.value = (availableHeight / initialZoom.value + homeCanvas.gap) / 11 * homeCanvas.rows - homeCanvas.gap
+      fitZoom.value = Math.min(1, availableWidth / width.value, availableHeight / height.value)
+      if (defaultView) {
+        zoom.value = initialZoom.value
       } else {
         zoom.value = Math.max(minZoom.value, zoom.value)
       }
@@ -68,15 +70,15 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     measure()
   }
   function recenter() {
-    fitted = true
+    defaultView = true
     resize()
-    zoom.value = fitZoom.value
+    zoom.value = initialZoom.value
     viewport.value?.scrollTo({ left: 0, top: 0, behavior: 'instant' })
     measure()
   }
   async function setZoom(value: number) {
     const center = { x: view.x + view.width / 2, y: view.y + view.height / 2 }
-    fitted = false
+    defaultView = false
     zoom.value = Math.max(minZoom.value, Math.min(1.25, Math.round(value * 100) / 100))
     await nextTick()
     viewport.value?.scrollTo({ left: center.x * zoom.value - (viewport.value?.clientWidth ?? 0) / 2, top: center.y * zoom.value - (viewport.value?.clientHeight ?? 0) / 2 })
@@ -215,7 +217,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     }
   })
   onBeforeUnmount(() => end(true))
-  return { enabled, blocks, canUndo, feedback, zoom, fitZoom, minZoom, view, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position, reset: () => {
+  return { enabled, blocks, canUndo, feedback, zoom, fitZoom, initialZoom, minZoom, view, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position, reset: () => {
     layout.reset()
     feedback.value = 'updated'
     sync()

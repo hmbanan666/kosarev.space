@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { activityLayout } from '../app/utils/home-canvas'
+import { activityLayout, homeCanvas } from '../app/utils/home-canvas'
 import { activityFeedItems, activityScore, calendarDays } from '../shared/activity'
 
 it('weights recent public commits and PRs, ignoring releases, old and future entries', () => {
@@ -20,7 +20,7 @@ it('places the most active project centrally and larger, with deterministic empt
   expect(layout).toEqual(activityLayout({ space: 5, woodlands: 0, k39: 80, context: 2 }))
   expect(layout.find((b) => b.id === 'k39')).toMatchObject({ x: 8, y: 4, w: 7, h: 3 })
   expect(layout.find((b) => b.id === 'context')!.w).toBeLessThan(7)
-  expect(layout.reduce((sum, b) => sum + b.w * b.h, 0)).toBeLessThan(20 * 12)
+  expect(layout.reduce((sum, b) => sum + b.w * b.h, 0)).toBeLessThan(homeCanvas.columns * homeCanvas.rows * 0.8)
 })
 
 it('shows a PR and its squash commit once, scoped to the same repository', () => {

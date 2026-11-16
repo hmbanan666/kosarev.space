@@ -1,7 +1,7 @@
 export interface CanvasBlock { id: string, x: number, y: number, w: number, h: number }
 export interface CanvasBounds { columns: number, rows: number }
 export interface LayoutStorage { getItem: (key: string) => string | null, setItem: (key: string, value: string) => void }
-export const canvasStorageKey = 'portfolio-layout-v3'
+export const canvasStorageKey = 'portfolio-layout-v4'
 const copy = (blocks: readonly CanvasBlock[]) => blocks.map((block) => ({ ...block }))
 const overlaps = (a: CanvasBlock, b: CanvasBlock) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 
@@ -11,7 +11,7 @@ export function createCanvasLayout(defaults: readonly CanvasBlock[], bounds: Can
   const inside = (b: CanvasBlock) => [b.x, b.y, b.w, b.h].every(Number.isInteger) && b.w > 0 && b.h > 0 && b.x >= 0 && b.y >= 0 && b.x + b.w <= bounds.columns && b.y + b.h <= bounds.rows
   function persist() {
     try {
-      storage?.setItem(canvasStorageKey, JSON.stringify({ version: 3, blocks }))
+      storage?.setItem(canvasStorageKey, JSON.stringify({ version: 4, blocks }))
     } catch { /* Storage can be unavailable or full. The session remains usable. */ }
   }
   function commit(next: CanvasBlock[]) {
@@ -82,7 +82,7 @@ export function createCanvasLayout(defaults: readonly CanvasBlock[], bounds: Can
     restore() {
       try {
         const saved = JSON.parse(storage?.getItem(canvasStorageKey) ?? 'null')
-        if (saved?.version !== 3 || !Array.isArray(saved.blocks) || saved.blocks.length !== defaults.length) {
+        if (saved?.version !== 4 || !Array.isArray(saved.blocks) || saved.blocks.length !== defaults.length) {
           return
         }
         const next = defaults.map((original) => {

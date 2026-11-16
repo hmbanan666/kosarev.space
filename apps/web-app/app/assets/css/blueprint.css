@@ -64,7 +64,7 @@
 .canvas-block-contacts .canvas-email { font-size: 1.65rem; overflow-wrap: anywhere; }
 .canvas-latest { margin-top: 12px; }
 .canvas-latest a { display: block; margin-top: 12px; font-size: 1.1rem; line-height: 1.5; }
-.canvas-grip { position: absolute; right: var(--grip-inset); top: var(--grip-inset); width: 32px; height: 32px; display: grid; place-items: center; color: #969087; cursor: grab !important; opacity: .5; touch-action: none; z-index: 2; }
+.canvas-grip { position: absolute; right: var(--grip-inset); top: var(--grip-inset); width: 32px; height: 32px; display: grid; place-items: center; color: #969087; cursor: grab !important; opacity: 0; touch-action: none; z-index: 3; }
 .blueprint-frame:hover .canvas-grip, .blueprint-frame:focus-within .canvas-grip { opacity: 1; }
 .canvas-grip:focus-visible { outline-offset: 0 !important; }
 .canvas-target { position: absolute; pointer-events: none; border: 1px dashed var(--ui-primary); background: #d9ad6714; z-index: 2; }
@@ -232,3 +232,12 @@ body:has(.activity-panel[open]) { overflow: hidden; }
 .canvas-enabled .activity-year-total { font-size: calc(.75rem * var(--canvas-type-scale)); }
 .canvas-block-contributions .activity-graph { width: min(100%, calc(var(--weeks) * 16px)); }
 .canvas-copyright { color: var(--ui-text-muted); }
+
+.canvas-edge { position: absolute; z-index: 2; cursor: grab; touch-action: none; }
+.canvas-edge-top, .canvas-edge-bottom { left: 0; right: 0; height: var(--edge-band); }
+.canvas-edge-left, .canvas-edge-right { top: var(--edge-band); bottom: var(--edge-band); width: var(--edge-band); }
+.canvas-edge-top { top: 0; }
+.canvas-edge-bottom { bottom: 0; }
+.canvas-edge-left { left: 0; }
+.canvas-edge-right { right: 0; }
+.canvas-viewport.is-dragging, .canvas-viewport.is-dragging * { cursor: grabbing !important; }

@@ -17,7 +17,7 @@ the earlier direction that explicitly deprioritized employment.
 ## Implemented structure
 
 - A server-rendered home with role, location, CV, PDF, work and email links.
-  Desktop and tablet enhance the blocks into a bounded 20 by 12 cell canvas.
+  Desktop and tablet enhance the blocks into a bounded 28 by 18 cell canvas.
   The home contains only this canvas; `/projects`, `/cases` and `/contact`
   provide the catalogs and contact page, alongside `/writing` and `/cv`.
   The header uses real localized routes and marks their active route.
@@ -122,7 +122,7 @@ Canvas coordinate values come from
 [`home-canvas.ts`](../apps/web-app/app/utils/home-canvas.ts); the home supplies
 its gap to CSS as well. Insets are measured inside the 1px card border.
 Canvas dimensions are `columns × cell − gap` and `rows × cell − gap`, so
-there is no trailing empty strip. The 20 by 12 graph-paper board leaves empty
+there is no trailing empty strip. The 28 by 18 graph-paper board leaves empty
 cells between clusters. It is not a packed rectangle. The role and original
 portrait remain prominent at centre-left; contact is a small edge card.
 Grid lines share the cards' coordinate space during pan and zoom. Four quiet
@@ -134,23 +134,26 @@ commits/PRs in 30 days, and the number in 14 days. Releases do not affect rank;
 future dates are excluded. Equal scores use project-key order. The highest
 rank occupies the central 7 by 3 slot; remaining projects use staggered 4 by 3 and 5 by 3
 edge slots.
-The same rank orders the mobile list. The algorithm is in
+The same rank orders the mobile list. Dostigus, Meloteka, Startodel, ChatGame
+and NextOrders reuse their existing project descriptions in outer slots. A
+separate latest-publication card appears only when published content is available.
+Contact remains last in reading order and near the outer edge. The algorithm is in
 [`home-canvas.ts`](../apps/web-app/app/utils/home-canvas.ts), with scoring in
 [`activity.ts`](../apps/web-app/shared/activity.ts).
 
 On desktop the sticky header and one bottom strip surround an edge-to-edge
 viewport. The enhanced home is exactly `100dvh` tall with no document scroll.
-The board's four outer gutters use `--site-gutter`; the world aligns with the
-header. Logical cells expand to match the available aspect ratio; uniform
-scaling preserves geometry. A text scale floor improves readability at fitted
-zoom. Saved positions and sizes survive activity updates and viewport changes.
+The initial board top and left gutters use `--site-gutter` and align with the
+header. Cards extend beyond the right and bottom viewport edges. Logical cells
+expand to match the available aspect ratio; uniform scaling preserves geometry.
+A text scale floor improves readability at the initial zoom. Saved positions and sizes survive activity updates and viewport changes.
 
-Initial load and fitted resize fit both dimensions. The fitted
-scale is capped at 100%; zoom ranges from the smaller of fitted scale and 80%
-up to 125%. Pan by dragging empty space, scrolling or focusing the viewport
-and pressing arrow keys after zooming. Native scroll bounds prevent getting
-lost; the document does not scroll through the canvas. Pinch or Ctrl/Meta-wheel adjusts zoom; zooming down to the minimum fits
-the board. Tab focus reveals off-screen blocks.
+Initial load and default-view resize show a 19 by 11 cell region of the larger
+board, capped at 100% scale. Zoom ranges from 25% to 125%. Pan by dragging empty
+space, scrolling or focusing the viewport and pressing arrow keys. Native scroll bounds prevent getting
+lost; the document does not scroll through the canvas. Pinch or Ctrl/Meta-wheel
+adjusts zoom; zooming out reveals the surrounding archive cards. Text scales
+with cards below the initial zoom. Tab focus reveals off-screen blocks.
 
 The bottom strip is one permanent 48px row: copyright on the left, the native
 online/profile pill in the centre, and Contact, Telegram and GitHub on the right.
@@ -160,9 +163,12 @@ across route changes. Below 768px, blocks form a vertical list with the normal
 footer. This readable fallback also works without JavaScript.
 
 The sticky 64px desktop header uses a compact name mark, monospace navigation,
-a gold active-route segment and small edge ticks. Its controls leave room on the
-right for future navigation work. Mobile uses a 56px header and compact menu
-sheet. No agent interface is implemented here.
+a gold active-route segment and small edge ticks. The locale link sits beside
+the name; AI Bot is the rightmost desktop control
+with the same outer gutter as the name. Mobile uses a 56px header and compact menu
+sheet. A global icon launcher opens the same site-agent drawer and hides while
+it is open. On the desktop home it sits above the bottom strip; mobile offsets include
+the safe area.
 
 Every card opens a detail panel from its surface or its keyboard action.
 Inner links keep their destinations; movement beyond six pixels suppresses a
@@ -200,11 +206,14 @@ configured, refresh the activity captures using
 `CANVAS_SCREENSHOTS=after pnpm exec playwright test e2e/activity-canvas.test.ts`.
 They are local review evidence, not production captures.
 
-Move blocks with the grip or its arrow keys. Positions snap to cells and
+Move blocks from a 14px band along any edge, or with the grip and its arrow keys.
+The grip appears on hover or keyboard focus. Body taps still open details.
+Positions snap to cells and
 colliding neighbours move to nearby free positions. If no placement is possible,
 the move is rejected. Escape cancels a drag. Versioned localStorage keeps only
 this device's layout, including card sizes; invalid or inaccessible data falls
-back to current activity defaults. Incompatible older saved sizes fall back to the new defaults. Layouts are
+back to current activity defaults. Layout storage version 4 discards earlier
+arrangements for the expanded board. Layouts are
 never sent to the server. The common presence coordinate system describes
 positions, not a shared arrangement of blocks.
 

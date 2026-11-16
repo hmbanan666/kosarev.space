@@ -28,7 +28,7 @@ for (const locale of ['en', 'ru']) {
       }
     })
     await openCanvas(page, locale)
-    await expect(page.locator('[data-block]')).toHaveCount(12)
+    await expect(page.locator('[data-block]')).toHaveCount(18)
     const overflow = await page.locator('[data-block]').evaluateAll((nodes) => nodes.filter((node) => node.scrollHeight > node.clientHeight + 2 || node.scrollWidth > node.clientWidth + 2).map((node) => node.getAttribute('data-block')))
     expect(overflow).toEqual([])
     const outsideBoard = await page.locator('[data-canvas-world]').evaluate((world) => {
@@ -69,14 +69,14 @@ test('a fitted canvas contains wheel scrolling and keeps its footer strip visibl
 
 test('canvas pans by wheel, background drag and arrows after pinch zoom, with bounded scrolling', async ({ page }) => {
   const viewport = await openCanvas(page)
-  const fittedZoom = await page.locator('[data-canvas-world]').evaluate((el) => getComputedStyle(el).transform)
+  const minimumZoom = 'matrix(0.25, 0, 0, 0.25, 0, 0)'
   await zoomInFully(page)
   await viewport.hover({ position: { x: 450, y: 450 } })
   await page.mouse.wheel(220, 160)
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBeGreaterThan(100)
   await viewport.dispatchEvent('wheel', { deltaY: 1000, ctrlKey: true })
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBe(0)
-  await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', fittedZoom)
+  await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', minimumZoom)
   await zoomInFully(page)
   await viewport.focus()
   await page.keyboard.press('ArrowRight')
@@ -93,7 +93,7 @@ test('canvas pans by wheel, background drag and arrows after pinch zoom, with bo
   expect(await viewport.evaluate((el) => el.scrollLeft <= el.scrollWidth - el.clientWidth && el.scrollTop <= el.scrollHeight - el.clientHeight)).toBe(true)
   await viewport.dispatchEvent('wheel', { deltaY: 1000, ctrlKey: true })
   expect(await viewport.evaluate((el) => [el.scrollLeft, el.scrollTop])).toEqual([0, 0])
-  await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', fittedZoom)
+  await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', minimumZoom)
 })
 
 test('block moves show a target, survive reload and support keyboard cancellation', async ({ page }) => {
@@ -123,6 +123,7 @@ test('block moves show a target, survive reload and support keyboard cancellatio
   await expect(movable).not.toHaveAttribute('style', blockOriginal!)
   const beforeCancel = await movable.getAttribute('style')
   await movable.evaluate((el) => Promise.all(el.getAnimations().map((animation) => animation.finished)))
+  await handleButton.hover()
   const handle = await handleButton.boundingBox()
   await page.mouse.move(handle!.x + 10, handle!.y + 10)
   await page.mouse.down()

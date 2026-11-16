@@ -27,7 +27,7 @@
       <p class="canvas-eyebrow">
         {{ t('activity.status') }}
       </p>
-      <p>{{ id === 'space' ? t('activity.spacePitch') : t(`projects.${id}.${id === 'context' ? 'description' : 'kind'}`) }}</p>
+      <p>{{ t(product.pitch) }}</p>
       <template v-if="repo">
         <h3>{{ t('activity.days30') }}</h3>
         <HomeActivityGraph :days="miniDays" mini />

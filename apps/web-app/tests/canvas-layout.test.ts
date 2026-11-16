@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { canvasStorageKey, createCanvasLayout } from '../app/utils/canvas-layout'
-import { homeBlocks, homeCanvas } from '../app/utils/home-canvas'
+import { activityLayout, homeBlocks, homeCanvas } from '../app/utils/home-canvas'
 
 const blocks = [
   { id: 'large', x: 0, y: 0, w: 2, h: 2 },
   { id: 'small', x: 2, y: 0, w: 1, h: 1 },
 ]
-it('keeps default cards within the grid without overlaps and leaves intentional gaps', () => {
-  const layout = createCanvasLayout(homeBlocks, homeCanvas)
+it.each([false, true])('keeps default cards within the grid without overlaps (publication: %s)', (hasPublication) => {
+  const defaults = activityLayout({}, hasPublication)
+  const layout = createCanvasLayout(defaults, homeCanvas)
   expect(homeBlocks.reduce((sum, b) => sum + b.w * b.h, 0)).toBeLessThanOrEqual(homeCanvas.columns * homeCanvas.rows * 0.8)
   for (let y = 0; y < homeCanvas.rows; y++) {
     for (let x = 0; x < homeCanvas.columns; x++) {
@@ -53,9 +54,9 @@ it('persists a valid layout, restores it, and supports reset and undo', () => {
 })
 it('rejects overlapping, out of bounds, duplicate and stale saved positions', () => {
   for (const saved of [
-    { version: 3, blocks: blocks.map((b) => ({ ...b, x: 0, y: 0 })) },
-    { version: 3, blocks: blocks.map((b) => ({ ...b, x: -1 })) },
-    { version: 3, blocks: [blocks[0], blocks[0]] },
+    { version: 4, blocks: blocks.map((b) => ({ ...b, x: 0, y: 0 })) },
+    { version: 4, blocks: blocks.map((b) => ({ ...b, x: -1 })) },
+    { version: 4, blocks: [blocks[0], blocks[0]] },
     { version: 0, blocks },
   ]) {
     const layout = createCanvasLayout(blocks, { columns: 5, rows: 4 }, { getItem: () => JSON.stringify(saved), setItem: () => {} })
@@ -114,4 +115,14 @@ it('preserves a visitor arrangement and sizes when activity changes the default 
   const restored = createCanvasLayout(changedDefaults, homeCanvas, storage)
   restored.restore()
   expect(restored.blocks).toEqual(layout.blocks)
+})
+
+it('places existing paused and archive projects beyond the main cluster', () => {
+  for (const id of ['dostigus', 'meloteka', 'startodel', 'chatgame', 'nextorders']) {
+    const block = homeBlocks.find((block) => block.id === id)
+    expect(block, id).toBeDefined()
+    expect(block!.x >= 20 || block!.y >= 12).toBe(true)
+  }
+  expect(homeCanvas.columns).toBeGreaterThan(20)
+  expect(homeCanvas.rows).toBeGreaterThan(12)
 })
