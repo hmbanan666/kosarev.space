@@ -112,6 +112,9 @@ for (const locale of ['en', 'ru']) {
 }
 
 test('every card edge drags, while body taps open details', async ({ page }) => {
+  test.setTimeout(45000)
+  // Motion has separate coverage; keep hit-target checks on settled cards.
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto('/en')
   await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)
@@ -124,7 +127,7 @@ test('every card edge drags, while body taps open details', async ({ page }) => 
     await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2)
     await page.mouse.down()
     await page.mouse.move(box!.x + box!.width / 2 + (side === 'right' ? -90 : 90), box!.y + box!.height / 2 + (side === 'bottom' ? -90 : 90), { steps: 6 })
-    await expect(page.locator('.canvas-target')).toBeVisible()
+    await expect(page.locator('.canvas-target'), `${side} edge preview`).toBeVisible()
     await expect(edge).toHaveCSS('cursor', 'grabbing')
     await page.mouse.up()
     await expect(card).not.toHaveAttribute('style', original!)

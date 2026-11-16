@@ -4,7 +4,7 @@ test.describe('homepage', () => {
   test('renders only the canvas on home', async ({ page }) => {
     await page.goto('/')
 
-    await expect(page.locator('[data-block]')).toHaveCount(12)
+    await expect(page.locator('[data-block]')).toHaveCount(18)
     await expect(page.locator('.home-catalog')).toHaveCount(0)
   })
 
