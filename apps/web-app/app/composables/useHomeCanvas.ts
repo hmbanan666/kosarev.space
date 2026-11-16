@@ -9,14 +9,6 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
   const storage = { getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value) }
   let layout = createCanvasLayout(defaults.value, homeCanvas, storage)
   const blocks = shallowRef(layout.blocks)
-  watch(defaults, () => {
-    end(true)
-    layout = createCanvasLayout(defaults.value, homeCanvas, storage)
-    if (mounted.value) {
-      layout.restore()
-    }
-    sync()
-  })
   const canUndo = ref(false)
   const feedback = ref('')
   const zoom = ref(1)
@@ -32,6 +24,21 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
   const targetFits = computed(() => !target.value || layout.preview(target.value.id, target.value.x, target.value.y) !== null)
   const dragging = ref(false)
   let gesture: { id?: string, pointer: number, x: number, y: number, left: number, top: number, block?: CanvasBlock } | null = null
+  let deferredLayout = false
+  function updateDefaults() {
+    if (gesture) {
+      deferredLayout = true
+      return
+    }
+    deferredLayout = false
+    layout = createCanvasLayout(defaults.value, homeCanvas, storage)
+    if (mounted.value) {
+      layout.restore()
+    }
+    sync()
+  }
+  // Metadata refreshes must not interrupt a gesture on an unchanged grid.
+  watch(() => JSON.stringify(defaults.value), updateDefaults)
   function sync() {
     blocks.value = layout.blocks
     canUndo.value = layout.canUndo
@@ -125,6 +132,9 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     gesture = null
     target.value = null
     dragging.value = false
+    if (deferredLayout) {
+      updateDefaults()
+    }
   }
   function key(event: KeyboardEvent, id?: string) {
     if (!enabled.value) {

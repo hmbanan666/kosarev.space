@@ -105,6 +105,7 @@ test('block moves show a target, survive reload and reset locally', async ({ pag
   const grip = block.getByRole('button', { name: 'Move block: Context' })
   const original = await block.getAttribute('style')
   const scale = await page.locator('[data-canvas-world]').evaluate((el) => el.getBoundingClientRect().width / (el as HTMLElement).offsetWidth)
+  await grip.hover()
   const rect = await grip.boundingBox()
   await page.mouse.move(rect!.x + 12, rect!.y + 12)
   await page.mouse.down()

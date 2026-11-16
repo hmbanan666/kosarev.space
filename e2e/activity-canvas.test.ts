@@ -87,3 +87,54 @@ test('deep links, outside dismissal, inner links and drag gestures remain distin
   await card.locator('h2 a').click()
   await expect(page).toHaveURL(/\/en\/projects\/context$/)
 })
+
+for (const changed of [false, true]) {
+  test(`an activity response preserves an in-progress drag (${changed ? 'new ranking' : 'same ranking'})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.clock.install()
+    await page.unroute('**/api/activity')
+    let hold = false
+    let release!: () => void
+    let requested!: () => void
+    const held = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    const intercepted = new Promise<void>((resolve) => {
+      requested = resolve
+    })
+    await page.route('**/api/activity', async (route) => {
+      if (hold) {
+        requested()
+        await held
+      }
+      await route.fulfill({ json: hold && changed ? snapshot : { ...snapshot, repos: [], items: [], calendar: [] } })
+    })
+    await page.goto('/en')
+    await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)
+    await expect(page.locator('[data-block="contributions"] .canvas-eyebrow')).toContainText('Public sample')
+    hold = true
+    await page.clock.fastForward(11000)
+    await intercepted
+    const block = page.locator('[data-block="context"]')
+    const original = await block.getAttribute('style')
+    const grip = await block.locator('.canvas-grip').boundingBox()
+    await page.mouse.move(grip!.x + 12, grip!.y + 12)
+    await page.mouse.down()
+    await page.mouse.move(grip!.x + 12, grip!.y + 74, { steps: 6 })
+    await expect(page.locator('.canvas-target')).toBeVisible()
+    const refreshed = page.waitForResponse('**/api/activity')
+    release()
+    await refreshed
+    if (changed) {
+      await expect(page.locator('[data-block="feed"] .activity-feed li')).toHaveCount(3)
+    }
+    await page.clock.fastForward(100)
+    await expect(page.locator('.canvas-target')).toBeVisible()
+    await page.mouse.up()
+    await expect(block).not.toHaveAttribute('style', original!)
+    await expect(page.getByRole('dialog')).not.toBeVisible()
+    const moved = await block.getAttribute('style')
+    await page.reload()
+    await expect(block).toHaveAttribute('style', moved!)
+  })
+}
