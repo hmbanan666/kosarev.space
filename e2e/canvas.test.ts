@@ -17,7 +17,7 @@ for (const locale of ['en', 'ru']) {
   test(`home ships SSR blocks and enhances without hydration warnings (${locale})`, async ({ page, request, browser }) => {
     const path = locale === 'en' ? '/en' : '/'
     const html = await (await request.get(path, { headers: { 'accept-language': locale } })).text()
-    for (const text of ['data-block="hero"', 'data-block="context"', 'data-block="dostigus"', 'AI Product Engineer / Fullstack Engineer', 'mailto:nick@kosarev.space']) {
+    for (const text of ['data-block="hero"', 'data-block="context"', 'data-block="space"', 'AI Product Engineer / Fullstack Engineer', 'mailto:nick@kosarev.space']) {
       expect(html).toContain(text)
     }
     const errors: string[] = []
@@ -28,7 +28,7 @@ for (const locale of ['en', 'ru']) {
       }
     })
     await openCanvas(page, locale)
-    await expect(page.locator('[data-block]')).toHaveCount(11)
+    await expect(page.locator('[data-block]')).toHaveCount(12)
     const overflow = await page.locator('[data-block]').evaluateAll((nodes) => nodes.filter((node) => node.scrollHeight > node.clientHeight + 2 || node.scrollWidth > node.clientWidth + 2).map((node) => node.getAttribute('data-block')))
     expect(overflow).toEqual([])
     const outsideBoard = await page.locator('[data-canvas-world]').evaluate((world) => {
@@ -44,9 +44,9 @@ for (const locale of ['en', 'ru']) {
     const noJs = await context.newPage()
     await noJs.goto(path)
     await expect(noJs.locator('h1')).toBeVisible()
-    await expect(noJs.locator(`[data-block="context"] a[href="${locale === 'en' ? '/en' : ''}/projects/context"]`)).toBeVisible()
+    await expect(noJs.locator(`[data-block="context"] a[href="${locale === 'en' ? '/en' : ''}/projects/context"]`).first()).toBeVisible()
     await expect(noJs.locator('.canvas-tools')).toHaveCount(0)
-    await noJs.locator('[data-block="archive"] a').first().click()
+    await noJs.locator('.site-desktop-nav a[href$="/projects"]').click()
     await expect(noJs).toHaveURL(/\/projects\/?$/)
     await expect(noJs.locator('#projects')).toBeVisible()
     await context.close()
@@ -86,15 +86,12 @@ test('canvas pans by wheel, background drag and arrows after zoom, with bounded 
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBe(96)
   await viewport.evaluate((el) => el.scrollTo(0, 0))
   const hero = await page.locator('[data-block="hero"]').boundingBox()
-  const context = await page.locator('[data-block="context"]').boundingBox()
-  const gap = (hero!.x + hero!.width + context!.x) / 2
+  const gap = hero!.x + hero!.width + 20
   await page.mouse.move(gap, hero!.y + 100)
   await page.mouse.down()
   await page.mouse.move(gap - 200, hero!.y + 50, { steps: 8 })
   await page.mouse.up()
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBeGreaterThan(100)
-  await page.locator('.canvas-minimap').click({ position: { x: 70, y: 35 } })
-  await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBeGreaterThan(300)
   await viewport.evaluate((el) => el.scrollTo(1e6, 1e6))
   expect(await viewport.evaluate((el) => el.scrollLeft <= el.scrollWidth - el.clientWidth && el.scrollTop <= el.scrollHeight - el.clientHeight)).toBe(true)
   await page.getByRole('button', { name: 'Recenter', exact: true }).click()
@@ -102,7 +99,7 @@ test('canvas pans by wheel, background drag and arrows after zoom, with bounded 
   await expect(page.locator('.canvas-zoom output')).toHaveText(fittedZoom!)
 })
 
-test('block moves show a target, survive reload, undo and reset locally', async ({ page }) => {
+test('block moves show a target, survive reload and reset locally', async ({ page }) => {
   await openCanvas(page)
   const block = page.locator('[data-block="context"]')
   const grip = block.getByRole('button', { name: 'Move block: Context' })
@@ -121,11 +118,8 @@ test('block moves show a target, survive reload, undo and reset locally', async 
   await expect(block).toHaveAttribute('style', moved!)
   await page.getByRole('button', { name: 'Reset layout', exact: true }).click()
   await expect(block).toHaveAttribute('style', original!)
-  await page.getByRole('button', { name: 'Undo', exact: true }).click()
-  await expect(block).toHaveAttribute('style', moved!)
-  await page.getByRole('button', { name: 'Reset layout', exact: true }).click()
-  // On the packed board, Dostigus has a valid one-cell move upwards.
-  const movable = page.locator('[data-block="dostigus"]')
+  // The edge project has room to move one cell upwards.
+  const movable = page.locator('[data-block="space"]')
   const handleButton = movable.locator('.canvas-grip')
   const blockOriginal = await movable.getAttribute('style')
   await handleButton.focus()
@@ -146,7 +140,7 @@ test('block moves show a target, survive reload, undo and reset locally', async 
 test('blocks lift and highlight on hover, then ease to a snapped position', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await openCanvas(page)
-  const movable = page.locator('[data-block="dostigus"]')
+  const movable = page.locator('[data-block="space"]')
   const border = await movable.evaluate((el) => getComputedStyle(el).borderTopColor)
   await movable.hover()
   await expect.poll(() => movable.evaluate((el) => getComputedStyle(el).transform)).toBe('matrix(1, 0, 0, 1, 0, -2)')
@@ -156,8 +150,8 @@ test('blocks lift and highlight on hover, then ease to a snapped position', asyn
   const motion = await movable.evaluate((el) => ({ properties: getComputedStyle(el).transitionProperty, duration: getComputedStyle(el).transitionDuration }))
   expect(motion.properties).toContain('top')
   expect(motion.duration).toContain('0.24s')
-  const pitch = await page.locator('[data-canvas-world]').evaluate((el) => ((el as HTMLElement).offsetHeight + 16) / 9)
-  await expect.poll(() => movable.evaluate((el) => Number.parseFloat(getComputedStyle(el).top))).toBeCloseTo(pitch * 2, 0)
+  const pitch = await page.locator('[data-canvas-world]').evaluate((el) => ((el as HTMLElement).offsetHeight + 16) / 11)
+  await expect.poll(() => movable.evaluate((el) => Number.parseFloat(getComputedStyle(el).top))).toBeCloseTo(pitch * 3, 0)
 })
 
 test('mobile and reduced motion keep every block readable without canvas controls on mobile', async ({ page }) => {
@@ -166,7 +160,7 @@ test('mobile and reduced motion keep every block readable without canvas control
   await page.goto('/en')
   await expect(page.locator('.canvas-tools')).toHaveCount(0)
   await expect(page.locator('.canvas-grip')).toHaveCount(0)
-  await expect(page.locator('.canvas-mobile-zone')).toHaveCount(5)
+  await expect(page.locator('.canvas-mobile-zone')).toHaveCount(0)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   for (const block of await page.locator('[data-block]').all()) {
     await expect(block).toBeVisible()

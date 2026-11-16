@@ -19,7 +19,7 @@
       {{ t('cv.subtitle') }}
     </p>
     <p class="canvas-description">
-      {{ heroIntro }}
+      {{ currentWork }}
     </p>
     <p class="canvas-footnote">
       {{ t('cv.location') }} · {{ t('cv.since') }}
@@ -48,33 +48,29 @@
       >{{ product.title }}</a>
     </h2>
     <p class="canvas-description">
-      {{ t(`projects.${id}.${id === 'context' || id === 'dostigus' ? 'description' : 'kind'}`) }}
+      {{ id === 'space' ? t('activity.spacePitch') : t(`projects.${id}.${id === 'context' ? 'description' : 'kind'}`) }}
     </p>
-    <figure v-if="id === 'k39'" class="canvas-map">
-      <div class="canvas-map-image">
-        <img
-          src="/projects/k39.png"
-          :alt="t('projects.k39.imageAlt')"
-          width="1000"
-          height="700"
-        >
-      </div>
-      <figcaption>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · <a href="https://protomaps.com">Protomaps</a></figcaption>
-    </figure>
-    <a
-      v-if="product.source"
+    <template v-if="repo">
+      <HomeActivityGraph :days="miniDays" mini />
+      <p class="canvas-footnote">
+        {{ lastCommit ? t('activity.lastCommit', { time: relativeTime(lastCommit.date) }) : t('activity.noActivity') }}
+      </p>
+    </template>
+    <p v-else class="canvas-footnote">
+      {{ t('activity.noRepo') }}
+    </p>
+    <NuxtLink
+      v-if="product.page"
       class="canvas-source"
-      :href="product.source"
-      target="_blank"
-      rel="noopener noreferrer"
-    >{{ t('site.source') }}<SiteLinkIcon external /></a>
+      :to="localePath(product.page)"
+    >
+      {{ t('activity.project') }}<SiteLinkIcon />
+    </NuxtLink>
     <a
       v-else
       class="canvas-source"
       :href="product.link"
-      target="_blank"
-      rel="noopener noreferrer"
-    >{{ t(`projects.${id}.visit`) }}<SiteLinkIcon external /></a>
+    >{{ t('activity.live') }}<SiteLinkIcon external /></a>
   </template>
   <template v-else-if="id === 'writing'">
     <p class="canvas-eyebrow">
@@ -119,12 +115,8 @@
         {{ t('hero.contact') }}<SiteLinkIcon />
       </NuxtLink>
     </p>
-    <h2 class="canvas-email">
-      <a href="mailto:nick@kosarev.space">nick@kosarev.space<SiteLinkIcon external /></a>
-    </h2>
-    <div class="canvas-links">
-      <a href="https://t.me/hmbanan666">Telegram<SiteLinkIcon external /></a><a href="https://github.com/hmbanan666">GitHub<SiteLinkIcon external /></a>
-    </div>
+    <h2>{{ t('activity.contactTitle') }}</h2>
+    <a class="canvas-source" href="mailto:nick@kosarev.space">{{ t('activity.email') }}<SiteLinkIcon external /></a>
   </template>
   <template v-else-if="id === 'live'">
     <p class="canvas-eyebrow">
@@ -132,48 +124,81 @@
     </p>
     <h2>
       <NuxtLink :to="localePath('/cases/kosarev-live-cursors')">
-        {{ t('site.presenceTitle') }}<SiteLinkIcon />
+        {{ t('activity.liveTitle') }}<SiteLinkIcon />
       </NuxtLink>
     </h2>
     <p class="canvas-footnote">
-      nuxt-live-cursors · WebSocket
+      WebSocket
     </p>
   </template>
-  <template v-else-if="id === 'archive'">
+  <template v-else-if="id === 'contributions'">
     <p class="canvas-eyebrow">
-      {{ t('canvas.archive') }}
+      GitHub · {{ t(`activity.${activity.coverage}`) }}
     </p>
-    <h2>
-      <NuxtLink :to="localePath('/projects')">
-        {{ t('projects.title') }}<SiteLinkIcon />
-      </NuxtLink>
-    </h2>
-    <p class="canvas-footnote">
-      {{ projects.map(project => project.title).join(' · ') }}
+    <h2>{{ t('activity.contributions') }}</h2>
+    <HomeActivityGraph v-if="activity.calendar.length" :days="activity.calendar" />
+    <p v-else class="canvas-footnote">
+      {{ t('activity.unavailable') }}
     </p>
-    <NuxtLink class="canvas-source" :to="localePath('/cases')">
-      {{ t('nav.cases') }}<SiteLinkIcon />
-    </NuxtLink>
   </template>
-  <template v-else-if="id === 'now'">
+  <template v-else-if="id === 'feed'">
     <p class="canvas-eyebrow">
-      {{ t('canvas.now') }}
+      {{ t('activity.title') }}
     </p>
-    <h2>{{ t('projects.activeTitle') }}</h2>
+    <h2>{{ t('activity.feed') }}</h2>
+    <HomeActivityFeed :items="activity.items.slice(0, 3)" />
+  </template>
+  <template v-else-if="id === 'skills'">
+    <p class="canvas-eyebrow">
+      {{ t('activity.languages') }}
+    </p>
+    <h2>{{ t('activity.skills') }}</h2>
+    <div class="activity-languages">
+      <span
+        v-for="[name, bytes] in languages.slice(0, 4)"
+        :key="name"
+        :title="t('activity.bytes', { count: bytes.toLocaleString(language) })"
+      >{{ name }} <small>{{ Math.round(bytes / languageTotal * 100) }}%</small></span>
+    </div>
     <p class="canvas-footnote">
-      {{ activeProducts.map(product => product.title).join(' · ') }}
+      {{ activityTechTags.join(' · ') }}
     </p>
   </template>
 </template>
 
 <script setup lang="ts">
+import type { ActivitySnapshot } from '~~/shared/activity'
 import type { PublicationSummary } from '~~/shared/publications'
+import { calendarDays, projectScores } from '~~/shared/activity'
+import { activityTechTags, canvasProducts } from '~/utils/activity-content'
 
-const props = defineProps<{ id: string, latest?: PublicationSummary }>()
+const props = defineProps<{ id: string, latest?: PublicationSummary, activity: ActivitySnapshot }>()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
-// Use the existing introduction verbatim; the project blocks carry its examples.
-const heroIntro = computed(() => t('hero.description').match(/^[^.]+\./)?.[0] ?? t('hero.description'))
 const language = computed(() => locale.value === 'en' ? 'en' : 'ru')
-const product = computed(() => [...activeProducts, ...pausedProjects].find((product) => product.key === props.id) as { title: string, page?: string, link?: string, source?: string } | undefined)
+const product = computed(() => canvasProducts.find((product) => product.key === props.id))
+const repo = computed(() => props.activity.repos.find((repo) => repo.project === props.id))
+const items = computed(() => props.activity.items.filter((item) => item.repo === repo.value?.name))
+const lastCommit = computed(() => items.value.find((item) => item.kind === 'commit'))
+const relativeTime = useActivityTime()
+const miniDays = computed(() => calendarDays(items.value, props.activity.fetchedAt ?? new Date(0).toISOString(), 30))
+const languages = computed(() => {
+  const totals: Record<string, number> = {}
+  for (const repo of props.activity.repos) {
+    for (const [name, bytes] of Object.entries(repo.languages)) {
+      totals[name] = (totals[name] ?? 0) + bytes
+    }
+  }
+  return Object.entries(totals).sort((a, b) => b[1] - a[1])
+})
+const languageTotal = computed(() => languages.value.reduce((sum, [, bytes]) => sum + bytes, 0))
+const currentWork = computed(() => {
+  const scores = projectScores(props.activity)
+  const key = Object.keys(scores).sort((a, b) => scores[b]! - scores[a]! || a.localeCompare(b))[0]
+  if (!key || !scores[key] || !props.activity.fetchedAt) {
+    return t('activity.fallback')
+  }
+  const count = props.activity.items.filter((item) => item.kind === 'commit' && item.repo === props.activity.repos.find((repo) => repo.project === key)?.name && Date.parse(props.activity.fetchedAt!) - Date.parse(item.date) < 7 * 86400000).length
+  return t('activity.now', { project: canvasProducts.find((product) => product.key === key)?.title, count })
+})
 </script>

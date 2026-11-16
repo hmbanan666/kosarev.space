@@ -153,6 +153,39 @@ build has been validated without database credentials. Database-backed routes
 still need a configured database and schema. For a standalone production
 preview, check the migration-directory contract in the [deployment guide](docs/deploy.md).
 
+## Public GitHub activity
+
+Home reads `GET /api/activity`. Its 30-minute server snapshot uses Nitro's
+`cache` storage, with background revalidation, a one-day stale limit and an
+immediate empty fallback on cold starts. Storage persistence follows the Nitro
+adapter; the default Node deployment cache is process-local and resets on
+restart. Language bytes are cached separately for 24 hours. No GitHub request
+blocks rendering. The browser revisits the snapshot after hydration and polls
+once a minute.
+
+`NUXT_GITHUB_TOKEN` is optional and server-only. Leave it empty for public REST
+requests, or supply a read-only token through runtime environment configuration
+to increase rate limits and enable the public year calendar through GraphQL.
+No private repository access is needed. Public owner listings, explicit visibility
+checks and fork exclusion gate returned data even if a supplied token has
+broader permissions. Never put a token in public runtime config or commit it.
+
+REST activity is a labelled 90-day sample, not a complete contribution total:
+up to six recent/mapped repositories, 100 default-branch commits and 100 PRs per
+repo, plus public release events. Languages cover up to 40 verified public owned
+repos. With a token, activity covers up to 40 repos and the year calendar uses
+public, allowlisted repository contributions (100 nodes per connection),
+excluding private/restricted counts. Rate limits, API retention and truncation
+can leave partial data; GraphQL failure falls back to REST. Project mappings
+live in `apps/web-app/server/utils/activity-projects.ts`.
+
+`NUXT_GITHUB_ACTIVITY_DISABLED=true` disables upstream activity requests and
+returns the empty fallback. Playwright sets it for its test server; activity
+browser tests intercept the API with the recorded public JSON fixture. Unit
+and browser activity tests require no GitHub connection or token. Fixture
+provenance and capture commands are in
+[the activity screenshots directory](docs/images/activity-canvas/README.md).
+
 ## Routes and repository layout
 
 Pages are `/`, `/projects`, `/projects/[key]`, `/cases`, `/cases/[key]`, `/contact`, `/writing`, `/writing/[slug]`, `/cv` and `/cv/print`, with English equivalents
