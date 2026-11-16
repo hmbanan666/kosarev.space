@@ -75,7 +75,13 @@ server timeout. Disconnecting or pressing Stop cancels the upstream request;
 closing the drawer keeps the ongoing answer. Responses stream SSE `delta`,
 `sources`, `done` or sanitized `error` events. HTTP 429 includes `Retry-After`.
 Partial or malformed streams display an error rather than a false success.
-Markdown disables HTML and images and rejects unsafe link schemes.
+Markdown disables HTML and images and rejects unsafe link schemes. The drawer,
+input, form and generated links use the existing analytics service's
+[privacy exclusion classes](https://www.yandex.com/support/metrica/en/code/html-markup)
+to exclude conversation text, field contents, form submission and generated
+outbound-link tracking from session replay and form analytics. These integration
+attributes are checked in the browser tests; live analytics delivery was not
+inspected.
 
 History is stored only in this tab's `sessionStorage` (up to 24 messages), persists
 across site navigation and reload, and can be cleared in the drawer. Storage

@@ -1,7 +1,7 @@
 <template>
   <dialog
     ref="dialog"
-    class="site-agent"
+    class="site-agent ym-hide-content ym-disable-clickmap"
     aria-labelledby="site-agent-title"
     @cancel.prevent="close"
     @click="outside"
@@ -105,12 +105,13 @@
           </li>
         </ol>
       </div>
-      <form class="agent-composer" @submit.prevent="submit(input)">
+      <form class="agent-composer ym-disable-submit" @submit.prevent="submit(input)">
         <label class="sr-only" for="site-agent-input">{{ t('agent.placeholder') }}</label>
         <textarea
           id="site-agent-input"
           ref="textarea"
           v-model="input"
+          class="ym-disable-keys"
           :placeholder="t('agent.placeholder')"
           maxlength="2000"
           rows="2"
@@ -153,6 +154,10 @@
 import MarkdownIt from 'markdown-it'
 
 const markdown = new MarkdownIt({ html: false, linkify: false }).disable('image')
+markdown.renderer.rules.link_open = (tokens, index, options, _env, renderer) => {
+  tokens[index]!.attrJoin('class', 'ym-disable-tracklink')
+  return renderer.renderToken(tokens, index, options)
+}
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()

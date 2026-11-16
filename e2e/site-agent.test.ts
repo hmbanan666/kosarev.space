@@ -35,6 +35,9 @@ for (const locale of ['ru', 'en']) {
       await page.addStyleTag({ content: 'nuxt-devtools-frame {display:none!important}' })
       await openAgent(page, label)
       const dialog = page.getByRole('dialog')
+      await expect(dialog).toHaveClass(/ym-hide-content/)
+      await expect(dialog.locator('textarea')).toHaveClass(/ym-disable-keys/)
+      await expect(dialog.locator('form')).toHaveClass(/ym-disable-submit/)
       await expect(dialog.locator('.agent-suggestions button')).toHaveCount(5)
       await expect(page.locator('#site-agent-input')).toBeFocused()
       if (process.env.AGENT_SCREENSHOTS) {
@@ -44,6 +47,7 @@ for (const locale of ['ru', 'en']) {
       await dialog.locator('.agent-suggestions button').first().click()
       await expect(dialog.locator('.agent-markdown')).toContainText('K39')
       await expect(dialog.getByRole('link', { name: 'k39.online' })).toHaveAttribute('href', 'https://k39.online')
+      await expect(dialog.getByRole('link', { name: 'k39.online' })).toHaveClass(/ym-disable-tracklink/)
       await dialog.locator('.agent-sources summary').click()
       if (process.env.AGENT_SCREENSHOTS) {
         await page.screenshot({ path: `docs/images/site-agent/answered-${locale}-${width}.png` })
