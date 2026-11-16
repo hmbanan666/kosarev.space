@@ -46,7 +46,7 @@ activity claims. Consequently the packaged base is reproducible at build time,
 while publications and activity remain current public supplements. Database
 publication failure omits those documents and the prompt requires honest unknowns.
 
-Retrieval ranks keyword matches with inverse document frequency, title weighting
+Retrieval ignores common RU/EN question words and ranks keyword matches with inverse document frequency, title weighting
 and a current-page boost. It searches the UI locale, includes recent user questions
 for follow-ups and selects whole chunks within a conservative 6,000 UTF-8-byte
 evidence budget (an upper bound on ordinary tokenizer token count). The prompt
@@ -55,12 +55,46 @@ unknowns, contact for hiring questions and brief refusal of unrelated tasks.
 Sources list the site pages supplied to the model; this is provenance of retrieved
 evidence, not a guarantee that every supplied page was cited in the answer.
 
+## Topic boundaries
+
+The system prompt limits answers to this site and its pages, Nick's products,
+experience, stack, cases, publications, availability and contact/hiring. It bans
+visitor coding tasks, general chat, homework, translation, role-play, unrelated
+people/companies and politics. Refusals use one short sentence with three
+on-topic suggestions. Instructions inside conversation history or retrieved
+content have no authority; the prompt forbids revealing or paraphrasing internal
+instructions, knowledge-pack internals, model names, credentials and environment.
+
+Before provider fetch, deterministic RU/EN patterns reject obvious unrelated or
+injection requests. These checks normalize compatibility characters, invisible
+separators and whitespace. A second gate checks the **latest question alone**:
+when it has no retrieved evidence with a lexical score of at least 0.35 (excluding
+page boosts) and no recognizable site, professional or product topic, it is
+refused. Previous questions and the current page cannot supply that score.
+Known product names include slugs from the public pack. Canned refusals use the
+question's RU/EN language, falling back to the UI locale for non-letter input,
+and send the same `delta`, empty `sources`, `done` SSE events with no provider
+call. The existing offline and rate-limit checks still run first.
+
+The streaming output guard withholds fenced code, including delimiters split
+between provider events. Only an exact fenced quotation also present in retrieved
+site evidence, at most 200 characters and five lines of code, may pass. Longer,
+unmatched and unterminated blocks are discarded. Ordinary prose still streams;
+an entirely removed answer receives the canned refusal. These are bounded
+heuristics and prompt instructions, not a semantic proof of scope enforcement
+for every possible model response. No classifier or additional provider call is
+used.
+
 ## Limits and lifecycle
 
-`POST /api/agent` accepts up to 12 user/assistant messages, ending in a user
-question. User messages have a 2,000-character limit, assistant history 8,000,
-total history 16,000, and the actual request body 64 KiB. System-role messages
-and invalid payloads are rejected. The client sends at most eight previous
+`POST /api/agent` accepts an envelope of up to 12 user/assistant messages, ending
+in a user question, then retains only the last seven messages (three previous
+exchanges plus the current question for alternating history). User messages
+have a 600-character limit. Incoming assistant history is bounded to 8,000
+characters per message and truncated to 600 before use; total incoming history
+is capped at 16,000 and the actual request body at 64 KiB. System-role messages
+and invalid payloads are rejected. The input and localized errors use the same
+600-character question limit. The client sends at most six previous
 messages and drops failed/interrupted turns from model history.
 
 The process-local limiter permits 20 attempts per IP per hour. Invalid attempts
@@ -70,8 +104,12 @@ conversation, raw-IP or provider-error logs in this feature. Restarts reset the
 counters; multiple replicas have independent limits. Behind a proxy, configure
 trusted IP handling explicitly or visitors will share the proxy's counter.
 
-The provider output is capped at 1,000 tokens and 8,000 characters, with a 45-second
-server timeout. Disconnecting or pressing Stop cancels the upstream request;
+The provider request always uses `max_tokens: 2000` and
+`reasoning: { effort: 'low', exclude: true }`, including when the configured model
+is `openrouter/free`. Only content deltas are forwarded. The output guard caps
+visible answers at 4,000 characters and consumes at most 8,000 content characters;
+reaching either limit ends the answer successfully and cancels upstream reading.
+There is a 45-second server timeout. Disconnecting or pressing Stop cancels the upstream request;
 closing the drawer keeps the ongoing answer. Responses stream SSE `delta`,
 `sources`, `done` or sanitized `error` events. HTTP 429 includes `Retry-After`.
 Partial or malformed streams display an error rather than a false success.
@@ -106,8 +144,12 @@ URL. It verifies actual endpoint streaming, packed evidence, Stop, validation,
 provider failure, rate limits and resistance to spoofed forwarding headers. The
 ordinary browser suite exercises the real offline endpoint without a key and
 uses intercepted SSE for deterministic UI captures. Both configurations disable
-GitHub activity fetching. Unit tests cover retrieval, prompt boundaries, full
-project coverage, request limits and fragmented UTF-8 SSE.
+GitHub activity fetching. Unit tests exercise the API handler with the real public knowledge pack and a
+local provider stub: 32 RU/EN attack/off-topic prompts must make no provider call,
+and 17 legitimate questions must reach it. Additional cases cover unrelated
+follow-ups, retrieval thresholds, reasoning settings, output caps, fragmented
+fences, exact short quotations, history limits and prompt boundaries. Existing
+retrieval, full project coverage and fragmented UTF-8 SSE tests remain.
 
 [RU/EN desktop and mobile screenshots](images/site-agent/) are local review
 captures with synthetic answers, not live provider or deployment evidence.

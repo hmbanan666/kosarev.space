@@ -44,12 +44,12 @@ export function useAgentConversation() {
   }
   async function send(question: string, page: string, locale: string) {
     const content = question.trim()
-    if (busy.value || !content || content.length > 2000) {
+    if (busy.value || !content || content.length > 600) {
       return
     }
     // Failed or interrupted turns do not become model-authored history.
-    const history = messages.value.filter((item, index) => !item.status && !(item.role === 'user' && messages.value[index + 1]?.status)).slice(-8)
-    const requestMessages = [...history.map(({ role, content }) => ({ role, content })), { role: 'user', content }]
+    const history = messages.value.filter((item, index) => !item.status && !(item.role === 'user' && messages.value[index + 1]?.status)).slice(-6)
+    const requestMessages = [...history.map(({ role, content }) => ({ role, content: content.slice(0, 600) })), { role: 'user', content }]
     while (requestMessages.length > 1 && requestMessages.reduce((sum, item) => sum + item.content.length, 0) > 16000) {
       requestMessages.shift()
     }

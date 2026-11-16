@@ -1,8 +1,9 @@
 import { createHmac, randomBytes } from 'node:crypto'
 import { readSse } from '../../shared/agent-stream'
 import { agentEvidence } from '../agent/evidence'
-import { createRateLimit, validateAgentRequest } from '../agent/guard'
+import { createRateLimit, isBlockedQuestion, looksOnTopic, scopeRefusal, validateAgentRequest } from '../agent/guard'
 import { buildPrompt, retrieve } from '../agent/knowledge'
+import { createOutputGuard } from '../agent/output'
 
 const limit = createRateLimit()
 const salt = randomBytes(32)
@@ -62,8 +63,27 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 400)
     return { code: 'invalid' }
   }
+  const question = request.messages.at(-1)!.content
+  const blocked = isBlockedQuestion(question)
+  const chunks = blocked ? [] : await agentEvidence()
+  const relevant = retrieve(chunks, question, '', request.locale, 6000, 0.35)
+  if (blocked || (!relevant.length && !looksOnTopic(question, chunks))) {
+    const stream = createEventStream(event)
+    setHeader(event, 'X-Accel-Buffering', 'no')
+    const send = async () => {
+      try {
+        await stream.push(JSON.stringify({ type: 'delta', text: scopeRefusal(question, request.locale) }))
+        await stream.push(JSON.stringify({ type: 'sources', sources: [] }))
+        await stream.push(JSON.stringify({ type: 'done' }))
+      } finally {
+        await stream.close()
+      }
+    }
+    void send().catch(() => {})
+    return stream.send()
+  }
   const query = request.messages.filter((message) => message.role === 'user').slice(-3).map((message) => message.content).join(' ')
-  const evidence = retrieve(await agentEvidence(), query, request.page, request.locale)
+  const evidence = retrieve(chunks, query, request.page, request.locale)
   const sources = [...new Map(evidence.map(({ title, url }) => [url, { title, url }])).values()]
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), 45000)
@@ -86,6 +106,7 @@ export default defineEventHandler(async (event) => {
         await push({ type: 'error', code: response.status === 429 ? 'rateLimit' : 'offline' })
         return
       }
+      const output = createOutputGuard(evidence)
       let length = 0
       let finished = false
       for await (const data of readSse(response.body)) {
@@ -100,16 +121,27 @@ export default defineEventHandler(async (event) => {
         const token = chunk.choices?.[0]?.delta?.content
         if (typeof token === 'string' && token) {
           length += token.length
-          if (length > 8000) {
-            throw new Error('Answer too large')
+          const text = output.push(token)
+          if (text) {
+            await push({ type: 'delta', text })
           }
-          await push({ type: 'delta', text: token })
+          if (output.full) {
+            finished = true
+            break
+          }
         }
       }
       if (!finished || !length) {
         throw new Error('Incomplete stream')
       }
-      await push({ type: 'sources', sources })
+      const tail = output.push('', true)
+      if (tail) {
+        await push({ type: 'delta', text: tail })
+      }
+      if (output.empty) {
+        await push({ type: 'delta', text: scopeRefusal(question, request.locale) })
+      }
+      await push({ type: 'sources', sources: output.empty ? [] : sources })
       await push({ type: 'done' })
     } catch {
       await push({ type: 'error', code: 'error' }).catch(() => {})

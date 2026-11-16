@@ -113,7 +113,7 @@
           v-model="input"
           class="ym-disable-keys"
           :placeholder="t('agent.placeholder')"
-          maxlength="2000"
+          maxlength="600"
           rows="2"
           @keydown.enter.exact="enter"
         />
