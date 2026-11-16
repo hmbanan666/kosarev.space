@@ -17,6 +17,7 @@
         </div>
         <SiteContactLinks />
       </div>
+      <div ref="presenceDock" class="site-footer-presence" />
       <div class="site-footer-bottom">
         <p>{{ t('footer.copyright', { year: new Date().getFullYear() }) }}</p>
         <div>
@@ -39,6 +40,14 @@
 </template>
 
 <script setup lang="ts">
+const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
+const footerDocked = useState('footer-presence-docked', () => false)
+watch(presenceDock, (element) => {
+  footerDocked.value = !!element
+}, { flush: 'post' })
+onBeforeUnmount(() => {
+  footerDocked.value = false
+})
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const pdfPath = computed(() => locale.value === 'en' ? '/cv-en.pdf' : '/cv.pdf')

@@ -19,6 +19,9 @@
       {{ t('cv.subtitle') }}
     </p>
     <p class="canvas-description">
+      {{ t('hero.description') }}
+    </p>
+    <p class="canvas-footnote canvas-current-work">
       {{ currentWork }}
     </p>
     <p class="canvas-footnote">
@@ -135,7 +138,12 @@
     <p class="canvas-eyebrow">
       GitHub · {{ t(`activity.${activity.coverage}`) }}
     </p>
-    <h2>{{ t('activity.contributions') }}</h2>
+    <div class="activity-calendar-heading">
+      <h2>{{ t('activity.contributions') }}</h2>
+      <span v-if="activity.coverage === 'githubYear' && activity.calendarTotal !== undefined" class="activity-year-total">
+        {{ t('activity.yearTotal', { count: activity.calendarTotal.toLocaleString(language) }) }}
+      </span>
+    </div>
     <HomeActivityGraph v-if="activity.calendar.length" :days="activity.calendar" />
     <p v-else class="canvas-footnote">
       {{ t('activity.unavailable') }}
@@ -146,7 +154,7 @@
       {{ t('activity.title') }}
     </p>
     <h2>{{ t('activity.feed') }}</h2>
-    <HomeActivityFeed :items="activity.items.slice(0, 3)" />
+    <HomeActivityFeed :items="activity.items" :limit="3" />
   </template>
   <template v-else-if="id === 'skills'">
     <p class="canvas-eyebrow">

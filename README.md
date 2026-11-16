@@ -165,26 +165,29 @@ once a minute.
 
 `NUXT_GITHUB_TOKEN` is optional and server-only. Leave it empty for public REST
 requests, or supply a read-only token through runtime environment configuration
-to increase rate limits and enable the public year calendar through GraphQL.
+to increase rate limits and enable the profile contribution calendar through GraphQL.
 No private repository access is needed. Public owner listings, explicit visibility
-checks and fork exclusion gate returned data even if a supplied token has
+checks and fork exclusion gate repository details even if a supplied token has
 broader permissions. Never put a token in public runtime config or commit it.
 
 REST activity is a labelled 90-day sample, not a complete contribution total:
 up to six recent/mapped repositories, 100 default-branch commits and 100 PRs per
 repo, plus public release events. Languages cover up to 40 verified public owned
-repos. With a token, activity covers up to 40 repos and the year calendar uses
-public, allowlisted repository contributions (100 nodes per connection),
-excluding private/restricted counts. Rate limits, API retention and truncation
+repos. With a token, public activity covers up to 40 repos. Only the year calendar
+uses `contributionCalendar`: 365 days and `totalContributions`, including
+anonymous private counts when shared on the GitHub profile. No repository names
+are requested by that query. Feed rows, project graphs, panels and languages
+remain restricted to verified public repositories. Rate limits, API retention and truncation
 can leave partial data; GraphQL failure falls back to REST. Project mappings
 live in `apps/web-app/server/utils/activity-projects.ts`.
 
 `NUXT_GITHUB_ACTIVITY_DISABLED=true` disables upstream activity requests and
 returns the empty fallback. Playwright sets it for its test server; activity
-browser tests intercept the API with the recorded public JSON fixture. Unit
+browser tests intercept the API with public repository observations and a
+synthetic year calendar fixture. Unit
 and browser activity tests require no GitHub connection or token. Fixture
 provenance and capture commands are in
-[the activity screenshots directory](docs/images/activity-canvas/README.md).
+[the canvas polish screenshots directory](docs/images/canvas-polish/README.md).
 
 ## Routes and repository layout
 

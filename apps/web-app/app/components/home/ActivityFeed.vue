@@ -1,6 +1,6 @@
 <template>
-  <ul v-if="items.length" class="activity-feed">
-    <li v-for="item in items" :key="item.id">
+  <ul v-if="rows.length" class="activity-feed">
+    <li v-for="item in rows" :key="item.id">
       <UIcon :name="item.kind === 'commit' ? 'i-lucide-git-commit-horizontal' : item.kind === 'pr' ? 'i-lucide-git-pull-request' : 'i-lucide-tag'" :aria-label="t(`activity.${item.kind}`)" />
       <div>
         <a
@@ -19,8 +19,10 @@
 
 <script setup lang="ts">
 import type { ActivityItem } from '~~/shared/activity'
+import { activityFeedItems } from '~~/shared/activity'
 
-defineProps<{ items: ActivityItem[] }>()
+const props = defineProps<{ items: ActivityItem[], limit?: number }>()
+const rows = computed(() => activityFeedItems(props.items).slice(0, props.limit))
 const { t } = useI18n()
 const relativeTime = useActivityTime()
 </script>

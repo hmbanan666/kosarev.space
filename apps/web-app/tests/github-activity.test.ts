@@ -63,7 +63,7 @@ it('retains honest partial results when GitHub rate limits a repository', async 
 })
 
 it('uses the profile calendar including anonymous counts without repository details', async () => {
-  const result = await fetchPublicActivity(async (path) => {
+  const result = await fetchPublicActivity(async (path, body) => {
     if (path.includes('/events/')) {
       return []
     }
@@ -71,13 +71,19 @@ it('uses the profile calendar including anonymous counts without repository deta
       return [repo]
     }
     if (path === '/graphql') {
+      expect(body?.query).toContain('from: "2025-11-17T00:00:00Z"')
+      expect(body?.query).not.toMatch(/repository|first:/)
+
       return { data: { user: { contributionsCollection: {
         contributionCalendar: { totalContributions: 1002, weeks: [{ contributionDays: [
           { date: '2026-01-15', contributionCount: 1002 },
         ] }] },
       } } } }
     }
-    if (path.includes('/commits') || path.includes('/pulls')) {
+    if (path.includes('/commits')) {
+      return commits
+    }
+    if (path.includes('/pulls')) {
       return []
     }
     if (path.endsWith('/languages')) {
@@ -88,6 +94,10 @@ it('uses the profile calendar including anonymous counts without repository deta
   expect(result.coverage).toBe('githubYear')
   expect(result.calendarTotal).toBe(1002)
   expect(result.calendar).toHaveLength(365)
+  expect(result.calendar[0]?.date).toBe('2025-11-17')
+  expect(result.calendar.at(-1)?.date).toBe('2026-11-16')
+  expect(result.items).toHaveLength(3)
+  expect(result.items.every((item) => item.repo === repo.full_name)).toBe(true)
   expect(result.calendar.find((day) => day.date === '2026-01-15')?.count).toBe(1002)
   expect(JSON.stringify(result)).not.toMatch(/secret|unverified/)
 })

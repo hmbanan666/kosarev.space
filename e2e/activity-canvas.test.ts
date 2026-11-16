@@ -1,5 +1,7 @@
 import process from 'node:process'
 import { expect, test } from '@playwright/test'
+import en from '../apps/web-app/i18n/locales/en.json' with { type: 'json' }
+import ru from '../apps/web-app/i18n/locales/ru.json' with { type: 'json' }
 import snapshot from '../apps/web-app/tests/fixtures/activity-snapshot.json' with { type: 'json' }
 
 test.beforeEach(async ({ page }) => {
@@ -27,14 +29,25 @@ for (const locale of ['ru', 'en']) {
         }
         await page.evaluate(() => document.fonts.ready)
         await page.mouse.move(0, 0)
-        await page.addStyleTag({ content: 'nuxt-devtools-frame {display:none!important}' })
+        await page.addStyleTag({ content: '#nuxt-devtools-container {display:none!important}' })
         expect(await page.locator('[data-block]').evaluateAll((blocks) => blocks.filter((block) => block.scrollHeight > block.clientHeight + 2 || block.scrollWidth > block.clientWidth + 2).map((block) => block.getAttribute('data-block')))).toEqual([])
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
         if (width >= 768) {
           expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(width === 1920 ? 1080 : 800)
         }
-        if (process.env.CANVAS_SCREENSHOTS) {
-          await page.screenshot({ path: `docs/images/activity-canvas/after-${locale}-${width}.png`, fullPage: true, animations: 'disabled' })
+        const graph = page.locator('[data-block="contributions"] .activity-graph')
+        await expect(graph.locator('span')).toHaveCount(width === 390 ? 177 : 365)
+        expect(await graph.evaluate((el) => Number(getComputedStyle(el).getPropertyValue('--weeks')))).toBe(width === 390 ? 26 : 53)
+        await expect(page.locator('[data-block="contributions"] .activity-year-total')).toBeVisible()
+        const paragraph = page.locator('[data-block="hero"] .canvas-description')
+        await expect(paragraph).toHaveText((locale === 'ru' ? ru : en).hero.description)
+        expect(await paragraph.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true)
+        await expect(page.locator('.canvas-zoom')).toHaveCount(0)
+        if (width === 390) {
+          await expect(page.locator('[data-live-cursors-bar]')).toHaveCount(0)
+        }
+        if (process.env.CANVAS_SCREENSHOTS && (locale === 'ru' || width === 1440)) {
+          await page.screenshot({ path: `docs/images/canvas-polish/after-${locale}-${width}.png`, fullPage: true, animations: 'disabled' })
         }
         const card = page.locator('[data-block="context"]')
         await card.locator('.canvas-description').click()
@@ -49,8 +62,8 @@ for (const locale of ['ru', 'en']) {
         } else {
           expect(box!.x).toBeGreaterThan(width / 2 - 1)
         }
-        if (process.env.CANVAS_SCREENSHOTS && (width === 1280 || width === 390)) {
-          await page.screenshot({ path: `docs/images/activity-canvas/panel-${locale}-${width}.png`, animations: 'disabled' })
+        if (process.env.CANVAS_SCREENSHOTS && locale === 'ru' && width === 1280) {
+          await page.screenshot({ path: `docs/images/canvas-polish/panel-${locale}-${width}.png`, animations: 'disabled' })
         }
         await page.keyboard.press('Shift+Tab')
         expect(await panel.evaluate((dialog) => dialog.contains(document.activeElement))).toBe(true)
@@ -111,7 +124,7 @@ for (const changed of [false, true]) {
     })
     await page.goto('/en')
     await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)
-    await expect(page.locator('[data-block="contributions"] .canvas-eyebrow')).toContainText('Public sample')
+    await expect(page.locator('[data-block="contributions"] .canvas-eyebrow')).toContainText('Past year')
     hold = true
     await page.clock.fastForward(11000)
     await intercepted
@@ -138,3 +151,37 @@ for (const changed of [false, true]) {
     await expect(block).toHaveAttribute('style', moved!)
   })
 }
+
+test('presence follows navigation into the normal page footer', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await page.context().addCookies([{ name: 'i18n_redirected', value: 'ru', url: 'http://localhost:3333' }])
+  await page.goto('/')
+  await expect(page.locator('.canvas-presence [data-live-cursors-bar]')).toBeVisible()
+  await page.locator('.site-desktop-nav a[href="/projects"]').click()
+  const pill = page.locator('.site-footer [data-live-cursors-bar]')
+  await expect(pill).toHaveCount(1)
+  await expect(pill).not.toBeInViewport()
+  await page.locator('.site-footer').scrollIntoViewIfNeeded()
+  await expect(pill).toBeInViewport()
+  await expect(pill).toHaveCSS('position', 'relative')
+  await expect(pill).toHaveCSS('border-radius', '9999px')
+  await page.evaluate(() => document.fonts.ready)
+  await page.addStyleTag({ content: '#nuxt-devtools-container {display:none!important}' })
+  if (process.env.CANVAS_SCREENSHOTS) {
+    await page.screenshot({ path: 'docs/images/canvas-polish/projects-ru-1280.png', fullPage: true, animations: 'disabled' })
+  }
+  await page.locator('.site-brand').click()
+  await expect(page.locator('.canvas-presence [data-live-cursors-bar]')).toBeVisible()
+  await expect(page.locator('[data-live-cursors-bar]')).toHaveCount(1)
+})
+
+test('the 90-day public fallback fits without a year total', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await page.route('**/api/activity', (route) => route.fulfill({ json: { ...snapshot, coverage: 'rest90', calendar: snapshot.calendar.slice(-90), calendarTotal: undefined } }))
+  await page.goto('/en')
+  const card = page.locator('[data-block="contributions"]')
+  await expect(card.locator('.canvas-eyebrow')).toContainText('Public sample')
+  await expect(card.locator('.activity-graph span')).toHaveCount(90)
+  await expect(card.locator('.activity-year-total')).toHaveCount(0)
+  expect(await card.evaluate((el) => el.scrollHeight <= el.clientHeight + 2)).toBe(true)
+})

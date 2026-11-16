@@ -111,45 +111,11 @@
     </div>
     <footer v-if="enabled" class="canvas-chrome">
       <div class="canvas-tools">
-        <div class="canvas-tool-group canvas-navigation">
-          <div class="canvas-zoom">
-            <button
-              type="button"
-              :aria-label="t('canvas.zoomOut')"
-              :disabled="zoom <= minZoom"
-              @click="setZoom(zoom - .05)"
-            >
-              −
-            </button>
-            <button
-              type="button"
-              :aria-label="t('canvas.recenter')"
-              :title="t('canvas.recenter')"
-              @click="recenter"
-            >
-              <output :aria-label="t('canvas.zoom')">{{ Math.round(zoom * 100) }}%</output>
-            </button>
-            <button
-              type="button"
-              :aria-label="t('canvas.zoomIn')"
-              :disabled="zoom >= 1.25"
-              @click="setZoom(zoom + .05)"
-            >
-              +
-            </button>
-            <button
-              type="button"
-              :aria-label="t('canvas.reset')"
-              :title="t('canvas.reset')"
-              @click="reset"
-            >
-              <UIcon name="i-lucide-rotate-ccw" />
-            </button>
-          </div>
-        </div>
+        <p class="canvas-copyright">
+          {{ t('footer.copyright', { year: new Date().getFullYear() }) }}
+        </p>
         <div ref="presenceDock" class="canvas-presence" />
         <div class="canvas-credits">
-          <p>{{ t('footer.copyright', { year: new Date().getFullYear() }) }}</p>
           <nav :aria-label="t('site.navigation')">
             <NuxtLink :to="localePath('/contact')">
               {{ t('hero.contact') }}<SiteLinkIcon />
@@ -183,7 +149,7 @@ const localePath = useLocalePath()
 const viewport = useTemplateRef<HTMLElement>('viewport')
 const { data: activity } = await useActivity()
 const defaults = computed(() => activityLayout(projectScores(activity.value)))
-const { enabled, blocks, feedback, zoom, fitZoom, minZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, reveal, position, reset } = useHomeCanvas(viewport, defaults)
+const { enabled, blocks, feedback, zoom, fitZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, start, move, end, key, wheel, reveal, position } = useHomeCanvas(viewport, defaults)
 const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
 const presenceDocked = useState('canvas-presence-docked', () => false)
 // Move the existing presence instance after its dock exists. Route changes
