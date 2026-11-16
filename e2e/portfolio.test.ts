@@ -218,6 +218,7 @@ test('native cursor pill starts by default, exposes profile actions and keeps CV
   await expect(pill).toBeVisible()
   await expect.poll(() => sockets.length).toBe(2)
   await expect(overlay).toBeHidden()
+  await page.addStyleTag({ content: '#nuxt-devtools-container { display: none !important; }' })
   await pill.click()
   await profile.getByRole('button', { name: 'Show cursors', exact: true }).click()
   await expect(overlay).toBeVisible()
