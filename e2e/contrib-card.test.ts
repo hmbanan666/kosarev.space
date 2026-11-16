@@ -125,3 +125,43 @@ test('a single active day has a one-day streak', async ({ page }) => {
   const panel = page.getByRole('dialog')
   await expect(panel.locator('.contribution-stats dd').nth(2)).toHaveText('1 day in a row')
 })
+
+test('empty canvas clears card text selection without clearing it on cards or controls', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/en?view=home')
+  const card = page.locator('[data-block="contributions"]')
+  await expect(card.locator('.canvas-open')).toBeVisible()
+  const select = () => card.locator('h2').evaluate((element) => {
+    const range = document.createRange()
+    range.selectNodeContents(element)
+    window.getSelection()!.removeAllRanges()
+    window.getSelection()!.addRange(range)
+  })
+  await select()
+  expect(await page.evaluate(() => window.getSelection()!.toString())).not.toBe('')
+  // Synthetic pointerdown keeps the browser's native selection behavior out of this assertion.
+  await card.dispatchEvent('pointerdown', { isPrimary: true, button: 0, pointerId: 1 })
+  expect(await page.evaluate(() => window.getSelection()!.toString())).not.toBe('')
+  await card.locator('.canvas-grip').dispatchEvent('pointerdown', { isPrimary: true, button: 0, pointerId: 1 })
+  expect(await page.evaluate(() => window.getSelection()!.toString())).not.toBe('')
+  await page.locator('.canvas-viewport').dispatchEvent('pointercancel')
+  const empty = await page.locator('.canvas-viewport').evaluate((element) => {
+    const box = element.getBoundingClientRect()
+    for (let y = box.top + 20; y < box.bottom - 20; y += 20) {
+      for (let x = box.left + 20; x < box.right - 20; x += 20) {
+        const target = document.elementFromPoint(x, y)
+        if (target && element.contains(target) && !target.closest('article, a, button, input, select, summary, [role="button"]')) {
+          return { x, y }
+        }
+      }
+    }
+    throw new Error('No empty canvas point found')
+  })
+  await page.mouse.move(empty.x, empty.y)
+  await page.mouse.down()
+  expect(await page.evaluate(() => window.getSelection()!.rangeCount)).toBe(0)
+  await page.mouse.up()
+  await card.locator('.canvas-open').focus()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('dialog')).toBeVisible()
+})
