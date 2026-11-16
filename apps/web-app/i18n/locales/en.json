@@ -455,7 +455,7 @@
   },
   "activity": {
     "title": "Public activity",
-    "contributions": "Contributions",
+    "contributions": "Code activity this year",
     "feed": "Recent work",
     "skills": "Code & skills",
     "graph": "Contributions by day",
@@ -491,7 +491,18 @@
     "bytes": "{count} bytes",
     "status": "In development",
     "email": "Email",
-    "calendarPrivacy": "GitHub profile contributions, including anonymous private counts when enabled on GitHub."
+    "legend": "Activity levels from less to more",
+    "less": "Less",
+    "more": "More",
+    "activeDays": "Active days",
+    "longestStreak": "Longest streak",
+    "dayCount": "{count} days in a row",
+    "total": "Total contributions",
+    "busiestDay": "Busiest day",
+    "byMonth": "Contributions by month",
+    "recentPublic": "Recent public work",
+    "githubProfile": "GitHub profile",
+    "contributionExplanation": "A GitHub contribution is a code change (commit), a proposed change (pull request), a code review or an issue; private work is counted only as anonymous numbers."
   },
   "agent": {
     "pending": "Queued",

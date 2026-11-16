@@ -160,7 +160,28 @@
         {{ t('activity.yearTotal', { count: activity.calendarTotal.toLocaleString(language) }) }}
       </span>
     </div>
-    <HomeActivityGraph v-if="activity.calendar.length" :days="activity.calendar" />
+    <template v-if="activity.calendar.length">
+      <HomeActivityGraph :days="activity.calendar" />
+      <div class="activity-calendar-footer">
+        <p class="activity-calendar-stats">
+          {{ t('activity.activeDays') }}: {{ contributionStats.activeDays.toLocaleString(locale) }}
+        </p>
+        <div
+          class="activity-legend"
+          role="img"
+          :aria-label="t('activity.legend')"
+        >
+          <span>{{ t('activity.less') }}</span>
+          <i
+            v-for="level in 5"
+            :key="level"
+            :class="`activity-level-${level - 1}`"
+            aria-hidden="true"
+          />
+          <span>{{ t('activity.more') }}</span>
+        </div>
+      </div>
+    </template>
     <p v-else class="canvas-footnote">
       {{ t('activity.unavailable') }}
     </p>
@@ -194,11 +215,13 @@
 import type { ActivitySnapshot } from '~~/shared/activity'
 import type { PublicationSummary } from '~~/shared/publications'
 import { calendarDays, projectScores } from '~~/shared/activity'
+import { contributionSummary } from '~~/shared/contribution-calendar'
 import { activityTechTags, canvasProducts } from '~/utils/activity-content'
 
 const props = defineProps<{ id: string, latest?: PublicationSummary, activity: ActivitySnapshot }>()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
+const contributionStats = computed(() => contributionSummary(props.activity.calendar))
 const language = computed(() => locale.value === 'en' ? 'en' : 'ru')
 const product = computed(() => canvasProducts.find((product) => product.key === props.id))
 const repo = computed(() => props.activity.repos.find((repo) => repo.project === props.id))
