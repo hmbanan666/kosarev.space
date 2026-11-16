@@ -36,7 +36,32 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
   const tooLarge = await request.post('/api/agent', { data: { messages: [{ role: 'user', content: 'x'.repeat(70000) }] } })
   expect(tooLarge.status()).toBe(413)
   const offline = await request.post('/api/agent', { data: { messages: [{ role: 'user', content: 'K39 provider offline' }], locale: 'en' } })
-  expect(await offline.text()).toContain('"code":"offline"')
+  const failedStream = await offline.text()
+  expect(failedStream.match(/"type":"error"/g)).toHaveLength(1)
+  expect(failedStream).toContain('"code":"error"')
+  const retrySession = randomUUID()
+  for (const failure of ['empty', 'incomplete']) {
+    const retried = await request.post('/api/agent', { data: { sessionId: retrySession, messages: [{ role: 'user', content: `K39 retry ${failure}` }], locale: 'en' } })
+    let answer = ''
+    const types: string[] = []
+    for await (const data of readSse(new Response(await retried.text()).body!)) {
+      const event = JSON.parse(data)
+      types.push(event.type)
+      if (event.type === 'reset') {
+        answer = ''
+      }
+      if (event.type === 'delta') {
+        answer += event.text
+      }
+    }
+    expect(answer).toContain('Калининграда')
+    expect(answer).not.toContain('Incomplete')
+    expect(types).not.toContain('error')
+    expect(types.at(-1)).toBe('done')
+    if (failure === 'incomplete') {
+      expect(types).toContain('reset')
+    }
+  }
   const publication = await request.post('/api/agent', { data: { messages: [{ role: 'user', content: 'Fixture publication verification' }], locale: 'en', page: '/en/writing/k39-draft-permissions' } })
   const publicationStream = await publication.text()
   expect(publicationStream).toContain('/writing/k39-draft-permissions')
@@ -73,6 +98,10 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
   try {
     // Inspect only synthetic test-session metadata. Do not print message content.
     await expect.poll(async () => {
+      const result = await database.query('SELECT count(*)::int AS count FROM agent_messages WHERE session_id = $1 AND model = $2 AND filtered_reason IS NULL', [retrySession, 'fixture-fallback:free'])
+      return result.rows[0].count
+    }).toBe(4)
+    await expect.poll(async () => {
       const result = await database.query('SELECT count(*)::int AS count FROM agent_messages WHERE session_id = $1', [refusalSession])
       return result.rows[0].count
     }).toBe(4)
@@ -84,7 +113,7 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
     await database.end()
   }
   // Spoofed forwarded headers cannot bypass the default socket-IP limit.
-  for (let index = 0; index < 9; index++) {
+  for (let index = 0; index < 7; index++) {
     const response = await request.post('/api/agent', { headers: { 'X-Forwarded-For': `198.51.100.${index}` }, data: {} })
     expect(response.status()).toBe(400)
   }
