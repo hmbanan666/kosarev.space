@@ -83,49 +83,25 @@ export async function fetchPublicActivity(request: GithubRequest, now: string, w
   if (withCalendar) {
     try {
       const year = `${new Date(Date.parse(now) - 364 * 86400000).toISOString().slice(0, 10)}T00:00:00Z`
-      const result = await request('/graphql', { query: `query { user(login: "${githubOwner}") { contributionsCollection(from: "${year}", to: "${now}") { commitContributionsByRepository(maxRepositories: 100) { repository { nameWithOwner isPrivate isFork } contributions(first: 100) { nodes { occurredAt commitCount } pageInfo { hasNextPage } } } pullRequestContributions(first: 100) { nodes { occurredAt pullRequest { repository { nameWithOwner isPrivate isFork } } } pageInfo { hasNextPage } } } } }` }) as CalendarResponse
-      if (result.errors || !result.data?.user) {
+      const result = await request('/graphql', { query: `query { user(login: "${githubOwner}") { contributionsCollection(from: "${year}", to: "${now}") { contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } } } }` }) as CalendarResponse
+      if (result.errors || !result.data?.user?.contributionsCollection?.contributionCalendar) {
         throw new Error('Calendar unavailable')
       }
-      const collection = result.data.user.contributionsCollection
-      const days = calendarDays([], now, 365)
-      const add = (date: string, count: number) => {
-        const day = days.find((day) => day.date === date.slice(0, 10))
-        if (day) {
-          day.count += count
-        }
-      }
-      for (const group of collection.commitContributionsByRepository) {
-        if (!publicCalendarRepo(group.repository, allowed)) {
-          continue
-        }
-        for (const item of group.contributions.nodes) {
-          add(item.occurredAt, item.commitCount)
-        }
-        snapshot.partial ||= group.contributions.pageInfo.hasNextPage
-      }
-      for (const item of collection.pullRequestContributions.nodes) {
-        if (publicCalendarRepo(item.pullRequest.repository, allowed)) {
-          add(item.occurredAt, 1)
-        }
-      }
-      snapshot.partial ||= collection.pullRequestContributions.pageInfo.hasNextPage
-      snapshot.calendar = days
-      snapshot.coverage = 'publicYear'
+      const calendar = result.data.user.contributionsCollection.contributionCalendar
+      const counts = new Map(calendar.weeks.flatMap((week) => week.contributionDays.map((day) => [day.date, day.contributionCount] as const)))
+      // Only aggregate dates/counts cross this boundary, never private metadata.
+      snapshot.calendar = calendarDays([], now, 365).map((day) => ({ ...day, count: counts.get(day.date) ?? 0 }))
+      snapshot.calendarTotal = calendar.totalContributions
+      snapshot.coverage = 'githubYear'
     } catch {
       snapshot.partial = true
     }
   }
   return snapshot
 }
-interface CalendarRepo { nameWithOwner: string, isPrivate: boolean, isFork: boolean }
-function publicCalendarRepo(repo: CalendarRepo, allowed: Set<string>) {
-  return repo.isPrivate === false && !repo.isFork && allowed.has(repo.nameWithOwner)
-}
 interface CalendarResponse {
   errors?: unknown[]
   data?: { user: { contributionsCollection: {
-    commitContributionsByRepository: { repository: CalendarRepo, contributions: { nodes: { occurredAt: string, commitCount: number }[], pageInfo: { hasNextPage: boolean } } }[]
-    pullRequestContributions: { nodes: { occurredAt: string, pullRequest: { repository: CalendarRepo } }[], pageInfo: { hasNextPage: boolean } }
+    contributionCalendar: { totalContributions: number, weeks: { contributionDays: { date: string, contributionCount: number }[] }[] }
   } } }
 }
