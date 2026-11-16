@@ -116,3 +116,12 @@ test('the public fallback panel labels its range and incomplete sample', async (
   await expect(panel.getByText(en.activity.partial, { exact: true })).toBeVisible()
   await expect(panel.locator('.contribution-months li')).toHaveCount(4)
 })
+
+test('a single active day has a one-day streak', async ({ page }) => {
+  await page.route('**/api/activity', (route) => route.fulfill({ json: {
+    ...snapshot, calendar: [{ date: '2026-11-16', count: 1 }], calendarTotal: 1,
+  } }))
+  await page.goto('/en?card=contributions')
+  const panel = page.getByRole('dialog')
+  await expect(panel.locator('.contribution-stats dd').nth(2)).toHaveText('1 day in a row')
+})

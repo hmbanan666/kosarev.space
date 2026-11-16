@@ -40,7 +40,7 @@ test.describe('English locale (/en)', () => {
     await page.goto('/en')
 
     await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)
-    await expect(page.getByRole('heading', { name: 'Contributions', level: 2, exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Code activity this year', level: 2, exact: true })).toBeVisible()
     await expect(page.locator('[data-block="cv"] .canvas-eyebrow')).toBeVisible()
   })
 
