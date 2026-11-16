@@ -18,6 +18,7 @@ for (const locale of ['ru', 'en']) {
         }
       })
       await page.goto(locale === 'en' ? '/en' : '/')
+      await page.locator('[data-block="hero"] .canvas-open').waitFor({ state: 'attached' })
       await expect(page.locator('[data-block="feed"] .activity-feed li')).toHaveCount(3)
       await page.evaluate(() => document.fonts.ready)
       await page.mouse.move(0, 0)
