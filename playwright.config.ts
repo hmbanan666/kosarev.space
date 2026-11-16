@@ -14,7 +14,7 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
   },
   webServer: {
-    command: `PORT=${port} pnpm --filter @kosarev/web-app dev`,
+    command: `NUXT_GITHUB_ACTIVITY_DISABLED=true PORT=${port} pnpm --filter @kosarev/web-app dev`,
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

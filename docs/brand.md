@@ -17,11 +17,11 @@ the earlier direction that explicitly deprioritized employment.
 ## Implemented structure
 
 - A server-rendered home with role, location, CV, PDF, work and email links.
-  Desktop and tablet enhance the blocks into a bounded 17 by 9 cell canvas.
+  Desktop and tablet enhance the blocks into a bounded 17 by 11 cell canvas.
   The home contains only this canvas; `/projects`, `/cases` and `/contact`
   provide the catalogs and contact page, alongside `/writing` and `/cv`.
   The header uses real localized routes and marks their active route.
-  Below 768px and without JavaScript, the same HTML uses a grouped list.
+  Below 768px and without JavaScript, the same HTML uses a priority-ordered list.
   The home links to the CV for the full career history.
 - A case finder with shareable URL filters, search, a visible path to all cases,
   and technical context available through native disclosure controls.
@@ -115,45 +115,59 @@ assistive technology. Never turn project cards into densely annotated diagrams.
 | `--grid-gap` | `16px` | All block gaps and frame padding |
 | `--block-inset` | `24px` | Card padding and bottom link inset |
 | `--grip-inset` | `8px` | Every drag handle's top/right inset |
-| `--control-height` | `44px` | Minimap, buttons and native online pill |
+| `--control-height` | `44px` | Native online pill and shared controls |
 
 Page tokens live in [`portfolio.css`](../apps/web-app/app/assets/css/portfolio.css).
 Canvas coordinate values come from
 [`home-canvas.ts`](../apps/web-app/app/utils/home-canvas.ts); the home supplies
 its gap to CSS as well. Insets are measured inside the 1px card border.
 Canvas dimensions are `columns × cell − gap` and `rows × cell − gap`, so
-there is no trailing empty strip. Default cells fill one 17 by 9 rectangle.
-The extra row gives Contacts the same label, title and bottom action spacing
-as the other cards. The introduction retains its portrait and name composition.
-Status labels share a baseline within each row, and all links end at the same
-bottom inset. Part numbers stay inside the upper corner, away from the grips.
-Four crosshairs sit symmetrically on the board corners; internal gaps contain
-no divider fragments or plates.
+there is no trailing empty strip. The 17 by 11 graph-paper board leaves empty
+cells between clusters. It is not a packed rectangle. The role and original
+portrait remain prominent at centre-left; contact is a small edge card.
+Grid lines share the cards' coordinate space during pan and zoom. Four quiet
+crosshairs and coordinate marks frame the board.
 
-On desktop the sticky header and slim bottom chrome surround one edge-to-edge
+The project layout is deterministic. For each project, the score is the sum of
+`max(0, 30 − floor(days since latest observed commit/PR))`, the number of observed
+commits/PRs in 30 days, and the number in 14 days. Releases do not affect rank;
+future dates are excluded. Equal scores use project-key order. The highest
+rank occupies the central 6 by 3 slot; remaining projects use 4 by 3 edge slots.
+The same rank orders the mobile list. The algorithm is in
+[`home-canvas.ts`](../apps/web-app/app/utils/home-canvas.ts), with scoring in
+[`activity.ts`](../apps/web-app/shared/activity.ts).
+
+On desktop the sticky header and one bottom strip surround an edge-to-edge
 viewport. The enhanced home is exactly `100dvh` tall with no document scroll.
-The board's four outer gutters use `--site-gutter`; its first column aligns
-with the header text. The 17 by 9 layout remains completely packed. Logical
-cell widths and heights expand independently to match the available aspect
-ratio, while a uniform display scale keeps text, card padding and gaps in
-proportion. Saved layout coordinates remain unchanged across window sizes.
-Corner ticks, quiet rulers and coordinates sit symmetrically at viewport edges.
+The board's four outer gutters use `--site-gutter`; the world aligns with the
+header. Logical cells expand to match the available aspect ratio; uniform
+scaling preserves geometry. A text scale floor improves readability at fitted
+zoom. Saved positions and sizes survive activity updates and viewport changes.
 
 Initial load, fitted resize, reset and recenter fit both dimensions. The fitted
 scale is capped at 100%; zoom ranges from the smaller of fitted scale and 80%
 up to 125%. Pan by dragging empty space, scrolling or focusing the viewport
 and pressing arrow keys after zooming. Native scroll bounds prevent getting
-lost; the document does not scroll through the canvas. The minimap navigates
-the zoomed board; its keyboard action fits and recenters. Tab focus reveals
-off-screen blocks.
+lost; the document does not scroll through the canvas. The zoom percentage
+button fits and recenters the board. Tab focus reveals off-screen blocks.
 
-The slim chrome combines minimap, recenter, zoom, undo/reset and the centered
-native online pill, with copyright and three small contact links beneath.
-One presence instance moves between the dock and the page shell, preserving
-its connection across route changes. Inner pages retain the full contact footer
-from PR #31 and their reading line-length limits. Below 768px, blocks form a
-vertical grouped list with the normal footer and no canvas controls. The same
-readable fallback remains available without JavaScript.
+The bottom strip is one 58px row: a compact zoom control and reset icon on
+the left, the native online/profile pill in the centre, and copyright plus
+Contact, Telegram and GitHub on the right. Reset has an accessible label and
+tooltip. There is no layout block, undo button, separate recenter label or
+minimap. One presence instance moves between the dock and page shell,
+preserving its connection across route changes. Inner pages retain the contact
+footer. Below 768px, blocks form a vertical list with the normal footer and no
+canvas controls. This readable fallback also works without JavaScript.
+
+Every card opens a detail panel from its surface or its keyboard action.
+Inner links keep their destinations; movement beyond six pixels suppresses a
+surface click. `?card=context` (and other card IDs) is shareable and participates
+in browser history. A native modal dialog supplies focus containment and Escape;
+outside clicks close it, and closing restores the card action's focus. Desktop
+uses a right sheet; mobile uses a bottom sheet. Project details include status,
+approved pitch, 30-day graph, observed commits/PRs, language bytes and available
+links. Repository/source information appears only after runtime public checks.
 
 ### Link icons
 
@@ -166,31 +180,62 @@ an arrow; never use text arrow glyphs. Action controls retain their semantic
 icons, such as copy, download and grip. Mobile keeps the same rule; on the
 zoomable board icons scale with its text.
 
-The home K39 preview crops the existing capture to the map area and applies
-the dark gold CSS duotone. Small linked attribution remains visible; no image
-bytes are added and the project page keeps the original. Blocks lift by 2px
-on hover and ease into snapped positions over 240ms; reduced motion disables
-both. Colors remain unchanged.
+Home project cards show a small 30-day activity graph and localized last-commit
+time when public data is available. Project-page images remain unchanged.
+Blocks lift by 2px on hover with a gold border and ease into snapped positions
+over 240ms; reduced motion disables both.
 
-Browser geometry regressions in
-[`canvas-precision.test.ts`](../e2e/canvas-precision.test.ts) cover 1024, 1280,
-1440, 1920 and 390px in RU/EN. They check shared edges, equal frame margins,
-gaps, padding, link insets, centered controls, native faces, overflow and
-hydration. The unit packing check ensures every default cell is occupied
-exactly once. Fullscreen review captures are in [`images/canvas-fullscreen`](images/canvas-fullscreen);
-[`images/canvas-precision`](images/canvas-precision) retains the earlier baseline.
-With the test database configured as in the README, refresh the home captures
-using `CANVAS_SCREENSHOTS=after pnpm exec playwright test e2e/canvas-precision.test.ts`.
-These screenshots are review evidence; geometry assertions run in CI without
-platform-dependent font rasterization comparisons.
+Browser regressions cover RU/EN at 1024, 1280, 1440, 1920 and 390px, shared
+edges, equal world margins, non-overlap, readable content, the one-row strip,
+native faces, overflow and hydration. Activity tests use a recorded public
+snapshot and check panel history, focus, dismissal and drag separation. Unit
+tests cover ranking, empty cells, public filtering and cache behavior. Review
+captures live in [`images/activity-canvas`](images/activity-canvas); historical
+fullscreen and precision captures remain unchanged. With the local test database
+configured, refresh the activity captures using
+`CANVAS_SCREENSHOTS=after pnpm exec playwright test e2e/activity-canvas.test.ts`.
+They are local review evidence, not production captures.
 
 Move blocks with the grip or its arrow keys. Positions snap to cells and
 colliding neighbours move to nearby free positions. If no placement is possible,
 the move is rejected. Escape cancels a drag. Versioned localStorage keeps only
-this device's layout; invalid or inaccessible data falls back to defaults.
-Undo retains up to 30 changes in the current session, including reset. Layouts
-are never sent to the server. The common canvas coordinate system describes
+this device's layout, including card sizes; invalid or inaccessible data falls
+back to current activity defaults. Reset returns to those defaults. Layouts are
+never sent to the server. The common presence coordinate system describes
 positions, not a shared arrangement of blocks.
+
+### Public activity
+
+[`GET /api/activity`](../apps/web-app/server/api/activity.get.ts) returns a
+server snapshot immediately from Nitro storage or an empty fallback, while
+refreshing in the background. Snapshots are fresh for 30 minutes, stale for at
+most a day, and refresh failures retry no faster than once a minute. The browser
+refreshes after hydration, after ten seconds and every minute. Language byte
+responses have a separate 24-hour Nitro cache, used only after visibility checks.
+
+The public GitHub owner listing and a per-repository visibility check gate all
+returned repository data. Forks are excluded. The server-only
+[project mapping](../apps/web-app/server/utils/activity-projects.ts) includes
+Context, K39, Woodlands and kosarev.space as candidates, not a declaration that
+all are public. Missing/private projects retain approved product copy without
+repository data or a source link.
+
+Without `NUXT_GITHUB_TOKEN`, REST supplies public owned repositories, languages,
+up to 100 author-filtered default-branch commits and 100 PRs per selected repo,
+and public release events. Languages cover up to 40 verified repositories;
+recent commit/PR requests cover six (mapped projects first, then recently pushed
+repos). The 90-day graph and totals are explicitly a public sample, not complete
+GitHub statistics. Rate limits and truncation can make it incomplete. No
+unobserved activity is invented. Skills combine returned language bytes with
+technology tags already present in portfolio content.
+
+The optional server-only token increases the API budget and enables a 365-day
+public commit/PR calendar through GraphQL `contributionsCollection`. It uses
+repository-level contributions checked against the public allowlist, never the
+aggregate calendar or restricted contribution counts. Up to 40 repositories and
+100 contribution nodes per connection are observed; labels still say public
+sample. A GraphQL failure retains REST coverage. The token is never serialized
+into a response. See [README](../README.md#public-github-activity) for configuration.
 
 The project archive lives at `/projects`; the case finder at `/cases` retains
 its `q`, `focus`, `tech` and `all` query filters, including native GET controls.
@@ -200,13 +245,13 @@ portfolio ItemList lives on `/projects`; Person and WebSite stay on home.
 Legacy home hashes redirect on the client, preserving locale and query:
 `#projects` and `#project-*` to `/projects` (retaining project hashes), `#skills`
 to `/cases`, `#experience` to `/cv#experience`, and `#contacts` to `/contact`.
-A bare home URL carrying case filters also redirects to `/cases`. Mobile follows semantic zone order and has no canvas controls.
+A bare home URL carrying case filters also redirects to `/cases`. Mobile follows activity priority and has no canvas controls.
 Inner pages keep their normal reading layout with angular surfaces, readable
 line lengths and visible focus. Print CV styling remains separate: two A4
 pages per language, selectable text and clickable contact/source links.
 
 Avoid technology tag walls, vanity counters, repeated identical cards,
-motion-dependent content and unnecessary overlays. Do not invent live activity
+motion-dependent content and overlays that do not add useful detail. Do not invent live activity
 or metrics. Respect reduced motion; no content depends on animation. The case
 finder keeps native GET controls when JavaScript is unavailable.
 

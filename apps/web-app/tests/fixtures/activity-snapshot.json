@@ -1,0 +1,1471 @@
+{
+  "fetchedAt": "2026-11-16T07:48:38.421404Z",
+  "repos": [
+    {
+      "name": "hmbanan666/context",
+      "project": "context",
+      "url": "https://github.com/hmbanan666/context",
+      "languages": {
+        "TypeScript": 1400900,
+        "Python": 6891,
+        "JavaScript": 2561,
+        "Dockerfile": 1117
+      }
+    },
+    {
+      "name": "hmbanan666/k39",
+      "project": "k39",
+      "url": "https://github.com/hmbanan666/k39",
+      "languages": {
+        "TypeScript": 2912726,
+        "Vue": 574459,
+        "JavaScript": 43660,
+        "CSS": 15505,
+        "Shell": 10528,
+        "Dockerfile": 5085
+      }
+    },
+    {
+      "name": "hmbanan666/kosarev.space",
+      "project": "space",
+      "url": "https://github.com/hmbanan666/kosarev.space",
+      "languages": {
+        "TypeScript": 199887,
+        "Vue": 101535,
+        "CSS": 35497,
+        "JavaScript": 34541,
+        "Dockerfile": 1010
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "hmbanan666/kosarev.space:c1bae5867a9254da18816c70e6b6a7d40e709e87",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Make the home canvas fullscreen and move catalogs to real pages (#32)",
+      "date": "2026-11-16T05:56:41Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/c1bae5867a9254da18816c70e6b6a7d40e709e87"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:32",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Make the home canvas fullscreen and move catalogs to real pages",
+      "date": "2026-11-15T21:43:48Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/32"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:adfb5b0714845e7f14a017d31576795f3838c0b9",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Align the canvas and shared page chrome to one symmetric grid (#31)",
+      "date": "2026-11-15T20:00:58Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/adfb5b0714845e7f14a017d31576795f3838c0b9"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:31",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Align the canvas and shared page chrome to one symmetric grid",
+      "date": "2026-11-15T18:22:57Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/31"
+    },
+    {
+      "id": "hmbanan666/context:104f1dc5437e885683fdfd28a0f0f6ba984a30c2",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: label grounding none when rare share and margin are both low (#66)",
+      "date": "2026-11-15T18:09:22Z",
+      "url": "https://github.com/hmbanan666/context/commit/104f1dc5437e885683fdfd28a0f0f6ba984a30c2"
+    },
+    {
+      "id": "hmbanan666/context:pr:66",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "fix: label grounding none when rare share and margin are both low",
+      "date": "2026-11-15T18:05:58Z",
+      "url": "https://github.com/hmbanan666/context/pull/66"
+    },
+    {
+      "id": "hmbanan666/context:0cc684b79d800569c3b8b8bf821c0be77c119965",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: ground on a cosine margin and the matched document pool (#65)",
+      "date": "2026-11-15T17:41:32Z",
+      "url": "https://github.com/hmbanan666/context/commit/0cc684b79d800569c3b8b8bf821c0be77c119965"
+    },
+    {
+      "id": "hmbanan666/context:pr:65",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "fix: ground on a cosine margin and the matched document pool",
+      "date": "2026-11-15T17:38:08Z",
+      "url": "https://github.com/hmbanan666/context/pull/65"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:5c55dd96858b3ab114faec0add9a96d528096b1d",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "fix(docker): copy pnpm patches before install (#30)",
+      "date": "2026-11-15T17:36:45Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/5c55dd96858b3ab114faec0add9a96d528096b1d"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:30",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "fix(docker): copy pnpm patches before install",
+      "date": "2026-11-15T17:36:35Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/30"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:9390d4dffeb143d62146d9769de6d0fb82b783a9",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Polish the home canvas with a packed black-and-gold bento (#29)",
+      "date": "2026-11-15T17:31:34Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/9390d4dffeb143d62146d9769de6d0fb82b783a9"
+    },
+    {
+      "id": "hmbanan666/context:de464de54ed122068cf0b79c2c736228bd560258",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: return none when only common terms match below the cosine floor (#64)",
+      "date": "2026-11-15T17:15:47Z",
+      "url": "https://github.com/hmbanan666/context/commit/de464de54ed122068cf0b79c2c736228bd560258"
+    },
+    {
+      "id": "hmbanan666/context:pr:64",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "fix: return none when only common terms match below the cosine floor",
+      "date": "2026-11-15T14:43:20Z",
+      "url": "https://github.com/hmbanan666/context/pull/64"
+    },
+    {
+      "id": "hmbanan666/context:bddbfb43dc03fced11504587ec9059e1ab86c244",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: ground strong matches on one passage, not common words (#63)",
+      "date": "2026-11-15T14:27:41Z",
+      "url": "https://github.com/hmbanan666/context/commit/bddbfb43dc03fced11504587ec9059e1ab86c244"
+    },
+    {
+      "id": "hmbanan666/context:pr:63",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "fix: keep search grounding honest on a large mixed corpus",
+      "date": "2026-11-15T14:16:39Z",
+      "url": "https://github.com/hmbanan666/context/pull/63"
+    },
+    {
+      "id": "hmbanan666/context:e735e3a01a91e54ad7c1ebded394fe15ec77f65a",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: store ADR and spec documents as versioned sources (#62)",
+      "date": "2026-11-15T14:09:08Z",
+      "url": "https://github.com/hmbanan666/context/commit/e735e3a01a91e54ad7c1ebded394fe15ec77f65a"
+    },
+    {
+      "id": "hmbanan666/context:pr:62",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "feat: store ADR and spec documents as versioned sources",
+      "date": "2026-11-15T14:05:38Z",
+      "url": "https://github.com/hmbanan666/context/pull/62"
+    },
+    {
+      "id": "hmbanan666/context:f72d3eef8e8ede93abf933356b95a41f7cc7459d",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: import markdown and report when search has no evidence (#61)",
+      "date": "2026-11-15T13:50:09Z",
+      "url": "https://github.com/hmbanan666/context/commit/f72d3eef8e8ede93abf933356b95a41f7cc7459d"
+    },
+    {
+      "id": "hmbanan666/context:pr:61",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "feat: import markdown and report when search has no evidence",
+      "date": "2026-11-15T13:46:47Z",
+      "url": "https://github.com/hmbanan666/context/pull/61"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:29",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Polish the home canvas with a packed black-and-gold bento",
+      "date": "2026-11-15T13:44:06Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/29"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:dc642f728bcd4f60f3aac0a7dfda124c64a1d1e8",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Add bounded canvas home and restrained engineering styling (#27)",
+      "date": "2026-11-15T13:27:40Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/dc642f728bcd4f60f3aac0a7dfda124c64a1d1e8"
+    },
+    {
+      "id": "hmbanan666/context:f7b92a6cf2ee0e649c5b528571422283332a6e75",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: publish an image and add context init for a new install (#60)",
+      "date": "2026-11-15T13:27:30Z",
+      "url": "https://github.com/hmbanan666/context/commit/f7b92a6cf2ee0e649c5b528571422283332a6e75"
+    },
+    {
+      "id": "hmbanan666/context:pr:60",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "Publish the image and add context init for a new install",
+      "date": "2026-11-15T13:03:36Z",
+      "url": "https://github.com/hmbanan666/context/pull/60"
+    },
+    {
+      "id": "hmbanan666/context:951d1f138f610544c8ca4d43c949c84e6919cc48",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: bind an MCP token to one project (#59)",
+      "date": "2026-11-15T12:48:06Z",
+      "url": "https://github.com/hmbanan666/context/commit/951d1f138f610544c8ca4d43c949c84e6919cc48"
+    },
+    {
+      "id": "hmbanan666/context:pr:59",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "Bind an MCP token to one project",
+      "date": "2026-11-15T12:44:36Z",
+      "url": "https://github.com/hmbanan666/context/pull/59"
+    },
+    {
+      "id": "hmbanan666/context:3ae26d447de4d8c91308d1aa3b498a1dd391bca6",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: keep every dated journal inside the default byte budget (#58)",
+      "date": "2026-11-15T11:18:52Z",
+      "url": "https://github.com/hmbanan666/context/commit/3ae26d447de4d8c91308d1aa3b498a1dd391bca6"
+    },
+    {
+      "id": "hmbanan666/context:pr:58",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "fix: keep every dated journal inside the default byte budget",
+      "date": "2026-11-15T11:15:33Z",
+      "url": "https://github.com/hmbanan666/context/pull/58"
+    },
+    {
+      "id": "hmbanan666/context:06a6431b4ea9225173317a6fcb6de7db5a05cd48",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: recall overlapping weeks and drop weak pack neighbours (#57)",
+      "date": "2026-11-15T10:52:06Z",
+      "url": "https://github.com/hmbanan666/context/commit/06a6431b4ea9225173317a6fcb6de7db5a05cd48"
+    },
+    {
+      "id": "hmbanan666/context:pr:57",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "fix: recall overlapping weeks and drop weak pack neighbours",
+      "date": "2026-11-15T10:48:48Z",
+      "url": "https://github.com/hmbanan666/context/pull/57"
+    },
+    {
+      "id": "hmbanan666/k39:1aedc2b92d4bbcd1d67413a49435828d90b4ee0a",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "feat(web): link the site to the Telegram channel (#339)",
+      "date": "2026-11-15T10:41:10Z",
+      "url": "https://github.com/hmbanan666/k39/commit/1aedc2b92d4bbcd1d67413a49435828d90b4ee0a"
+    },
+    {
+      "id": "hmbanan666/context:8655dd34701fd37fdc9dc522b726280670d407dc",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: rank undated project search as one hybrid list (#56)",
+      "date": "2026-11-15T10:33:49Z",
+      "url": "https://github.com/hmbanan666/context/commit/8655dd34701fd37fdc9dc522b726280670d407dc"
+    },
+    {
+      "id": "hmbanan666/k39:pr:339",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "Link the site to the official Telegram channel",
+      "date": "2026-11-15T10:32:49Z",
+      "url": "https://github.com/hmbanan666/k39/pull/339"
+    },
+    {
+      "id": "hmbanan666/context:pr:56",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "fix: rank undated project search as one hybrid list",
+      "date": "2026-11-15T10:30:16Z",
+      "url": "https://github.com/hmbanan666/context/pull/56"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:27",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Add bounded canvas home and restrained engineering styling",
+      "date": "2026-11-15T10:28:03Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/27"
+    },
+    {
+      "id": "hmbanan666/context:b4eadc3050acae59405c80b6603bb5b1656ee0d7",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: cap pack profiles and match glossary phrases (#55)",
+      "date": "2026-11-15T10:02:54Z",
+      "url": "https://github.com/hmbanan666/context/commit/b4eadc3050acae59405c80b6603bb5b1656ee0d7"
+    },
+    {
+      "id": "hmbanan666/context:pr:55",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "Cap pack profiles and match glossary phrases",
+      "date": "2026-11-15T09:59:30Z",
+      "url": "https://github.com/hmbanan666/context/pull/55"
+    },
+    {
+      "id": "hmbanan666/context:e56d198c3a071918e7f298226f8620ef841ed88f",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: expand project glossaries for cross-lingual search (#54)",
+      "date": "2026-11-15T09:36:23Z",
+      "url": "https://github.com/hmbanan666/context/commit/e56d198c3a071918e7f298226f8620ef841ed88f"
+    },
+    {
+      "id": "hmbanan666/context:pr:54",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "Cross-lingual project search: glossary, tagged E5 vectors, project eval",
+      "date": "2026-11-15T09:33:08Z",
+      "url": "https://github.com/hmbanan666/context/pull/54"
+    },
+    {
+      "id": "hmbanan666/context:f459a749be7496acdbbe1252c47e9fcae4c33f20",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: rank task packs by the query (#53)",
+      "date": "2026-11-14T18:04:47Z",
+      "url": "https://github.com/hmbanan666/context/commit/f459a749be7496acdbbe1252c47e9fcae4c33f20"
+    },
+    {
+      "id": "hmbanan666/context:pr:53",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "Rank task packs by the query",
+      "date": "2026-11-14T18:01:22Z",
+      "url": "https://github.com/hmbanan666/context/pull/53"
+    },
+    {
+      "id": "hmbanan666/context:77bb13a4e3cf66f7d24a6aa230ae0eab48055c04",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: add search mode pack for a budgeted task (#52)",
+      "date": "2026-11-14T17:39:21Z",
+      "url": "https://github.com/hmbanan666/context/commit/77bb13a4e3cf66f7d24a6aa230ae0eab48055c04"
+    },
+    {
+      "id": "hmbanan666/context:pr:52",
+      "kind": "pr",
+      "repo": "hmbanan666/context",
+      "title": "Add search mode pack for a budgeted task",
+      "date": "2026-11-14T17:35:41Z",
+      "url": "https://github.com/hmbanan666/context/pull/52"
+    },
+    {
+      "id": "hmbanan666/context:38fe24823bf00ea38b9f7ece7ee1652d14df2e5d",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: report tidy call failures, finish journal backfill, and bound excerpts (#51)",
+      "date": "2026-11-14T17:17:26Z",
+      "url": "https://github.com/hmbanan666/context/commit/38fe24823bf00ea38b9f7ece7ee1652d14df2e5d"
+    },
+    {
+      "id": "hmbanan666/context:7bf7fcf6a1d07ac3ba3e435d2c277771af93a08e",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: accept offset dates and write journal sentences (#50)",
+      "date": "2026-11-14T15:52:45Z",
+      "url": "https://github.com/hmbanan666/context/commit/7bf7fcf6a1d07ac3ba3e435d2c277771af93a08e"
+    },
+    {
+      "id": "hmbanan666/context:1f78e091e90fdab6c2a9005529e9497e8a9aeb11",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: recall dated project items and summarize weekly journals (#49)",
+      "date": "2026-11-14T14:27:45Z",
+      "url": "https://github.com/hmbanan666/context/commit/1f78e091e90fdab6c2a9005529e9497e8a9aeb11"
+    },
+    {
+      "id": "hmbanan666/context:89da99918ea6fd325f48992b5f599ba594100490",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: add owner approval for proposed facts, decisions and projects (#48)",
+      "date": "2026-11-14T14:06:21Z",
+      "url": "https://github.com/hmbanan666/context/commit/89da99918ea6fd325f48992b5f599ba594100490"
+    },
+    {
+      "id": "hmbanan666/context:269ae633684ff2481fcc9e52544f6d1def51ba32",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix: normalize repos, strip PR footers, and spread distillation (#47)",
+      "date": "2026-11-14T13:51:41Z",
+      "url": "https://github.com/hmbanan666/context/commit/269ae633684ff2481fcc9e52544f6d1def51ba32"
+    },
+    {
+      "id": "hmbanan666/context:10ff15f439680d316e47861ea4832070bd9aac54",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: add owner project profiles and weekly journals (#46)",
+      "date": "2026-11-14T13:38:48Z",
+      "url": "https://github.com/hmbanan666/context/commit/10ff15f439680d316e47861ea4832070bd9aac54"
+    },
+    {
+      "id": "hmbanan666/context:1a2dd36c5ea16b042f6335ae22111561daaded78",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: prefer distilled items in project search (#45)",
+      "date": "2026-11-14T13:19:27Z",
+      "url": "https://github.com/hmbanan666/context/commit/1a2dd36c5ea16b042f6335ae22111561daaded78"
+    },
+    {
+      "id": "hmbanan666/context:14f570f1f9bd6952511ccf47300bc5f3f86d770b",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: distill proposed facts and decisions (#44)",
+      "date": "2026-11-14T13:02:27Z",
+      "url": "https://github.com/hmbanan666/context/commit/14f570f1f9bd6952511ccf47300bc5f3f86d770b"
+    },
+    {
+      "id": "hmbanan666/context:9660fc2fceba8e9d138eea2193cd00ec518d38d9",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "feat: add project catalog and associations (#43)",
+      "date": "2026-11-14T12:34:05Z",
+      "url": "https://github.com/hmbanan666/context/commit/9660fc2fceba8e9d138eea2193cd00ec518d38d9"
+    },
+    {
+      "id": "hmbanan666/context:66c76a63c69a3a18cd889d685b29ba5502a643db",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "docs: accept project memory decisions for an architect client (#42)",
+      "date": "2026-11-14T12:10:34Z",
+      "url": "https://github.com/hmbanan666/context/commit/66c76a63c69a3a18cd889d685b29ba5502a643db"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:39990d635dfa13a73d550e9f71a2929934c25a88",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: publish long-form copy on Context, Dostigus and K39 (#26)",
+      "date": "2026-11-13T16:36:33Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/39990d635dfa13a73d550e9f71a2929934c25a88"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:26",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Publish long-form copy on the Context, Dostigus and K39 pages",
+      "date": "2026-11-13T16:33:15Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/26"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:8623ede08b2d1d1011a4a8e381358573c72e3695",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: add optional long-form sections and a K39 project page (#25)",
+      "date": "2026-11-13T15:28:51Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/8623ede08b2d1d1011a4a8e381358573c72e3695"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:25",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Add optional long-form sections and a K39 project page",
+      "date": "2026-11-13T15:25:49Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/25"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:d369c36c1d82a119014bdc02e07dfd40fce4c7ba",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Add current skills, Context and Dostigus, and writing feeds (#23)",
+      "date": "2026-11-13T14:59:12Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/d369c36c1d82a119014bdc02e07dfd40fce4c7ba"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:23",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Add current skills, Context and Dostigus, and writing feeds",
+      "date": "2026-11-13T14:39:05Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/23"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:6dd02115cc69664003dd791fe7f0824fa453cfa0",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Reposition the site as AI Product Engineer / Fullstack Engineer (#22)",
+      "date": "2026-11-13T12:02:34Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/6dd02115cc69664003dd791fe7f0824fa453cfa0"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:22",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "Reposition the site as AI Product Engineer / Fullstack Engineer",
+      "date": "2026-11-13T11:39:05Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/22"
+    },
+    {
+      "id": "hmbanan666/context:555b66a030bf4845b1793b6d82fb762ce695de66",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "build: adopt pnpm and Vite+ for checks and tests (#41)",
+      "date": "2026-11-02T17:50:32Z",
+      "url": "https://github.com/hmbanan666/context/commit/555b66a030bf4845b1793b6d82fb762ce695de66"
+    },
+    {
+      "id": "hmbanan666/context:03500eef55743554336cc3a92b2b915a367b8ce8",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix(tidy): remove automatic LLM supersession (#40)",
+      "date": "2026-11-02T17:34:25Z",
+      "url": "https://github.com/hmbanan666/context/commit/03500eef55743554336cc3a92b2b915a367b8ce8"
+    },
+    {
+      "id": "hmbanan666/context:0b7ca65430f07682fe12a95d12e99ffaa44062bc",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix(tidy): restrict supersession to explicit note replacements (#39)",
+      "date": "2026-11-02T17:19:57Z",
+      "url": "https://github.com/hmbanan666/context/commit/0b7ca65430f07682fe12a95d12e99ffaa44062bc"
+    },
+    {
+      "id": "hmbanan666/context:79b47e55165dd81ddbdbd4b330bc9bee6ec5f814",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix(deploy): mount host CA bundle for Codex TLS (#38)",
+      "date": "2026-11-02T17:08:53Z",
+      "url": "https://github.com/hmbanan666/context/commit/79b47e55165dd81ddbdbd4b330bc9bee6ec5f814"
+    },
+    {
+      "id": "hmbanan666/context:d68685953fd36fce074f1a4ee68dcc557ce8d2a6",
+      "kind": "commit",
+      "repo": "hmbanan666/context",
+      "title": "fix(tidy): preserve duplicate decisions and fail fast without Codex login (#37)",
+      "date": "2026-11-02T16:45:23Z",
+      "url": "https://github.com/hmbanan666/context/commit/d68685953fd36fce074f1a4ee68dcc557ce8d2a6"
+    },
+    {
+      "id": "hmbanan666/k39:99a9ac8d773e25e71299a7c0d3f0ef8b418815ae",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "Merge pull request #335 from hmbanan666/codex/k39-bugfix",
+      "date": "2026-11-01T18:05:22Z",
+      "url": "https://github.com/hmbanan666/k39/commit/99a9ac8d773e25e71299a7c0d3f0ef8b418815ae"
+    },
+    {
+      "id": "hmbanan666/k39:pr:335",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "fix(seo): reject place slugs reserved by built-in routes",
+      "date": "2026-11-01T16:14:06Z",
+      "url": "https://github.com/hmbanan666/k39/pull/335"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:78b3d80f3f5d3dea183e4ed988a260c587116759",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: publish reviewed Markdown revisions from PostgreSQL (#21)",
+      "date": "2026-10-28T18:35:13Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/78b3d80f3f5d3dea183e4ed988a260c587116759"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:21",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: publish reviewed Markdown revisions from PostgreSQL",
+      "date": "2026-10-28T18:12:27Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/21"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:9fea804900cb8feb785f6a4f438e59c57cd40c72",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: close the verified website roadmap (#20)",
+      "date": "2026-10-28T17:26:13Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/9fea804900cb8feb785f6a4f438e59c57cd40c72"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:20",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: close the verified website roadmap",
+      "date": "2026-10-28T17:22:17Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/20"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:543b60ce67986c6f588cc38806ec836da973d529",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: unify Writing into a chronological publication feed (#19)",
+      "date": "2026-10-28T17:16:13Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/543b60ce67986c6f588cc38806ec836da973d529"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:90eb85eb64704aedc036ff0dd2ae3e193f87a2f7",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: add editorial publication skill and review gate (#18)",
+      "date": "2026-10-28T17:15:13Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/90eb85eb64704aedc036ff0dd2ae3e193f87a2f7"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:19",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: unify Writing into a chronological publication feed",
+      "date": "2026-10-28T17:12:17Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/19"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:pr:18",
+      "kind": "pr",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: establish publication-editor skill for public writing",
+      "date": "2026-10-28T17:09:00Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/pull/18"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:569fedd13d6c9598416b7df3b8dc087a5ee6dec2",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: publish the first bilingual K39 engineering article (#17)",
+      "date": "2026-10-28T16:52:26Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/569fedd13d6c9598416b7df3b8dc087a5ee6dec2"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:ea99af9e6fcff66ea75fe3d52185d9547652c131",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: present K39 and Woodlands as active products (#16)",
+      "date": "2026-10-28T12:43:45Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/ea99af9e6fcff66ea75fe3d52185d9547652c131"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:6ebaca6a81ab2a1407351d37158dcb4558515b1c",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: curate engineering cases and publishable EXPI content (#15)",
+      "date": "2026-10-28T11:50:03Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/6ebaca6a81ab2a1407351d37158dcb4558515b1c"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:3c0a11d543ba50f23eb665ff07215a1c8582678f",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: update product direction and Phase 1 plan (#14)",
+      "date": "2026-10-28T11:49:55Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/3c0a11d543ba50f23eb665ff07215a1c8582678f"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:dcb8f05a54751e7c86f4097e2a64c5c9cffab28c",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: clarify small-team positioning in RU and EN (#13)",
+      "date": "2026-10-27T08:53:30Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/dcb8f05a54751e7c86f4097e2a64c5c9cffab28c"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:ed3cd6c784560859086f9c98928ce6d64f98979e",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: configure engineering skills for the repository (#9)",
+      "date": "2026-10-27T08:11:12Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/ed3cd6c784560859086f9c98928ce6d64f98979e"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:ec4700efc1748a56c129b0e0cc26e6ff16cc2813",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: stage website roadmap and agent workflow (#8)",
+      "date": "2026-10-27T08:01:31Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/ec4700efc1748a56c129b0e0cc26e6ff16cc2813"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:303181bb197ddd73d307383ed9e40e803c3c4aad",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: redesign portfolio in black and amber (#7)",
+      "date": "2026-10-26T17:48:42Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/303181bb197ddd73d307383ed9e40e803c3c4aad"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:b4a931a74b29f64b4a8393446d050a22b452d60f",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: clarify EXPI launch status and cached build result (#6)",
+      "date": "2026-10-26T14:37:49Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/b4a931a74b29f64b4a8393446d050a22b452d60f"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:c0243f1601d8992bf66707f3d59e4ce6466f8e84",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: refresh bilingual CV and printable PDFs (#5)",
+      "date": "2026-10-26T14:00:34Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/c0243f1601d8992bf66707f3d59e4ce6466f8e84"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:7095646c0d76e127f4332ff49e957cf07418a347",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: align project guidance with implemented behavior (#4)",
+      "date": "2026-10-26T10:21:32Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/7095646c0d76e127f4332ff49e957cf07418a347"
+    },
+    {
+      "id": "hmbanan666/k39:0420863b84fccf47f5f34a9fb30e8353a14ed66f",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "Merge pull request #334 from hmbanan666/ao/user-asks-russian/vite-plus",
+      "date": "2026-10-26T09:56:02Z",
+      "url": "https://github.com/hmbanan666/k39/commit/0420863b84fccf47f5f34a9fb30e8353a14ed66f"
+    },
+    {
+      "id": "hmbanan666/k39:pr:334",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "chore: adopt Vite+ and simplify the agent toolchain",
+      "date": "2026-10-26T09:44:06Z",
+      "url": "https://github.com/hmbanan666/k39/pull/334"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:11eb80506e694b5c3d5ffc352ec7c8fb6cf863e7",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "chore: upgrade to pnpm 12 and Nuxt 4.6 (#3)",
+      "date": "2026-10-26T09:24:55Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/11eb80506e694b5c3d5ffc352ec7c8fb6cf863e7"
+    },
+    {
+      "id": "hmbanan666/k39:b3e9f0a13804158f7173876067397053fdcd4f19",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "style: normalize source formatting with Oxfmt",
+      "date": "2026-10-26T09:08:35Z",
+      "url": "https://github.com/hmbanan666/k39/commit/b3e9f0a13804158f7173876067397053fdcd4f19"
+    },
+    {
+      "id": "hmbanan666/k39:da2cfa699d375709f51bd47d13f8a6f3028be47d",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "chore: adopt project-local Vite+ toolchain",
+      "date": "2026-10-26T09:07:54Z",
+      "url": "https://github.com/hmbanan666/k39/commit/da2cfa699d375709f51bd47d13f8a6f3028be47d"
+    },
+    {
+      "id": "hmbanan666/k39:bd1770f3d9b2e1708d5c081518e579dd9555bc40",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "Merge pull request #332 from hmbanan666/ao/collection-sources/schedule-quality-signals",
+      "date": "2026-10-25T18:12:21Z",
+      "url": "https://github.com/hmbanan666/k39/commit/bd1770f3d9b2e1708d5c081518e579dd9555bc40"
+    },
+    {
+      "id": "hmbanan666/k39:52343a362431b2f6795be8ee85e4dc2f6da9c436",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "Merge pull request #331 from hmbanan666/ao/collection-sources/runtime-source-audit",
+      "date": "2026-10-25T17:46:24Z",
+      "url": "https://github.com/hmbanan666/k39/commit/52343a362431b2f6795be8ee85e4dc2f6da9c436"
+    },
+    {
+      "id": "hmbanan666/k39:pr:332",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "fix(scoring): distinguish schedule uncertainty from stale facts",
+      "date": "2026-10-25T14:54:49Z",
+      "url": "https://github.com/hmbanan666/k39/pull/332"
+    },
+    {
+      "id": "hmbanan666/k39:ab1adbef0202ddd5874be094b0bd23eac7ea62cf",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(scoring): distinguish schedule uncertainty from stale facts",
+      "date": "2026-10-25T14:02:46Z",
+      "url": "https://github.com/hmbanan666/k39/commit/ab1adbef0202ddd5874be094b0bd23eac7ea62cf"
+    },
+    {
+      "id": "hmbanan666/k39:pr:331",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "feat(ops): ship a bounded read-only source audit in the runtime image",
+      "date": "2026-10-25T13:18:32Z",
+      "url": "https://github.com/hmbanan666/k39/pull/331"
+    },
+    {
+      "id": "hmbanan666/k39:599b8178d6e83da119aeaa25555c925eac3f3579",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "feat(ops): ship read-only source audit in runtime image",
+      "date": "2026-10-25T13:13:30Z",
+      "url": "https://github.com/hmbanan666/k39/commit/599b8178d6e83da119aeaa25555c925eac3f3579"
+    },
+    {
+      "id": "hmbanan666/k39:2f69caa273b95201f58e2cf0addb7be2d45a9cf5",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "Merge pull request #317 from hmbanan666/ao/collection-sources/editorial-validation",
+      "date": "2026-10-24T19:06:19Z",
+      "url": "https://github.com/hmbanan666/k39/commit/2f69caa273b95201f58e2cf0addb7be2d45a9cf5"
+    },
+    {
+      "id": "hmbanan666/k39:103721adb62cb8e1ec06563900774ce6ed939e7b",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "test(editorial): retain notice publication refusal guards",
+      "date": "2026-10-24T18:53:26Z",
+      "url": "https://github.com/hmbanan666/k39/commit/103721adb62cb8e1ec06563900774ce6ed939e7b"
+    },
+    {
+      "id": "hmbanan666/k39:a02c9ca78190605b123696d2e5b4637a3a094c9f",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): preserve pending notice advisories",
+      "date": "2026-10-24T18:45:20Z",
+      "url": "https://github.com/hmbanan666/k39/commit/a02c9ca78190605b123696d2e5b4637a3a094c9f"
+    },
+    {
+      "id": "hmbanan666/k39:eacd57c58d46c4d372be9c520f96ae268b195260",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "docs(content): explain uncertainty publication advisories",
+      "date": "2026-10-24T18:26:24Z",
+      "url": "https://github.com/hmbanan666/k39/commit/eacd57c58d46c4d372be9c520f96ae268b195260"
+    },
+    {
+      "id": "hmbanan666/k39:ef131a37b249475a61410ca1636fd6ac9ce0b01e",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): keep score advisories client-safe",
+      "date": "2026-10-24T18:23:38Z",
+      "url": "https://github.com/hmbanan666/k39/commit/ef131a37b249475a61410ca1636fd6ac9ce0b01e"
+    },
+    {
+      "id": "hmbanan666/k39:49a4bff624403eb6c6bbe58d358848cd922943ef",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "Merge pull request #328 from hmbanan666/ao/local-sync/writing-uncertainty-adr",
+      "date": "2026-10-24T18:15:45Z",
+      "url": "https://github.com/hmbanan666/k39/commit/49a4bff624403eb6c6bbe58d358848cd922943ef"
+    },
+    {
+      "id": "hmbanan666/k39:7be881a2e9c264e51b9689652851e849f87271eb",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): treat ambiguous degree forms as advisory",
+      "date": "2026-10-24T18:09:44Z",
+      "url": "https://github.com/hmbanan666/k39/commit/7be881a2e9c264e51b9689652851e849f87271eb"
+    },
+    {
+      "id": "hmbanan666/k39:pr:328",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "docs(adr): make ambiguous writing forms advisory",
+      "date": "2026-10-24T18:07:10Z",
+      "url": "https://github.com/hmbanan666/k39/pull/328"
+    },
+    {
+      "id": "hmbanan666/k39:e2b7c49062f05e6accb8c849a072283a5606fe77",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "docs(adr): make ambiguous writing forms advisory",
+      "date": "2026-10-24T18:04:07Z",
+      "url": "https://github.com/hmbanan666/k39/commit/e2b7c49062f05e6accb8c849a072283a5606fe77"
+    },
+    {
+      "id": "hmbanan666/k39:072a615272a153af0b6ece37a6da86758b7df751",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): make appointment prose advisory",
+      "date": "2026-10-24T17:43:54Z",
+      "url": "https://github.com/hmbanan666/k39/commit/072a615272a153af0b6ece37a6da86758b7df751"
+    },
+    {
+      "id": "hmbanan666/k39:efc71b6633269d14839ec6f912887ec522b65ba5",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "Merge pull request #327 from hmbanan666/ao/local-sync/appointment-advisory-adr",
+      "date": "2026-10-24T17:37:38Z",
+      "url": "https://github.com/hmbanan666/k39/commit/efc71b6633269d14839ec6f912887ec522b65ba5"
+    },
+    {
+      "id": "hmbanan666/k39:pr:327",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "docs(adr): make appointment text checks advisory",
+      "date": "2026-10-24T17:22:31Z",
+      "url": "https://github.com/hmbanan666/k39/pull/327"
+    },
+    {
+      "id": "hmbanan666/k39:ffa514edab3deab59643334b0cf512b5718927e5",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "docs(adr): make appointment text checks advisory",
+      "date": "2026-10-24T17:19:36Z",
+      "url": "https://github.com/hmbanan666/k39/commit/ffa514edab3deab59643334b0cf512b5718927e5"
+    },
+    {
+      "id": "hmbanan666/k39:c5d8276146de19802545c3c294df2d752b6d99f5",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): retain coordinated adjective modifiers",
+      "date": "2026-10-24T17:00:54Z",
+      "url": "https://github.com/hmbanan666/k39/commit/c5d8276146de19802545c3c294df2d752b6d99f5"
+    },
+    {
+      "id": "hmbanan666/k39:20adebb99186f889e2a95d03d062216934214319",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): retain quoted labels and coordinated subjects",
+      "date": "2026-10-24T16:42:31Z",
+      "url": "https://github.com/hmbanan666/k39/commit/20adebb99186f889e2a95d03d062216934214319"
+    },
+    {
+      "id": "hmbanan666/k39:230a03c968f827607677ff7c878e744dacdca1bc",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): preserve subject types and coordinated context",
+      "date": "2026-10-24T16:11:31Z",
+      "url": "https://github.com/hmbanan666/k39/commit/230a03c968f827607677ff7c878e744dacdca1bc"
+    },
+    {
+      "id": "hmbanan666/k39:ef48ee5392b452c0e4a469e5e2574415c982bbb1",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): retain implicit context and title ownership",
+      "date": "2026-10-24T15:48:19Z",
+      "url": "https://github.com/hmbanan666/k39/commit/ef48ee5392b452c0e4a469e5e2574415c982bbb1"
+    },
+    {
+      "id": "hmbanan666/k39:pr:326",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "fix(catalog): label regions as areas and omit inferred locality",
+      "date": "2026-10-24T15:34:55Z",
+      "url": "https://github.com/hmbanan666/k39/pull/326"
+    },
+    {
+      "id": "hmbanan666/k39:6eb3a882c9327e1fad244c7dd6713bafbae2269f",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): scope booking clauses and match inflections",
+      "date": "2026-10-24T15:29:37Z",
+      "url": "https://github.com/hmbanan666/k39/commit/6eb3a882c9327e1fad244c7dd6713bafbae2269f"
+    },
+    {
+      "id": "hmbanan666/k39:pr:325",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "fix(venues): leave OSM phones for explicit source review",
+      "date": "2026-10-24T15:14:56Z",
+      "url": "https://github.com/hmbanan666/k39/pull/325"
+    },
+    {
+      "id": "hmbanan666/k39:aa7825fb6976d9133300b6c7764644d772765b7d",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): distinguish museum nouns from adjectives",
+      "date": "2026-10-24T15:13:34Z",
+      "url": "https://github.com/hmbanan666/k39/commit/aa7825fb6976d9133300b6c7764644d772765b7d"
+    },
+    {
+      "id": "hmbanan666/k39:pr:324",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "docs(adr): define regions as named catalogue areas",
+      "date": "2026-10-24T14:50:50Z",
+      "url": "https://github.com/hmbanan666/k39/pull/324"
+    },
+    {
+      "id": "hmbanan666/k39:a85e5ebcf9f88ad7fdbb5dc272d63b67071bdc0c",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): compare booking subject roles across phrase",
+      "date": "2026-10-24T14:50:39Z",
+      "url": "https://github.com/hmbanan666/k39/commit/a85e5ebcf9f88ad7fdbb5dc272d63b67071bdc0c"
+    },
+    {
+      "id": "hmbanan666/k39:7fdcd43a2bfbe672598d4cdceb7eecd9d6274c98",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): retain subjects after locative phrases",
+      "date": "2026-10-24T14:28:37Z",
+      "url": "https://github.com/hmbanan666/k39/commit/7fdcd43a2bfbe672598d4cdceb7eecd9d6274c98"
+    },
+    {
+      "id": "hmbanan666/k39:4048446353c4d5e0df745ada35c7dd98ce7a7c51",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): preserve appointment subjects across complements",
+      "date": "2026-10-24T14:02:55Z",
+      "url": "https://github.com/hmbanan666/k39/commit/4048446353c4d5e0df745ada35c7dd98ce7a7c51"
+    },
+    {
+      "id": "hmbanan666/k39:pr:322",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "fix(scoring): use member admission evidence for collections",
+      "date": "2026-10-24T12:49:32Z",
+      "url": "https://github.com/hmbanan666/k39/pull/322"
+    },
+    {
+      "id": "hmbanan666/k39:pr:321",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "fix(public): clarify straight-line distances and closed access",
+      "date": "2026-10-24T12:48:48Z",
+      "url": "https://github.com/hmbanan666/k39/pull/321"
+    },
+    {
+      "id": "hmbanan666/k39:pr:320",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "fix(venues): warn when official prices have no visible module",
+      "date": "2026-10-24T12:32:05Z",
+      "url": "https://github.com/hmbanan666/k39/pull/320"
+    },
+    {
+      "id": "hmbanan666/k39:pr:318",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "docs: clean obsolete plans and clarify task entry points",
+      "date": "2026-10-24T12:17:46Z",
+      "url": "https://github.com/hmbanan666/k39/pull/318"
+    },
+    {
+      "id": "hmbanan666/k39:pr:317",
+      "kind": "pr",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): allow ambiguous pronouns and zero-point booking advisories",
+      "date": "2026-10-24T12:13:25Z",
+      "url": "https://github.com/hmbanan666/k39/pull/317"
+    },
+    {
+      "id": "hmbanan666/k39:4a79cf1c4f8da2b148e73a1352036c6c9489f318",
+      "kind": "commit",
+      "repo": "hmbanan666/k39",
+      "title": "fix(editorial): scope superlatives and appointment subjects",
+      "date": "2026-10-24T12:10:24Z",
+      "url": "https://github.com/hmbanan666/k39/commit/4a79cf1c4f8da2b148e73a1352036c6c9489f318"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:3746853526f236cf84b466519ef75c4234749f1a",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "docs: add brand rework intent for the site",
+      "date": "2026-07-23T12:50:31Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/3746853526f236cf84b466519ef75c4234749f1a"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:6b424cce78dd3fd3d34953ec5e8f1530388e859d",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "chore: move prod deploy to Dokploy, drop GHCR/k8s pipelines",
+      "date": "2026-07-22T14:29:28Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/6b424cce78dd3fd3d34953ec5e8f1530388e859d"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:f8accbf18011af09928d2a4cffdfcae64e3d3f03",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "chore: release v0.3.0",
+      "date": "2026-03-19T14:46:03Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/f8accbf18011af09928d2a4cffdfcae64e3d3f03"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:ccd6c7d629dabdf176dac81ff51c90c82207aa82",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "feat: pro.json",
+      "date": "2026-03-19T14:41:56Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/ccd6c7d629dabdf176dac81ff51c90c82207aa82"
+    },
+    {
+      "id": "hmbanan666/kosarev.space:62b3f9bd00a6fa19bab5cbda0ef0639d8e3afcaf",
+      "kind": "commit",
+      "repo": "hmbanan666/kosarev.space",
+      "title": "chore: updated nuxt-live-cursors",
+      "date": "2026-03-19T13:49:56Z",
+      "url": "https://github.com/hmbanan666/kosarev.space/commit/62b3f9bd00a6fa19bab5cbda0ef0639d8e3afcaf"
+    }
+  ],
+  "calendar": [
+    {
+      "date": "2026-08-19",
+      "count": 0
+    },
+    {
+      "date": "2026-08-20",
+      "count": 0
+    },
+    {
+      "date": "2026-08-21",
+      "count": 0
+    },
+    {
+      "date": "2026-08-22",
+      "count": 0
+    },
+    {
+      "date": "2026-08-23",
+      "count": 0
+    },
+    {
+      "date": "2026-08-24",
+      "count": 0
+    },
+    {
+      "date": "2026-08-25",
+      "count": 0
+    },
+    {
+      "date": "2026-08-26",
+      "count": 0
+    },
+    {
+      "date": "2026-08-27",
+      "count": 0
+    },
+    {
+      "date": "2026-08-28",
+      "count": 0
+    },
+    {
+      "date": "2026-08-29",
+      "count": 0
+    },
+    {
+      "date": "2026-08-30",
+      "count": 0
+    },
+    {
+      "date": "2026-08-31",
+      "count": 0
+    },
+    {
+      "date": "2026-09-01",
+      "count": 0
+    },
+    {
+      "date": "2026-09-02",
+      "count": 0
+    },
+    {
+      "date": "2026-09-03",
+      "count": 0
+    },
+    {
+      "date": "2026-09-04",
+      "count": 0
+    },
+    {
+      "date": "2026-09-05",
+      "count": 0
+    },
+    {
+      "date": "2026-09-06",
+      "count": 0
+    },
+    {
+      "date": "2026-09-07",
+      "count": 0
+    },
+    {
+      "date": "2026-09-08",
+      "count": 0
+    },
+    {
+      "date": "2026-09-09",
+      "count": 0
+    },
+    {
+      "date": "2026-09-10",
+      "count": 0
+    },
+    {
+      "date": "2026-09-11",
+      "count": 0
+    },
+    {
+      "date": "2026-09-12",
+      "count": 0
+    },
+    {
+      "date": "2026-09-13",
+      "count": 0
+    },
+    {
+      "date": "2026-09-14",
+      "count": 0
+    },
+    {
+      "date": "2026-09-15",
+      "count": 0
+    },
+    {
+      "date": "2026-09-16",
+      "count": 0
+    },
+    {
+      "date": "2026-09-17",
+      "count": 0
+    },
+    {
+      "date": "2026-09-18",
+      "count": 0
+    },
+    {
+      "date": "2026-09-19",
+      "count": 0
+    },
+    {
+      "date": "2026-09-20",
+      "count": 0
+    },
+    {
+      "date": "2026-09-21",
+      "count": 0
+    },
+    {
+      "date": "2026-09-22",
+      "count": 0
+    },
+    {
+      "date": "2026-09-23",
+      "count": 0
+    },
+    {
+      "date": "2026-09-24",
+      "count": 0
+    },
+    {
+      "date": "2026-09-25",
+      "count": 0
+    },
+    {
+      "date": "2026-09-26",
+      "count": 0
+    },
+    {
+      "date": "2026-09-27",
+      "count": 0
+    },
+    {
+      "date": "2026-09-28",
+      "count": 0
+    },
+    {
+      "date": "2026-09-29",
+      "count": 0
+    },
+    {
+      "date": "2026-09-30",
+      "count": 0
+    },
+    {
+      "date": "2026-10-01",
+      "count": 0
+    },
+    {
+      "date": "2026-10-02",
+      "count": 0
+    },
+    {
+      "date": "2026-10-03",
+      "count": 0
+    },
+    {
+      "date": "2026-10-04",
+      "count": 0
+    },
+    {
+      "date": "2026-10-05",
+      "count": 0
+    },
+    {
+      "date": "2026-10-06",
+      "count": 0
+    },
+    {
+      "date": "2026-10-07",
+      "count": 0
+    },
+    {
+      "date": "2026-10-08",
+      "count": 0
+    },
+    {
+      "date": "2026-10-09",
+      "count": 0
+    },
+    {
+      "date": "2026-10-10",
+      "count": 0
+    },
+    {
+      "date": "2026-10-11",
+      "count": 0
+    },
+    {
+      "date": "2026-10-12",
+      "count": 0
+    },
+    {
+      "date": "2026-10-13",
+      "count": 0
+    },
+    {
+      "date": "2026-10-14",
+      "count": 0
+    },
+    {
+      "date": "2026-10-15",
+      "count": 0
+    },
+    {
+      "date": "2026-10-16",
+      "count": 0
+    },
+    {
+      "date": "2026-10-17",
+      "count": 0
+    },
+    {
+      "date": "2026-10-18",
+      "count": 0
+    },
+    {
+      "date": "2026-10-19",
+      "count": 0
+    },
+    {
+      "date": "2026-10-20",
+      "count": 0
+    },
+    {
+      "date": "2026-10-21",
+      "count": 0
+    },
+    {
+      "date": "2026-10-22",
+      "count": 0
+    },
+    {
+      "date": "2026-10-23",
+      "count": 0
+    },
+    {
+      "date": "2026-10-24",
+      "count": 31
+    },
+    {
+      "date": "2026-10-25",
+      "count": 6
+    },
+    {
+      "date": "2026-10-26",
+      "count": 9
+    },
+    {
+      "date": "2026-10-27",
+      "count": 3
+    },
+    {
+      "date": "2026-10-28",
+      "count": 12
+    },
+    {
+      "date": "2026-10-29",
+      "count": 0
+    },
+    {
+      "date": "2026-10-30",
+      "count": 0
+    },
+    {
+      "date": "2026-10-31",
+      "count": 0
+    },
+    {
+      "date": "2026-11-01",
+      "count": 2
+    },
+    {
+      "date": "2026-11-02",
+      "count": 5
+    },
+    {
+      "date": "2026-11-03",
+      "count": 0
+    },
+    {
+      "date": "2026-11-04",
+      "count": 0
+    },
+    {
+      "date": "2026-11-05",
+      "count": 0
+    },
+    {
+      "date": "2026-11-06",
+      "count": 0
+    },
+    {
+      "date": "2026-11-07",
+      "count": 0
+    },
+    {
+      "date": "2026-11-08",
+      "count": 0
+    },
+    {
+      "date": "2026-11-09",
+      "count": 0
+    },
+    {
+      "date": "2026-11-10",
+      "count": 0
+    },
+    {
+      "date": "2026-11-11",
+      "count": 0
+    },
+    {
+      "date": "2026-11-12",
+      "count": 0
+    },
+    {
+      "date": "2026-11-13",
+      "count": 8
+    },
+    {
+      "date": "2026-11-14",
+      "count": 14
+    },
+    {
+      "date": "2026-11-15",
+      "count": 37
+    },
+    {
+      "date": "2026-11-16",
+      "count": 1
+    }
+  ],
+  "coverage": "rest90",
+  "partial": true
+}

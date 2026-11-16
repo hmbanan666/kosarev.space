@@ -6,12 +6,13 @@ const blocks = [
   { id: 'large', x: 0, y: 0, w: 2, h: 2 },
   { id: 'small', x: 2, y: 0, w: 1, h: 1 },
 ]
-it('packs every default home cell exactly once, with no holes or ragged edges', () => {
+it('keeps default cards within the grid without overlaps and leaves intentional gaps', () => {
   const layout = createCanvasLayout(homeBlocks, homeCanvas)
+  expect(homeBlocks.reduce((sum, b) => sum + b.w * b.h, 0)).toBeLessThan(homeCanvas.columns * homeCanvas.rows * 0.8)
   for (let y = 0; y < homeCanvas.rows; y++) {
     for (let x = 0; x < homeCanvas.columns; x++) {
       const occupants = layout.blocks.filter((block) => x >= block.x && x < block.x + block.w && y >= block.y && y < block.y + block.h)
-      expect(occupants, `cell ${x},${y}`).toHaveLength(1)
+      expect(occupants.length, `cell ${x},${y}`).toBeLessThanOrEqual(1)
     }
   }
 })
@@ -52,9 +53,9 @@ it('persists a valid layout, restores it, and supports reset and undo', () => {
 })
 it('rejects overlapping, out of bounds, duplicate and stale saved positions', () => {
   for (const saved of [
-    { version: 1, blocks: blocks.map((b) => ({ ...b, x: 0, y: 0 })) },
-    { version: 1, blocks: blocks.map((b) => ({ ...b, x: -1 })) },
-    { version: 1, blocks: [blocks[0], blocks[0]] },
+    { version: 2, blocks: blocks.map((b) => ({ ...b, x: 0, y: 0 })) },
+    { version: 2, blocks: blocks.map((b) => ({ ...b, x: -1 })) },
+    { version: 2, blocks: [blocks[0], blocks[0]] },
     { version: 0, blocks },
   ]) {
     const layout = createCanvasLayout(blocks, { columns: 5, rows: 4 }, { getItem: () => JSON.stringify(saved), setItem: () => {} })
@@ -100,4 +101,17 @@ it('rejects an impossible move atomically, including the undo history', () => {
   expect(layout.move('a', 1, 0)).toBe(false)
   expect(layout.blocks).toEqual(full)
   expect(layout.canUndo).toBe(false)
+})
+
+it('preserves a visitor arrangement and sizes when activity changes the default ranking', () => {
+  const data = new Map<string, string>()
+  const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => {
+    data.set(key, value)
+  } }
+  const layout = createCanvasLayout(homeBlocks, homeCanvas, storage)
+  layout.move('context', 5, 4)
+  const changedDefaults = homeBlocks.map((block) => block.id === 'context' ? { ...block, w: 4 } : block)
+  const restored = createCanvasLayout(changedDefaults, homeCanvas, storage)
+  restored.restore()
+  expect(restored.blocks).toEqual(layout.blocks)
 })

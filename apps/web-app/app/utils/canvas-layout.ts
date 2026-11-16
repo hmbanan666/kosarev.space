@@ -1,17 +1,17 @@
 export interface CanvasBlock { id: string, x: number, y: number, w: number, h: number }
 export interface CanvasBounds { columns: number, rows: number }
 export interface LayoutStorage { getItem: (key: string) => string | null, setItem: (key: string, value: string) => void }
-export const canvasStorageKey = 'portfolio-layout-v1'
+export const canvasStorageKey = 'portfolio-layout-v2'
 const copy = (blocks: readonly CanvasBlock[]) => blocks.map((block) => ({ ...block }))
 const overlaps = (a: CanvasBlock, b: CanvasBlock) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 
 export function createCanvasLayout(defaults: readonly CanvasBlock[], bounds: CanvasBounds, storage?: LayoutStorage) {
   let blocks = copy(defaults)
   const history: CanvasBlock[][] = []
-  const inside = (b: CanvasBlock) => [b.x, b.y, b.w, b.h].every(Number.isInteger) && b.x >= 0 && b.y >= 0 && b.x + b.w <= bounds.columns && b.y + b.h <= bounds.rows
+  const inside = (b: CanvasBlock) => [b.x, b.y, b.w, b.h].every(Number.isInteger) && b.w > 0 && b.h > 0 && b.x >= 0 && b.y >= 0 && b.x + b.w <= bounds.columns && b.y + b.h <= bounds.rows
   function persist() {
     try {
-      storage?.setItem(canvasStorageKey, JSON.stringify({ version: 1, blocks }))
+      storage?.setItem(canvasStorageKey, JSON.stringify({ version: 2, blocks }))
     } catch { /* Storage can be unavailable or full. The session remains usable. */ }
   }
   function commit(next: CanvasBlock[]) {
@@ -82,12 +82,12 @@ export function createCanvasLayout(defaults: readonly CanvasBlock[], bounds: Can
     restore() {
       try {
         const saved = JSON.parse(storage?.getItem(canvasStorageKey) ?? 'null')
-        if (saved?.version !== 1 || !Array.isArray(saved.blocks) || saved.blocks.length !== defaults.length) {
+        if (saved?.version !== 2 || !Array.isArray(saved.blocks) || saved.blocks.length !== defaults.length) {
           return
         }
         const next = defaults.map((original) => {
           const position = saved.blocks.find((b: CanvasBlock) => b.id === original.id)
-          return { ...original, x: position?.x, y: position?.y } as CanvasBlock
+          return { ...original, x: position?.x, y: position?.y, w: position?.w, h: position?.h } as CanvasBlock
         })
         if (next.every((block, index) => inside(block) && !next.slice(index + 1).some((other) => overlaps(block, other)))) {
           blocks = next

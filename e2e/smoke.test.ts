@@ -4,7 +4,7 @@ test.describe('homepage', () => {
   test('renders only the canvas on home', async ({ page }) => {
     await page.goto('/')
 
-    await expect(page.locator('[data-block]')).toHaveCount(11)
+    await expect(page.locator('[data-block]')).toHaveCount(12)
     await expect(page.locator('.home-catalog')).toHaveCount(0)
   })
 
@@ -32,7 +32,7 @@ test.describe('English locale (/en)', () => {
     await page.goto('/en')
 
     await expect(page).toHaveTitle(/Kosarev/)
-    await expect(page.locator('[data-block="archive"]')).toBeVisible()
+    await expect(page.locator('[data-block="contributions"]')).toBeVisible()
     await expect(page.locator('[data-block="cv"]')).toBeVisible()
   })
 
@@ -40,7 +40,7 @@ test.describe('English locale (/en)', () => {
     await page.goto('/en')
 
     await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)
-    await expect(page.getByRole('heading', { name: 'Projects', level: 2, exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Contributions', level: 2, exact: true })).toBeVisible()
     await expect(page.locator('[data-block="cv"] .canvas-eyebrow')).toBeVisible()
   })
 

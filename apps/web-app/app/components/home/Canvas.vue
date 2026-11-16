@@ -1,7 +1,7 @@
 <template>
   <section
     class="home-canvas site-wrap"
-    :style="{ '--grid-gap': `${homeCanvas.gap}px` }"
+    :style="{ '--grid-gap': `${homeCanvas.gap}px`, '--canvas-type-scale': enabled ? Math.max(1, .78 / zoom) : 1 }"
     :class="{ 'canvas-enabled': enabled }"
     :aria-label="t('canvas.title')"
   >
@@ -41,7 +41,7 @@
           <div
             class="canvas-world"
             :data-canvas-world="enabled ? '' : undefined"
-            :style="enabled ? { width: `${width}px`, height: `${height}px`, transform: `scale(${zoom})` } : undefined"
+            :style="enabled ? { 'width': `${width}px`, 'height': `${height}px`, 'transform': `scale(${zoom})`, '--canvas-cell-width': `${cellWidth}px`, '--canvas-cell-height': `${cellHeight}px` } : undefined"
           >
             <BlueprintMark
               v-for="corner in ['top-left', 'top-right', 'bottom-left', 'bottom-right']"
@@ -51,15 +51,14 @@
               :class="`canvas-crosshair-${corner}`"
             />
             <template v-for="block in blocks" :key="block.id">
-              <h2 v-if="mobileZones[block.id]" class="canvas-mobile-zone">
-                {{ t(mobileZones[block.id]!) }}
-              </h2>
               <BlueprintFrame
                 :data-block="block.id"
                 :class="[`canvas-block-${block.id}`, { 'canvas-moving': target?.id === block.id }]"
                 :accent="block.id === 'hero'"
                 :part="parts[block.id]"
                 :style="enabled ? position(block) : undefined"
+                @pointerdown="rememberPointer"
+                @click="openCard($event, block.id)"
               >
                 <button
                   v-if="enabled"
@@ -73,7 +72,21 @@
                 >
                   <UIcon name="i-lucide-grip" aria-hidden="true" />
                 </button>
-                <HomeBlockContent :id="block.id" :latest="latest" />
+                <button
+                  v-if="mounted"
+                  class="canvas-open sr-only"
+                  aria-haspopup="dialog"
+                  aria-controls="activity-detail-panel"
+                  :aria-label="t('activity.open', { name: blockLabel(block.id) })"
+                  @click.stop="showCard(block.id)"
+                >
+                  {{ t('activity.open', { name: blockLabel(block.id) }) }}
+                </button>
+                <HomeBlockContent
+                  :id="block.id"
+                  :latest="latest"
+                  :activity="activity"
+                />
               </BlueprintFrame>
             </template>
             <div
@@ -99,35 +112,6 @@
     <footer v-if="enabled" class="canvas-chrome">
       <div class="canvas-tools">
         <div class="canvas-tool-group canvas-navigation">
-          <button
-            class="canvas-minimap"
-            :aria-label="t('canvas.minimap')"
-            @click="locate"
-            @keydown.enter.prevent="recenter"
-            @keydown.space.prevent="recenter"
-          >
-            <svg :viewBox="`0 0 ${width} ${height}`" aria-hidden="true">
-              <rect
-                v-for="block in blocks"
-                :key="block.id"
-                :x="block.x * cellWidth"
-                :y="block.y * cellHeight"
-                :width="block.w * cellWidth - homeCanvas.gap"
-                :height="block.h * cellHeight - homeCanvas.gap"
-                class="minimap-block"
-              />
-              <rect
-                :x="view.x"
-                :y="view.y"
-                :width="Math.min(view.width, width)"
-                :height="Math.min(view.height, height)"
-                class="minimap-view"
-              />
-            </svg>
-          </button>
-          <button type="button" @click="recenter">
-            {{ t('canvas.recenter') }}
-          </button>
           <div class="canvas-zoom">
             <button
               type="button"
@@ -137,7 +121,14 @@
             >
               −
             </button>
-            <output :aria-label="t('canvas.zoom')">{{ Math.round(zoom * 100) }}%</output>
+            <button
+              type="button"
+              :aria-label="t('canvas.recenter')"
+              :title="t('canvas.recenter')"
+              @click="recenter"
+            >
+              <output :aria-label="t('canvas.zoom')">{{ Math.round(zoom * 100) }}%</output>
+            </button>
             <button
               type="button"
               :aria-label="t('canvas.zoomIn')"
@@ -146,46 +137,53 @@
             >
               +
             </button>
+            <button
+              type="button"
+              :aria-label="t('canvas.reset')"
+              :title="t('canvas.reset')"
+              @click="reset"
+            >
+              <UIcon name="i-lucide-rotate-ccw" />
+            </button>
           </div>
         </div>
         <div ref="presenceDock" class="canvas-presence" />
-        <div class="canvas-tool-group canvas-layout-tools">
-          <span class="canvas-local">{{ t('canvas.local') }}</span>
-          <span class="sr-only" role="status">{{ feedback ? t(`canvas.${feedback}`) : '' }}</span>
-          <button
-            type="button"
-            :disabled="!canUndo"
-            @click="undo"
-          >
-            {{ t('canvas.undo') }}
-          </button>
-          <button type="button" @click="reset">
-            {{ t('canvas.reset') }}
-          </button>
+        <div class="canvas-credits">
+          <p>{{ t('footer.copyright', { year: new Date().getFullYear() }) }}</p>
+          <nav :aria-label="t('site.navigation')">
+            <NuxtLink :to="localePath('/contact')">
+              {{ t('hero.contact') }}<SiteLinkIcon />
+            </NuxtLink>
+            <a href="https://t.me/hmbanan666">Telegram<SiteLinkIcon external /></a>
+            <a href="https://github.com/hmbanan666">GitHub<SiteLinkIcon external /></a>
+          </nav>
         </div>
       </div>
-      <div class="canvas-credits">
-        <p>{{ t('footer.copyright', { year: new Date().getFullYear() }) }}</p>
-        <nav :aria-label="t('site.navigation')">
-          <NuxtLink :to="localePath('/contact')">
-            {{ t('hero.contact') }}<SiteLinkIcon />
-          </NuxtLink>
-          <a href="https://t.me/hmbanan666">Telegram<SiteLinkIcon external /></a>
-          <a href="https://github.com/hmbanan666">GitHub<SiteLinkIcon external /></a>
-        </nav>
-      </div>
+      <span class="sr-only" role="status">{{ feedback ? t(`canvas.${feedback}`) : '' }}</span>
     </footer>
+    <HomeDetailPanel
+      :id="selectedCard"
+      :title="blockLabel(selectedCard ?? '')"
+      :activity="activity"
+      :latest="latest"
+      @close="closeCard"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
+import { projectScores } from '~~/shared/activity'
 import { sortPublications } from '~~/shared/publications'
-import { homeCanvas } from '~/utils/home-canvas'
+import { canvasProducts } from '~/utils/activity-content'
+import { activityLayout, homeCanvas } from '~/utils/home-canvas'
 
 const { t } = useI18n()
+const mounted = useMounted()
 const localePath = useLocalePath()
 const viewport = useTemplateRef<HTMLElement>('viewport')
-const { enabled, blocks, canUndo, feedback, zoom, fitZoom, minZoom, view, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position, reset, undo } = useHomeCanvas(viewport)
+const { data: activity } = await useActivity()
+const defaults = computed(() => activityLayout(projectScores(activity.value)))
+const { enabled, blocks, feedback, zoom, fitZoom, minZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, reveal, position, reset } = useHomeCanvas(viewport, defaults)
 const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
 const presenceDocked = useState('canvas-presence-docked', () => false)
 // Move the existing presence instance after its dock exists. Route changes
@@ -199,9 +197,44 @@ onBeforeUnmount(() => {
 const { data } = await usePublications()
 const parts: Record<string, string> = { hero: 'A / 01', context: 'B / 01', k39: 'B / 02', writing: 'C / 01' }
 const latest = computed(() => sortPublications(data.value ?? [])[0])
-const mobileZones: Record<string, string> = { hero: 'canvas.engineer', context: 'projects.title', writing: 'canvas.reading', cv: 'site.experience', live: 'canvas.now' }
 function blockLabel(id: string) {
-  const labels: Record<string, string> = { hero: t('hero.name'), cv: t('nav.cv'), contacts: t('hero.contact'), writing: t('writing.title'), live: 'Live', archive: t('canvas.archive'), now: t('canvas.now') }
-  return labels[id] ?? [...activeProducts, ...pausedProjects].find((product) => product.key === id)?.title ?? id
+  const labels: Record<string, string> = { hero: t('hero.name'), cv: t('nav.cv'), contacts: t('hero.contact'), writing: t('writing.title'), live: t('activity.liveTitle'), contributions: t('activity.contributions'), feed: t('activity.feed'), skills: t('activity.skills') }
+  return labels[id] ?? canvasProducts.find((product) => product.key === id)?.title ?? id
 }
+const route = useRoute()
+const router = useRouter()
+const selectedCard = computed(() => typeof route.query.card === 'string' && defaults.value.some((block) => block.id === route.query.card) ? route.query.card : undefined)
+let openedHere = false
+let trigger: HTMLElement | null = null
+let pointer = { x: 0, y: 0 }
+function rememberPointer(event: PointerEvent) {
+  pointer = { x: event.clientX, y: event.clientY }
+}
+function openCard(event: MouseEvent, id: string) {
+  if ((event.target as HTMLElement).closest('a, button, input, summary') || Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 6) {
+    return
+  }
+  showCard(id)
+}
+function showCard(id: string) {
+  trigger = document.querySelector(`[data-block="${id}"] .canvas-open`)
+  trigger?.focus({ preventScroll: true })
+  openedHere = true
+  void router.push({ query: { ...route.query, card: id } })
+}
+function closeCard() {
+  if (openedHere) {
+    router.back()
+  } else {
+    const { card: _, ...query } = route.query
+    void router.replace({ query })
+  }
+}
+watch(selectedCard, async (value) => {
+  if (!value) {
+    openedHere = false
+    await nextTick()
+    trigger?.focus({ preventScroll: true })
+  }
+})
 </script>

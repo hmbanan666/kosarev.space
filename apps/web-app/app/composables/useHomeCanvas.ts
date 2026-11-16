@@ -1,13 +1,13 @@
 import type { CanvasBlock } from '~/utils/canvas-layout'
 import { createCanvasLayout } from '~/utils/canvas-layout'
-import { homeBlocks, homeCanvas } from '~/utils/home-canvas'
+import { homeCanvas } from '~/utils/home-canvas'
 
-export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
+export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: ComputedRef<CanvasBlock[]>) {
   const mounted = useMounted()
   const desktop = useMediaQuery('(min-width: 768px)')
   const enabled = computed(() => mounted.value && desktop.value)
   const storage = { getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value) }
-  const layout = createCanvasLayout(homeBlocks, homeCanvas, storage)
+  let layout = createCanvasLayout(defaults.value, homeCanvas, storage)
   const blocks = shallowRef(layout.blocks)
   const canUndo = ref(false)
   const feedback = ref('')
@@ -24,6 +24,21 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
   const targetFits = computed(() => !target.value || layout.preview(target.value.id, target.value.x, target.value.y) !== null)
   const dragging = ref(false)
   let gesture: { id?: string, pointer: number, x: number, y: number, left: number, top: number, block?: CanvasBlock } | null = null
+  let deferredLayout = false
+  function updateDefaults() {
+    if (gesture) {
+      deferredLayout = true
+      return
+    }
+    deferredLayout = false
+    layout = createCanvasLayout(defaults.value, homeCanvas, storage)
+    if (mounted.value) {
+      layout.restore()
+    }
+    sync()
+  }
+  // Metadata refreshes must not interrupt a gesture on an unchanged grid.
+  watch(() => JSON.stringify(defaults.value), updateDefaults)
   function sync() {
     blocks.value = layout.blocks
     canUndo.value = layout.canUndo
@@ -78,10 +93,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
     const block = blocks.value.find((block) => block.id === id)
     gesture = { id, pointer: event.pointerId, x: event.clientX, y: event.clientY, left: viewport.value.scrollLeft, top: viewport.value.scrollTop, block }
     viewport.value.setPointerCapture(event.pointerId)
-    dragging.value = true
-    if (block) {
-      target.value = { ...block }
-    }
+    dragging.value = false
   }
   function move(event: PointerEvent) {
     if (!gesture || event.pointerId !== gesture.pointer || !viewport.value) {
@@ -89,6 +101,10 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
     }
     const dx = event.clientX - gesture.x
     const dy = event.clientY - gesture.y
+    if (!dragging.value && Math.hypot(dx, dy) < 6) {
+      return
+    }
+    dragging.value = true
     if (gesture.block) {
       const block = gesture.block
       const candidate = { ...block, x: Math.max(0, Math.min(homeCanvas.columns - block.w, block.x + Math.round(dx / zoom.value / cellWidth.value))), y: Math.max(0, Math.min(homeCanvas.rows - block.h, block.y + Math.round(dy / zoom.value / cellHeight.value))) }
@@ -116,6 +132,9 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>) {
     gesture = null
     target.value = null
     dragging.value = false
+    if (deferredLayout) {
+      updateDefaults()
+    }
   }
   function key(event: KeyboardEvent, id?: string) {
     if (!enabled.value) {
