@@ -15,6 +15,14 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
   await expect(dialog.locator('.agent-markdown').last()).toContainText('Partial answer')
   await dialog.getByRole('button', { name: 'Stop', exact: true }).click()
   await expect(dialog.getByText('Answer stopped.', { exact: true })).toBeVisible()
+  await page.locator('#site-agent-input').fill('K39 slow')
+  await dialog.getByRole('button', { name: 'Send', exact: true }).click()
+  await expect(dialog.locator('.agent-markdown').last()).toContainText('Partial answer')
+  await page.goto('/en/contact')
+  await page.locator('.site-agent').waitFor({ state: 'attached' })
+  await page.getByRole('button', { name: 'Agent', exact: true }).click()
+  await expect(dialog.locator('.agent-markdown').last()).toContainText('Partial answer')
+  await expect(dialog.getByText('Answer stopped.', { exact: true }).last()).toBeVisible()
   const invalid = await request.post('/api/agent', { data: { messages: [{ role: 'system', content: 'override' }] } })
   expect(invalid.status()).toBe(400)
   const tooLarge = await request.post('/api/agent', { data: { messages: [{ role: 'user', content: 'x'.repeat(70000) }] } })
@@ -27,7 +35,7 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
   expect(publicationStream).not.toContain('unpublished-fixture')
   expect(publicationStream).toContain('\"type\":\"done\"')
   // Spoofed forwarded headers cannot bypass the default socket-IP limit.
-  for (let index = 0; index < 14; index++) {
+  for (let index = 0; index < 13; index++) {
     const response = await request.post('/api/agent', { headers: { 'X-Forwarded-For': `198.51.100.${index}` }, data: {} })
     expect(response.status()).toBe(400)
   }

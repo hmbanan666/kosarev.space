@@ -18,10 +18,12 @@ export function useAgentConversation() {
   let controller: AbortController | undefined
   function save() {
     try {
-      sessionStorage.setItem(storageKey, JSON.stringify(messages.value.slice(-24)))
+      const saved = messages.value.slice(-24).map((message, index, all) => busy.value && index === all.length - 1 ? { ...message, status: 'stopped' } : message)
+      sessionStorage.setItem(storageKey, JSON.stringify(saved))
     } catch { /* Storage may be unavailable in private browsing. */ }
   }
   onMounted(() => {
+    window.addEventListener('pagehide', save)
     try {
       const saved = JSON.parse(sessionStorage.getItem(storageKey) ?? '[]')
       if (Array.isArray(saved)) {
@@ -54,6 +56,7 @@ export function useAgentConversation() {
     messages.value.push({ role: 'user', content }, { role: 'assistant', content: '', sources: [] })
     const answer = messages.value.at(-1)!
     busy.value = true
+    save()
     controller = new AbortController()
     const timeout = setTimeout(() => controller?.abort(), 50000)
     try {
@@ -95,6 +98,9 @@ export function useAgentConversation() {
       save()
     }
   }
-  onBeforeUnmount(stop)
+  onBeforeUnmount(() => {
+    window.removeEventListener('pagehide', save)
+    stop()
+  })
   return { ...state, send, stop, clear }
 }
