@@ -14,7 +14,7 @@
         </h2>
         <div class="agent-actions">
           <button
-            :disabled="!messages.length || busy"
+            :disabled="!messages.length"
             :aria-label="t('agent.clear')"
             :title="t('agent.clear')"
             @click="clear"
@@ -73,7 +73,7 @@
               v-html="markdown.render(message.content)"
             />
             <p
-              v-if="message.status"
+              v-if="message.status && message.status !== 'streaming'"
               class="agent-notice"
               role="status"
             >
@@ -85,7 +85,7 @@
                 {{ t('agent.contact') }}
               </NuxtLink>
             </p>
-            <p v-if="busy && index === messages.length - 1 && !message.content" class="agent-thinking">
+            <p v-if="message.status === 'streaming' && !message.content" class="agent-thinking">
               {{ t('agent.thinking') }}
             </p>
             <details v-if="message.sources?.length" class="agent-sources">
@@ -129,10 +129,9 @@
             <UIcon name="i-lucide-square" />{{ t('agent.stop') }}
           </button>
           <button
-            v-else
             type="submit"
             class="agent-send"
-            :disabled="!input.trim()"
+            :disabled="!input.trim() || input.trim().length > 600"
             :aria-label="t('agent.send')"
           >
             <UIcon name="i-lucide-arrow-up" />{{ t('agent.send') }}
@@ -203,7 +202,7 @@ function trackScroll() {
   pinned = !element || element.scrollHeight - element.scrollTop - element.clientHeight < 80
 }
 function submit(question: string) {
-  if (busy.value || !question.trim()) {
+  if (!question.trim() || question.trim().length > 600) {
     return
   }
   input.value = ''
@@ -235,6 +234,7 @@ watch(open, async (value) => {
     textarea.value?.focus()
   } else {
     dialog.value?.close()
+    await nextTick()
     returnFocus?.focus()
   }
 })
@@ -292,9 +292,9 @@ button:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-vis
 .agent-composer { border-top: 1px solid #353535; padding: 18px 24px max(20px, env(safe-area-inset-bottom)); background: #151515; }
 .agent-composer textarea { display: block; width: 100%; resize: none; background: transparent; color: #f3f1eb; padding: 8px 0; min-height: 70px; font: inherit; }
 .agent-composer textarea::placeholder { color: #aaa8a2; }
-.agent-composer-bottom { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }
-.agent-hint { font-size: 11px; color: #aaa8a2; }
-.agent-send { display: flex; align-items: center; gap: 7px; min-height: 40px; padding: 8px 12px; border: 1px solid #625039; color: #d9ad67; }
+.agent-composer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }
+.agent-hint { flex: 1; font-size: 11px; color: #aaa8a2; }
+.agent-send { flex-shrink: 0; display: flex; align-items: center; gap: 7px; min-height: 40px; padding: 8px 12px; border: 1px solid #625039; color: #d9ad67; }
 @media (max-width: 767px) {
   .site-agent { inset: auto 0 0; width: 100%; border-left: 0; border-top: 1px solid #625039; }
   .agent-header { padding: 12px 20px; }

@@ -5,7 +5,7 @@ import { expect, test } from '@playwright/test'
 
 async function openAgent(page: Page, label: string) {
   await page.locator('.site-agent').waitFor({ state: 'attached' })
-  await page.getByRole('button', { name: label, exact: true }).click()
+  await page.locator('.site-header').getByRole('button', { name: label, exact: true }).click()
   await expect(page.getByRole('dialog', { name: label, exact: true })).toBeVisible()
 }
 
@@ -15,7 +15,7 @@ for (const locale of ['ru', 'en']) {
       await page.setViewportSize({ width, height: 900 })
       await page.context().addCookies([{ name: 'i18n_redirected', value: locale, url: 'http://localhost:3333' }])
       const english = locale === 'en'
-      const label = english ? 'Agent' : 'Агент'
+      const label = 'AI Bot'
       const prefix = english ? '/en' : ''
       const answer = english ? 'K39 is a map of places in Kaliningrad. Explore [K39](/en/projects/k39) or visit [k39.online](https://k39.online).' : 'K39 — карта мест Калининграда. Подробнее о [K39](/projects/k39) и на [k39.online](https://k39.online).'
       await page.route('**/api/agent', async (route) => {
@@ -58,7 +58,7 @@ for (const locale of ['ru', 'en']) {
       await expect(dialog.locator('.agent-markdown')).toContainText('K39')
       await page.keyboard.press('Escape')
       await expect(dialog).not.toBeVisible()
-      await expect(page.getByRole('button', { name: label, exact: true })).toBeFocused()
+      await expect(page.locator('.site-header').getByRole('button', { name: label, exact: true })).toBeFocused()
       await page.reload()
       await openAgent(page, label)
       await expect(dialog.locator('.agent-markdown')).toContainText('K39')
@@ -78,10 +78,10 @@ test('shortcut, input guard and offline endpoint without a key', async ({ page, 
   expect(response.status()).toBe(503)
   expect(await response.json()).toEqual({ code: 'offline' })
   await page.goto('/en/projects/context')
-  await expect(page.getByRole('button', { name: 'Agent', exact: true })).toBeVisible()
+  await expect(page.locator('.site-header').getByRole('button', { name: 'AI Bot', exact: true })).toBeVisible()
   await page.waitForFunction(() => !!document.querySelector('.site-agent'))
   await page.keyboard.press('/')
-  const dialog = page.getByRole('dialog', { name: 'Agent', exact: true })
+  const dialog = page.getByRole('dialog', { name: 'AI Bot', exact: true })
   await expect(dialog).toBeVisible()
   await dialog.getByRole('button', { name: 'What is Context?', exact: true }).click()
   await expect(dialog.getByRole('status').first()).toContainText('offline')
@@ -97,7 +97,7 @@ test('shortcut, input guard and offline endpoint without a key', async ({ page, 
 test('rate-limit and interrupted stream are visible and history can be cleared', async ({ page }) => {
   await page.route('**/api/agent', (route) => route.fulfill({ status: 429, json: { code: 'rateLimit' } }))
   await page.goto('/en/contact')
-  await openAgent(page, 'Agent')
+  await openAgent(page, 'AI Bot')
   const dialog = page.getByRole('dialog')
   await dialog.locator('.agent-suggestions button').first().click()
   await expect(dialog.getByRole('status').first()).toContainText('Message limit')

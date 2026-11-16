@@ -95,7 +95,12 @@ characters per message and truncated to 600 before use; total incoming history
 is capped at 16,000 and the actual request body at 64 KiB. System-role messages
 and invalid payloads are rejected. The input and localized errors use the same
 600-character question limit. The client sends at most six previous
-messages and drops failed/interrupted turns from model history.
+messages and drops failed/interrupted turns from model history. The composer
+remains enabled during streaming. Sending again immediately adds a localized
+pending user turn; the client drains these turns sequentially, using each
+question's original page and locale and only the completed preceding history.
+Stop aborts the current answer and continues the queue. Clear cancels the current
+answer and removes the queue. Each question still produces one API request.
 
 The process-local limiter permits 20 attempts per IP per hour. Invalid attempts
 also count when the provider is configured. Counters expire after an hour, use a
@@ -121,8 +126,10 @@ outbound-link tracking from session replay and form analytics. These integration
 attributes are checked in the browser tests; live analytics delivery was not
 inspected.
 
-History is stored only in this tab's `sessionStorage` (up to 24 messages), persists
-across site navigation and reload, and can be cleared in the drawer. Storage
+History is stored only in this tab's `sessionStorage`: up to 24 recent
+messages before the queue plus all pending turns while work remains. It persists across site
+navigation and reload and can be cleared in the drawer. An interrupted answer
+restores as stopped; pending questions resume sequentially after reload. Storage
 failure leaves the current in-memory conversation usable. On Send, bounded
 conversation history and selected public site excerpts are sent to the configured
 provider; nothing is sent merely by opening the drawer.
@@ -141,7 +148,7 @@ The dedicated configuration loads `e2e/fixtures/agent-provider.mjs` into the loc
 test server through `NODE_OPTIONS`. It intercepts provider fetches and supplies
 synthetic delayed SSE; there is no production mock flag or configurable upstream
 URL. It verifies actual endpoint streaming, packed evidence, Stop, validation,
-provider failure, rate limits and resistance to spoofed forwarding headers. The
+stop-then-continue queue behavior, provider failure, rate limits and resistance to spoofed forwarding headers. The
 ordinary browser suite exercises the real offline endpoint without a key and
 uses intercepted SSE for deterministic UI captures. Both configurations disable
 GitHub activity fetching. Unit tests exercise the API handler with the real public knowledge pack and a

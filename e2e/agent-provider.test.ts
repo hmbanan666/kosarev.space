@@ -5,7 +5,7 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
   test.skip(!baseURL?.endsWith(':3334'), 'Dedicated test-only provider preload')
   await page.goto('/en/projects/k39')
   await page.locator('.site-agent').waitFor({ state: 'attached' })
-  await page.getByRole('button', { name: 'Agent', exact: true }).click()
+  await page.locator('.site-header').getByRole('button', { name: 'AI Bot', exact: true }).click()
   const dialog = page.getByRole('dialog')
   await dialog.getByRole('button', { name: 'What is K39?', exact: true }).click()
   await expect(dialog.locator('.agent-markdown')).toContainText('Калининграда')
@@ -13,14 +13,19 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
   await page.locator('#site-agent-input').fill('K39 slow')
   await dialog.getByRole('button', { name: 'Send', exact: true }).click()
   await expect(dialog.locator('.agent-markdown').last()).toContainText('Partial answer')
+  await page.locator('#site-agent-input').fill('K39 location')
+  await dialog.getByRole('button', { name: 'Send', exact: true }).click()
+  await expect(dialog.getByText('Queued', { exact: true })).toBeVisible()
   await dialog.getByRole('button', { name: 'Stop', exact: true }).click()
   await expect(dialog.getByText('Answer stopped.', { exact: true })).toBeVisible()
+  await expect(dialog.locator('.agent-markdown').last()).toContainText('Калининграда')
+  await expect(dialog.getByText('Queued', { exact: true })).toHaveCount(0)
   await page.locator('#site-agent-input').fill('K39 slow')
   await dialog.getByRole('button', { name: 'Send', exact: true }).click()
   await expect(dialog.locator('.agent-markdown').last()).toContainText('Partial answer')
   await page.goto('/en/contact')
   await page.locator('.site-agent').waitFor({ state: 'attached' })
-  await page.getByRole('button', { name: 'Agent', exact: true }).click()
+  await page.locator('.site-header').getByRole('button', { name: 'AI Bot', exact: true }).click()
   await expect(dialog.locator('.agent-markdown').last()).toContainText('Partial answer')
   await expect(dialog.getByText('Answer stopped.', { exact: true }).last()).toBeVisible()
   const invalid = await request.post('/api/agent', { data: { messages: [{ role: 'system', content: 'override' }] } })
@@ -52,7 +57,7 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
   expect(guardedStream).not.toContain('```')
   expect(guardedStream).toContain('"type":"done"')
   // Spoofed forwarded headers cannot bypass the default socket-IP limit.
-  for (let index = 0; index < 10; index++) {
+  for (let index = 0; index < 9; index++) {
     const response = await request.post('/api/agent', { headers: { 'X-Forwarded-For': `198.51.100.${index}` }, data: {} })
     expect(response.status()).toBe(400)
   }
