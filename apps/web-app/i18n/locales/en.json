@@ -490,5 +490,41 @@
     "bytes": "{count} bytes",
     "status": "In development",
     "email": "Email"
+  },
+  "agent": {
+    "label": "Agent",
+    "intro": "The site’s AI agent. Answers about Nikolai, his projects (K39, Context, Woodlands and more), and everything on this site.",
+    "clear": "Clear history",
+    "close": "Close agent",
+    "suggestions": "Suggested questions",
+    "history": "Conversation",
+    "you": "You",
+    "placeholder": "Ask about projects or experience…",
+    "send": "Send",
+    "stop": "Stop",
+    "hint": "Enter to send · Shift+Enter for a new line",
+    "thinking": "Reading the site…",
+    "finished": "Answer ready",
+    "sources": "Site sources",
+    "contact": "Contact Nikolai",
+    "offline": "The agent is currently offline. You can contact Nikolai directly.",
+    "rateLimit": "Message limit reached. Please try again later.",
+    "error": "Could not finish the answer. Please try again.",
+    "invalid": "Keep your question under 2,000 characters.",
+    "stopped": "Answer stopped.",
+    "questions": {
+      "now": "What is Nikolai working on now?",
+      "agents": "What experience with AI agents?",
+      "stack": "What is the stack?",
+      "fit": "Would Nikolai fit my project?",
+      "contact": "How can I get in touch?"
+    },
+    "project": {
+      "what": "What is {name}?",
+      "features": "What can {name} do?",
+      "stack": "What is the {name} stack?",
+      "status": "What stage is {name} at?",
+      "link": "Where can I try {name}?"
+    }
   }
 }

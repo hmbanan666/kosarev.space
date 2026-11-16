@@ -1,5 +1,7 @@
 <template>
   <UApp>
+    <SiteHeader />
+    <ClientOnly><SiteAgent /></ClientOnly>
     <UPage>
       <UPageHero
         :title="error?.statusCode === 404 ? '404' : String(error?.statusCode || 500)"
