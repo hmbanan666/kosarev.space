@@ -16,9 +16,10 @@
     "test": "vitest run",
     "test:content": "vitest run --config vitest.content.config.ts",
     "test:e2e": "playwright test",
-    "check:full": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run test:content && pnpm run test:e2e && pnpm run build",
+    "check:full": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run test:content && pnpm run test:e2e && pnpm run test:agent && pnpm run build",
     "release": "bumpp -r",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:agent": "playwright test --config playwright.agent.config.ts"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",

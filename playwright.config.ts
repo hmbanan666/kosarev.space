@@ -5,6 +5,7 @@ const port = 3333
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: 'agent-provider.test.ts',
   globalSetup: './e2e/publication-fixture.mjs',
   timeout: 30000,
   workers: 2,
