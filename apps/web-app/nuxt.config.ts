@@ -14,6 +14,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     databaseUrl: '',
+    githubToken: '',
+    githubActivityDisabled: false,
     public: {
       metrikaId: '',
     },
