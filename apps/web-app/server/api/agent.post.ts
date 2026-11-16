@@ -67,8 +67,9 @@ export default defineEventHandler(async (event) => {
   }
   const question = request.messages.at(-1)!.content
   const sessionId = request.sessionId ?? randomUUID()
+  let model = String(config.agentModel)
   const persist = (content: string, sources: { title: string, url: string }[], reason: string | null = null) => {
-    const common = { sessionId, page: request.page, locale: request.locale, model: String(config.agentModel), filtered: reason === 'blocked_question' || reason === 'off_topic' || reason === 'output_guard', filteredReason: reason, latencyMs: Date.now() - started }
+    const common = { sessionId, page: request.page, locale: request.locale, model, filtered: reason === 'blocked_question' || reason === 'off_topic' || reason === 'output_guard', filteredReason: reason, latencyMs: Date.now() - started }
     // Retain background work for the request lifecycle, never await it on the SSE path.
     const write = Promise.resolve().then(() => repository.agentMessage.save([
       { ...common, role: 'user', content: question, sources: [] },
@@ -98,11 +99,21 @@ export default defineEventHandler(async (event) => {
   }
   const query = request.messages.filter((message) => message.role === 'user').slice(-3).map((message) => message.content).join(' ')
   const evidence = retrieve(chunks, query, request.page, request.locale)
-  const sources = [...new Map(evidence.map(({ title, url }) => [url, { title, url }])).values()]
+  const sourceByUrl = new Map<string, { title: string, url: string }>()
+  for (const { title, url } of evidence) {
+    // Preserve the reserved Profile title when a ranked excerpt shares its URL.
+    if (!sourceByUrl.has(url)) {
+      sourceByUrl.set(url, { title, url })
+    }
+  }
+  const sources = [...sourceByUrl.values()]
   const controller = new AbortController()
+  const deadline = Date.now() + 45000
   const timer = setTimeout(() => controller.abort(), 45000)
+  let disconnected = false
   const stream = createEventStream(event)
   stream.onClosed(() => {
+    disconnected = true
     controller.abort()
     clearTimeout(timer)
   })
@@ -111,6 +122,10 @@ export default defineEventHandler(async (event) => {
   let savedSources: { title: string, url: string }[] = []
   let reason: string | null = null
   const push = (value: { type: string, text?: string, sources?: { title: string, url: string }[], code?: string }) => {
+    if (value.type === 'reset') {
+      answer = ''
+      savedSources = []
+    }
     if (value.type === 'delta') {
       answer += value.text ?? ''
     }
@@ -119,48 +134,82 @@ export default defineEventHandler(async (event) => {
     }
     return stream.push(JSON.stringify(value))
   }
-  const run = async () => {
-    try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${config.openrouterApiKey}`, 'Content-Type': 'application/json' },
-        signal: controller.signal,
-        body: JSON.stringify({ model: config.agentModel, messages: buildPrompt(evidence, request.messages, request.page, request.locale), stream: true, max_tokens: 2000, reasoning: { effort: 'low', exclude: true } }),
-      })
-      if (!response.ok || !response.body) {
-        reason = 'provider_unavailable'
-        await push({ type: 'error', code: response.status === 429 ? 'rateLimit' : 'offline' })
-        return
+  const messages = buildPrompt(evidence, request.messages, request.page, request.locale)
+  const attempt = async (signal: AbortSignal) => {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${config.openrouterApiKey}`, 'Content-Type': 'application/json' },
+      signal,
+      body: JSON.stringify({ model, messages, stream: true, max_tokens: 2000, reasoning: { effort: 'low', exclude: true } }),
+    })
+    if (!response.ok || !response.body) {
+      await response.body?.cancel().catch(() => {})
+      throw new Error('Provider unavailable')
+    }
+    const output = createOutputGuard(evidence)
+    const wording = createAnswerWording()
+    let hasContent = false
+    let finished = false
+    for await (const data of readSse(response.body)) {
+      if (data === '[DONE]') {
+        finished = true
+        break
       }
-      const output = createOutputGuard(evidence)
-      const wording = createAnswerWording()
-      let length = 0
-      let finished = false
-      for await (const data of readSse(response.body)) {
-        if (data === '[DONE]') {
+      const chunk = JSON.parse(data)
+      if (chunk.error) {
+        throw new Error('Provider stream failed')
+      }
+      const token = chunk.choices?.[0]?.delta?.content
+      if (typeof token === 'string' && token) {
+        hasContent ||= !!token.trim()
+        const text = output.push(wording(token))
+        if (text) {
+          await push({ type: 'delta', text })
+        }
+        if (output.full) {
           finished = true
           break
         }
-        const chunk = JSON.parse(data)
-        if (chunk.error) {
-          throw new Error('Provider stream failed')
+      }
+    }
+    if (!finished || !hasContent) {
+      throw new Error('Incomplete stream')
+    }
+    return { output, wording }
+  }
+  const run = async () => {
+    try {
+      let completed: Awaited<ReturnType<typeof attempt>> | undefined
+      for (let index = 0; index < 2; index++) {
+        controller.signal.throwIfAborted()
+        const remaining = deadline - Date.now()
+        if (remaining <= 0) {
+          throw new Error('Provider deadline exceeded')
         }
-        const token = chunk.choices?.[0]?.delta?.content
-        if (typeof token === 'string' && token) {
-          length += token.length
-          const text = output.push(wording(token))
-          if (text) {
-            await push({ type: 'delta', text })
+        const upstream = new AbortController()
+        // Give a stalled primary half the total budget; fallback uses only what remains.
+        const attemptTimer = setTimeout(() => upstream.abort(), index === 0 ? Math.min(22500, remaining) : remaining)
+        try {
+          completed = await attempt(AbortSignal.any([controller.signal, upstream.signal]))
+          break
+        } catch (error) {
+          if (index === 1 || controller.signal.aborted) {
+            throw error
           }
-          if (output.full) {
-            finished = true
-            break
+          // Discard incomplete prose before streaming a replacement answer.
+          if (answer) {
+            await push({ type: 'reset' })
           }
+          model = String(config.agentFallbackModel || config.agentModel)
+        } finally {
+          clearTimeout(attemptTimer)
+          upstream.abort()
         }
       }
-      if (!finished || !length) {
-        throw new Error('Incomplete stream')
+      if (!completed) {
+        throw new Error('Provider failed')
       }
+      const { output, wording } = completed
       const tail = output.push(wording('', true), true)
       if (tail) {
         await push({ type: 'delta', text: tail })
@@ -174,15 +223,15 @@ export default defineEventHandler(async (event) => {
       await push({ type: 'sources', sources: output.empty ? [] : sources })
       await push({ type: 'done' })
     } catch {
-      reason = controller.signal.aborted ? 'interrupted' : 'provider_error'
+      reason = disconnected ? 'interrupted' : 'provider_error'
       await push({ type: 'error', code: 'error' }).catch(() => {})
     } finally {
       persist(answer, savedSources, reason)
       clearTimeout(timer)
       controller.abort()
-      await stream.close()
+      await stream.close().catch(() => {})
     }
   }
-  void run()
+  void run().catch(() => {})
   return stream.send()
 })

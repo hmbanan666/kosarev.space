@@ -71,6 +71,7 @@ for (const locale of ['ru', 'en']) {
         await expect(panel.locator('.contribution-months li')).toHaveCount(13)
         await expect(panel.locator('.contribution-stats dd').nth(0)).toHaveText((1305).toLocaleString(locale))
         await expect(panel.locator('.contribution-stats dd').nth(1)).toHaveText('192')
+        await expect(panel.locator('.contribution-stats dd').nth(2)).toHaveText(/^\d+$/)
         await expect(panel.locator('.contribution-months li').first()).toContainText('65')
         await expect(panel.locator('.activity-feed li')).toHaveCount(3)
         expect(await panel.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true)
@@ -123,7 +124,7 @@ test('a single active day has a one-day streak', async ({ page }) => {
   } }))
   await page.goto('/en?card=contributions')
   const panel = page.getByRole('dialog')
-  await expect(panel.locator('.contribution-stats dd').nth(2)).toHaveText('1 day in a row')
+  await expect(panel.locator('.contribution-stats dd').nth(2)).toHaveText('1')
 })
 
 test('empty canvas clears card text selection without clearing it on cards or controls', async ({ page }) => {

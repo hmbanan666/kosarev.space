@@ -139,6 +139,9 @@ export function useAgentConversation() {
         const event = JSON.parse(data)
         if (event.type === 'delta' && typeof event.text === 'string') {
           answer.content += event.text
+        } else if (event.type === 'reset') {
+          answer.content = ''
+          answer.sources = []
         } else if (event.type === 'sources') {
           answer.sources = event.sources
         } else if (event.type === 'error') {

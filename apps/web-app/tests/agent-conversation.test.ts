@@ -141,3 +141,21 @@ it('keeps an anonymous session across reloads and drawer clear, rotating after s
   await third
   expect(requests[2]!.body.sessionId).not.toBe(id)
 })
+
+it('replaces an incomplete attempt in the same turn and keeps only the fallback in follow-up history', async () => {
+  const chat = useAgentConversation()
+  mount()
+  const done = chat.send('First', '/en', 'en')
+  requests[0]!.stream.enqueue(encoder.encode('data: {"type":"delta","text":"Incomplete first attempt"}\n\n'))
+  await vi.waitFor(() => expect(chat.messages.value[1]?.content).toBe('Incomplete first attempt'))
+  requests[0]!.stream.enqueue(encoder.encode('data: {"type":"reset"}\n\n'))
+  finish(0, 'Fallback answer')
+  await done
+  expect(requests).toHaveLength(1)
+  expect(chat.messages.value[1]).toMatchObject({ content: 'Fallback answer', status: undefined })
+  expect(JSON.parse(stored!)[1].content).toBe('Fallback answer')
+  const next = chat.send('Second', '/en', 'en')
+  expect(requests[1]!.body.messages[1]?.content).toBe('Fallback answer')
+  finish(1, 'Next answer')
+  await next
+})

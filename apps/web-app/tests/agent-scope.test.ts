@@ -6,6 +6,7 @@ let handler: (event: unknown) => Promise<unknown>
 let provider: ReturnType<typeof vi.fn>
 let events: Array<{ type: string, text?: string, sources?: unknown[] }>
 let closed: Promise<void>
+let disconnect: () => void
 
 beforeEach(async () => {
   vi.resetModules()
@@ -17,13 +18,15 @@ beforeEach(async () => {
   vi.stubGlobal('defineEventHandler', (fn: typeof handler) => fn)
   vi.stubGlobal('setHeader', vi.fn())
   vi.stubGlobal('setResponseStatus', vi.fn())
-  vi.stubGlobal('useRuntimeConfig', () => ({ openrouterApiKey: 'fixture', agentModel: 'fixture' }))
+  vi.stubGlobal('useRuntimeConfig', () => ({ openrouterApiKey: 'fixture', agentModel: 'fixture', agentFallbackModel: 'fallback:free' }))
   vi.stubGlobal('getRequestIP', () => '127.0.0.1')
   vi.stubGlobal('getRequestWebStream', (event: { body: unknown }) => new Response(JSON.stringify(event.body)).body)
   vi.stubGlobal('useStorage', () => ({ getItem: async (key: string) => key === 'pack.json' ? pack : null }))
   vi.stubGlobal('repository', { publication: { findAll: async () => [] } })
   vi.stubGlobal('createEventStream', () => ({
-    onClosed: vi.fn(),
+    onClosed: (fn: () => void) => {
+      disconnect = fn
+    },
     push: async (data: string) => {
       events.push(JSON.parse(data))
     },
@@ -39,6 +42,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   vi.unstubAllGlobals()
+  vi.useRealTimers()
 })
 
 async function ask(content: string, locale = 'ru', history: Array<{ role: string, content: string }> = [], page = '/') {
@@ -141,6 +145,7 @@ it('supplies a refusal if the entire model answer was removed', async () => {
   expect(events[0]?.text).toContain('Sorry')
   expect(events.at(-2)?.sources).toEqual([])
   expect(events.at(-1)?.type).toBe('done')
+  expect(provider).toHaveBeenCalledOnce()
 })
 
 it('normalizes names and punctuation across provider deltas while preserving the contact link', async () => {
@@ -175,4 +180,146 @@ it('still finishes the answer when a message write fails', async () => {
   await ask('What is K39?', 'en')
   expect(save).toHaveBeenCalledOnce()
   expect(events.at(-1)?.type).toBe('done')
+})
+
+it('retries an empty provider response once and persists the fallback model', async () => {
+  const save = vi.fn(async () => {})
+  vi.stubGlobal('repository', { publication: { findAll: async () => [] }, agentMessage: { save } })
+  provider.mockResolvedValueOnce(new Response('data: [DONE]\n\n'))
+  await ask('можешь кодить на golang?')
+  expect(provider).toHaveBeenCalledTimes(2)
+  expect(provider.mock.calls.map((call) => JSON.parse(call[1].body).model)).toEqual(['fixture', 'fallback:free'])
+  for (const call of provider.mock.calls) {
+    expect(JSON.parse(call[1].body)).toMatchObject({ max_tokens: 2000, reasoning: { effort: 'low', exclude: true } })
+  }
+  expect(events.filter((event) => event.type === 'delta').map((event) => event.text).join('')).toBe('Product answer')
+  expect(events.at(-1)?.type).toBe('done')
+  expect(events.some((event) => event.type === 'error')).toBe(false)
+  expect(save.mock.calls[0]![0][1]).toMatchObject({ model: 'fallback:free', content: 'Product answer', filteredReason: null })
+})
+
+const providerFailures = [
+  ['transport', () => {
+    throw new Error('Synthetic transport failure')
+  }],
+  ['HTTP 400', () => new Response(null, { status: 400 })],
+  ['HTTP 429', () => new Response(null, { status: 429 })],
+  ['HTTP 503', () => new Response(null, { status: 503 })],
+  ['missing body', () => new Response(null)],
+  ['stream error', () => new Response('data: {"error":{"message":"Synthetic failure"}}\n\n')],
+  ['malformed stream', () => new Response('data: invalid-json\n\n')],
+  ['incomplete stream', () => new Response('data: {"choices":[{"delta":{"content":"Incomplete answer"}}]}\n\n')],
+  ['whitespace only', () => new Response('data: {"choices":[{"delta":{"content":"   "}}]}\n\ndata: [DONE]\n\n')],
+] as const
+
+it.each(providerFailures)('retries once after %s and delivers only the replacement answer', async (_name, fail) => {
+  const save = vi.fn(async () => {})
+  vi.stubGlobal('repository', { publication: { findAll: async () => [] }, agentMessage: { save } })
+  provider.mockImplementationOnce(fail)
+  await ask('What is K39?', 'en')
+  expect(provider).toHaveBeenCalledTimes(2)
+  let visible = ''
+  for (const event of events) {
+    if (event.type === 'reset') {
+      visible = ''
+    }
+    if (event.type === 'delta') {
+      visible += event.text
+    }
+  }
+  expect(visible).toBe('Product answer')
+  expect(events.some((event) => event.type === 'error')).toBe(false)
+  expect(save.mock.calls[0]![0][1]).toMatchObject({ model: 'fallback:free', content: 'Product answer', filteredReason: null })
+})
+
+it.each(providerFailures)('closes with one sanitized error and a provider failure reason when both attempts fail: %s', async (_name, fail) => {
+  const save = vi.fn(async () => {})
+  vi.stubGlobal('repository', { publication: { findAll: async () => [] }, agentMessage: { save } })
+  provider.mockImplementation(fail)
+  await ask('What is K39?', 'en')
+  expect(provider).toHaveBeenCalledTimes(2)
+  expect(events.filter((event) => event.type === 'error')).toEqual([{ type: 'error', code: 'error' }])
+  expect(events.some((event) => event.type === 'done')).toBe(false)
+  expect(save.mock.calls[0]![0][1]).toMatchObject({ filtered: false, filteredReason: 'provider_error' })
+})
+
+it('still retries when both configured models are the free router', async () => {
+  vi.stubGlobal('useRuntimeConfig', () => ({ openrouterApiKey: 'fixture', agentModel: 'openrouter/free', agentFallbackModel: 'openrouter/free' }))
+  provider.mockResolvedValueOnce(new Response('data: [DONE]\n\n'))
+  await ask('What is K39?', 'en')
+  expect(provider.mock.calls.map((call) => JSON.parse(call[1].body).model)).toEqual(['openrouter/free', 'openrouter/free'])
+  expect(events.at(-1)?.type).toBe('done')
+})
+
+function stalledProvider(_url: string, options: RequestInit) {
+  return new Promise<Response>((_resolve, reject) => {
+    options.signal!.addEventListener('abort', () => reject(new Error('Aborted')), { once: true })
+  })
+}
+
+it('aborts a stalled primary halfway through the budget and lets the fallback finish', async () => {
+  vi.useFakeTimers()
+  provider.mockImplementationOnce(stalledProvider)
+  await handler({ body: { messages: [{ role: 'user', content: 'What is K39?' }], locale: 'en' } })
+  await vi.advanceTimersByTimeAsync(22500)
+  await closed
+  expect(provider).toHaveBeenCalledTimes(2)
+  expect(provider.mock.calls[0]![1].signal.aborted).toBe(true)
+  expect(events.at(-1)?.type).toBe('done')
+  expect(vi.getTimerCount()).toBe(0)
+})
+
+it('bounds two stalled attempts to the original 45-second total budget', async () => {
+  vi.useFakeTimers()
+  const save = vi.fn(async () => {})
+  vi.stubGlobal('repository', { publication: { findAll: async () => [] }, agentMessage: { save } })
+  provider.mockImplementation(stalledProvider)
+  await handler({ body: { messages: [{ role: 'user', content: 'What is K39?' }], locale: 'en' } })
+  await vi.advanceTimersByTimeAsync(44999)
+  expect(provider).toHaveBeenCalledTimes(2)
+  expect(events).toEqual([])
+  await vi.advanceTimersByTimeAsync(1)
+  await closed
+  expect(events).toEqual([{ type: 'error', code: 'error' }])
+  expect(provider.mock.calls.every((call) => call[1].signal.aborted)).toBe(true)
+  expect(save.mock.calls[0]![0][1]).toMatchObject({ filteredReason: 'provider_error', latencyMs: 45000 })
+  expect(vi.getTimerCount()).toBe(0)
+})
+
+it('cancels on disconnect without retrying', async () => {
+  provider.mockImplementation(stalledProvider)
+  await handler({ body: { messages: [{ role: 'user', content: 'What is K39?' }], locale: 'en' } })
+  disconnect()
+  await closed
+  expect(provider).toHaveBeenCalledOnce()
+  expect(provider.mock.calls[0]![1].signal.aborted).toBe(true)
+})
+
+it('also aborts stalled response bodies within the shared budget', async () => {
+  vi.useFakeTimers()
+  provider.mockImplementation((_url, options) => new Response(new ReadableStream({
+    start(stream) {
+      stream.enqueue(new TextEncoder().encode('data: {"choices":[{"delta":{"content":"Partial answer"}}]}\n\n'))
+      options.signal.addEventListener('abort', () => stream.error(new Error('Aborted')), { once: true })
+    },
+  })))
+  await handler({ body: { messages: [{ role: 'user', content: 'What is K39?' }], locale: 'en' } })
+  await vi.advanceTimersByTimeAsync(45000)
+  await closed
+  expect(provider).toHaveBeenCalledTimes(2)
+  expect(events.filter((event) => event.type === 'reset')).toHaveLength(1)
+  expect(events.filter((event) => event.type === 'error')).toEqual([{ type: 'error', code: 'error' }])
+  expect(vi.getTimerCount()).toBe(0)
+})
+
+it.each(['ru', 'en'])('sends the actual Profile for unknown-tool questions even with no packed evidence (%s)', async (locale) => {
+  vi.stubGlobal('useStorage', () => ({ getItem: async () => null }))
+  await ask(locale === 'ru' ? 'можешь кодить на golang?' : 'Can you code in golang?', locale)
+  expect(provider).toHaveBeenCalledOnce()
+  const prompt = JSON.parse(provider.mock.calls[0]![1].body).messages[0].content
+  expect(prompt.includes('Profile · Стек')).toBe(true)
+  for (const tool of ['TypeScript', 'Vue', 'Nuxt', 'Node.js', 'PostgreSQL']) {
+    expect(prompt.includes(tool)).toBe(true)
+  }
+  expect(events.find((event) => event.type === 'sources')?.sources).toContainEqual({ title: 'Profile · Стек', url: `${locale === 'en' ? '/en' : ''}/cv#cv-skills` })
 })

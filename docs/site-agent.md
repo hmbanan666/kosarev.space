@@ -13,13 +13,17 @@ control.
 | --- | --- | --- |
 | `NUXT_OPENROUTER_API_KEY` | empty | Server-only provider credential; empty returns HTTP 503 with `code: offline` |
 | `NUXT_AGENT_MODEL` | `google/gemini-2.5-flash-lite` | Model identifier sent to the provider |
+| `NUXT_AGENT_FALLBACK_MODEL` | `nvidia/nemotron-3.5-lightning:free` | Second model for the one automatic retry after a provider failure |
 | `NUXT_AGENT_TRUST_PROXY` | `false` | Use `X-Forwarded-For` for rate-limit identity only behind a trusted proxy that overwrites the header |
 
 No key is required to build or browse the site. Configure credentials at
 runtime; they are never exposed in public runtime config. The route uses fetch
 with the [OpenRouter streaming chat-completions
 API](https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request).
-Provider availability and billing were not tested with a live key.
+The fallback default was checked against the [public model listing](https://openrouter.ai/nvidia/nemotron-3.5-lightning:free)
+on 16 November 2026; it lists a free text endpoint. Model availability can
+change, so operators can override the fallback independently of the primary.
+Provider responses and billing were not tested with a live key.
 
 ## Public knowledge
 
@@ -43,30 +47,47 @@ site build. [Request-time evidence](../apps/web-app/server/agent/evidence.ts)
 adds only the selected **published** revisions through the existing public
 repository methods. It never reads drafts.
 
+A compact `Profile · Стек` block is also rebuilt for every request directly from
+[`cvSkillGroups`](../apps/web-app/app/utils/cv.ts), independently of the packed
+asset. It contains only the CV's web, systems and integrations groups, plus
+localized CV and Markdown contact links. It includes no employer, role-at-company
+or private-project copy and links its source to `/cv#cv-skills` (under `/en` for
+English).
+
 A compact `Now · Сейчас` block is rebuilt for every request from the active
 project catalog, the latest published summary, and the existing
 `github-public-v1` Nitro cache used by `/api/activity`. It does not trigger
 another GitHub fetch. Activity snapshots older than 24 hours or dated in the
-future are omitted. Future-dated observations are excluded too. At most three
-observations carry only an allowlisted public repository name and timestamp,
-never commit subjects or private repository names. The block labels its snapshot
+future are omitted. Future-dated observations and commits older than 30 days
+are excluded too.
+At most three commits, newest first, carry only an allowlisted public repository
+name, timestamp and localized readable date. Pull requests and releases are
+excluded so they cannot be described as commits. The block never includes commit
+subjects or private repository names. The block labels its snapshot
 and incomplete public coverage. A cold cache supplies no activity claims, while
 the public project catalog still supplies current work. Publication failure
-omits publication evidence and the prompt requires honest unknowns.
+omits publication evidence and the prompt requires honest unknowns. Current-work
+answers must name the active products, include one or two latest public commits
+as repository plus readable time when available, mention the latest publication
+when present and offer the localized contact link. Empty or stale activity must
+not produce invented commits.
 
 Retrieval ignores common RU/EN question words and ranks keyword matches with
 inverse document frequency, title weighting and a current-page boost. It
 searches the UI locale, includes recent user questions for follow-ups and
 selects whole chunks within a conservative 6,000 UTF-8-byte evidence budget (an
-upper bound on ordinary tokenizer token count). The current-work block gets
-reserved space; second-person skill questions also reserve the compact skills
-and CV excerpts, including when the requested tool is absent. The prompt
+upper bound on ordinary tokenizer token count). Profile and Now get reserved
+space before ranked excerpts for every on-topic
+question, including tools absent from the public stack. Skill questions may also
+reserve packed skills and CV excerpts. Scope checks still require lexical or
+topic evidence; the always-on blocks do not bypass the pre-filter. The prompt
 requires product-level answers, the user's language, linked evidence, honest
 unknowns, contact for hiring questions and brief refusal of unrelated tasks.
-Unknown-tool answers must say the tool is not listed, describe the evidenced
-stack, and offer a localized Markdown contact link. They must not invent
-experience or use a vague confirmation disclaimer. Sources list the site pages
-supplied to the model; this is provenance of retrieved evidence, not a guarantee
+Unknown-tool answers must say the tool is not listed, describe the documented
+core stack from Profile, and offer a localized Markdown contact link. They must
+not invent experience or use a vague confirmation disclaimer. With Profile present they
+must not claim there are no stack details; without it they must acknowledge the
+gap. Sources list the site pages supplied to the model; this is provenance of retrieved evidence, not a guarantee
 that every supplied page was cited in the answer.
 
 ## Topic boundaries
@@ -103,8 +124,8 @@ replaces em dashes, and preserves email addresses and URLs. The keyboard hint
 uses middots in Russian and is hidden on touch devices. Ordinary prose still
 streams; an entirely removed answer receives the canned refusal. These are
 bounded heuristics and prompt instructions, not a semantic proof of scope
-enforcement for every possible model response. No classifier or additional
-provider call is used.
+enforcement for every possible model response. No classifier call is used.
+Completed output-guard refusals never trigger a retry.
 
 ## Limits and lifecycle
 
@@ -137,11 +158,23 @@ The provider request always uses `max_tokens: 2000` and `reasoning: { effort:
 `openrouter/free`. Only content deltas are forwarded. The output guard caps
 visible answers at 4,000 characters and consumes at most 8,000 content
 characters; reaching either limit ends the answer successfully and cancels
-upstream reading. There is a 45-second server timeout. Disconnecting or pressing
+upstream reading. There is one 45-second server budget for both attempts. A
+transport error,
+provider HTTP error (including provider 429), missing body, malformed/incomplete
+stream, or completed stream with no non-whitespace content triggers one retry
+using `NUXT_AGENT_FALLBACK_MODEL`. A stalled primary is aborted after 22.5 seconds;
+the fallback gets only the remaining total time. Equal model identifiers still
+produce one retry. Site rate limits, pre-filter refusals, completed output-guard
+filtering and visitor cancellation do not retry. Both attempts use the same
+reasoning and token settings and a fresh output/wording guard. A partial first
+answer is cleared with an SSE `reset` event before replacement deltas arrive,
+so it is not mixed into the fallback answer, stored answer or follow-up history.
+Two provider failures produce one sanitized `error` event with `code: error`;
+timeouts retain the `provider_error` persistence reason. Disconnecting or pressing
 Stop cancels the upstream request; closing the drawer keeps the ongoing answer.
-Responses stream SSE `delta`, `sources`, `done` or sanitized `error` events.
-HTTP 429 includes `Retry-After`. Partial or malformed streams display an error
-rather than a false success. Markdown disables HTML and images and rejects
+Responses stream SSE `delta`, `reset`, `sources`, `done` or sanitized `error` events.
+HTTP 429 includes `Retry-After`. Partial or malformed streams that also fail on
+retry display an error rather than a false success. Markdown disables HTML and images and rejects
 unsafe link schemes. The drawer, input, form and generated links use the
 existing analytics service's [privacy exclusion
 classes](https://www.yandex.com/support/metrica/en/code/html-markup) to exclude
@@ -170,7 +203,7 @@ identifiers are rejected.
 [Migration 0003](../packages/database/migrations/0003_agent_messages.sql) adds
 `agent_messages` in the existing site PostgreSQL database. The server saves the
 latest user turn and the delivered assistant text together, with page, locale,
-configured model, filter flag/reason, sources and elapsed milliseconds. It does
+model used for the delivered attempt (including fallback), filter flag/reason, sources and elapsed milliseconds. It does
 not duplicate incoming conversation history. Refusals are retained, including
 output-guard filtering; provider failures/interruption retain partial output
 with a reason. `created_at` is generated by PostgreSQL. IP addresses and

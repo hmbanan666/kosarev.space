@@ -23,7 +23,7 @@
       </div>
       <div>
         <dt>{{ t('activity.longestStreak') }}</dt>
-        <dd>{{ t('activity.dayCount', { count: summary.longestStreak }) }}</dd>
+        <dd>{{ summary.longestStreak.toLocaleString(locale) }}</dd>
       </div>
       <div v-if="summary.busiestDay">
         <dt>{{ t('activity.busiestDay') }}</dt>

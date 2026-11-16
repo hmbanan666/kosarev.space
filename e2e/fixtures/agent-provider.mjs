@@ -15,6 +15,11 @@ globalThis.fetch = async (input, options) => {
   if (question.includes('provider offline')) {
     return new Response(null, { status: 503 })
   }
+  if (question.includes('retry') && request.model === 'fixture-primary') {
+    return new Response(question.includes('empty')
+      ? 'data: [DONE]\n\n'
+      : 'data: {"choices":[{"delta":{"content":"Incomplete primary answer"}}]}\n\n')
+  }
   const text = question.includes('unsafe snippet')
     ? ['K39 overview.\n`', '``python\nsecret_code()\n`', '``\nContact Nick.']
     : ['K39 — карта ', 'Калининграда. [K39](/projects/k39).']

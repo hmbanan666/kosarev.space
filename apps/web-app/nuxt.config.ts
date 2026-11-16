@@ -27,6 +27,7 @@ export default defineNuxtConfig({
     databaseUrl: '',
     openrouterApiKey: '',
     agentModel: 'google/gemini-2.5-flash-lite',
+    agentFallbackModel: 'nvidia/nemotron-3.5-lightning:free',
     agentTrustProxy: false,
     githubToken: '',
     githubActivityDisabled: false,
