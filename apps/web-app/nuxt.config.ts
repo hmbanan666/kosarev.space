@@ -1,3 +1,5 @@
+import { generateAgentKnowledge } from './build/agent-knowledge'
+
 export default defineNuxtConfig({
   modules: [
     '@nuxt/ui',
@@ -8,12 +10,24 @@ export default defineNuxtConfig({
     'nuxt-live-cursors',
   ],
 
+  hooks: {
+    'nitro:build:before': generateAgentKnowledge,
+    'ready': generateAgentKnowledge,
+  },
+
+  nitro: {
+    serverAssets: [{ baseName: 'agent-knowledge', dir: './.nuxt/agent-knowledge' }],
+  },
+
   liveCursors: {
     stripLocalePrefixes: ['en'],
   },
 
   runtimeConfig: {
     databaseUrl: '',
+    openrouterApiKey: '',
+    agentModel: 'google/gemini-2.5-flash-lite',
+    agentTrustProxy: false,
     githubToken: '',
     githubActivityDisabled: false,
     public: {

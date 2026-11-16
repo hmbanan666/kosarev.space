@@ -16,6 +16,15 @@
         </NuxtLink>
       </nav>
       <div class="site-header-controls">
+        <button
+          class="site-agent-trigger"
+          :disabled="!mounted"
+          aria-haspopup="dialog"
+          :aria-label="t('agent.label')"
+          @click="closeMenu(); agentOpen = true"
+        >
+          <UIcon name="i-lucide-bot" aria-hidden="true" />{{ t('agent.label') }}
+        </button>
         <LanguageSwitcher />
         <details
           ref="menu"
@@ -52,6 +61,7 @@
 
 <script setup lang="ts">
 const { t, locale } = useI18n()
+const { open: agentOpen } = useSiteAgent()
 const localePath = useLocalePath()
 const route = useRoute()
 const menu = useTemplateRef<HTMLDetailsElement>('menu')
@@ -79,3 +89,11 @@ function closeMenu(restoreFocus = false) {
 watch(() => route.path, () => closeMenu())
 onClickOutside(menu, () => closeMenu())
 </script>
+
+<style scoped>
+.site-agent-trigger { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 8px 12px; border: 1px solid #625039; color: #d9ad67; font-size: 13px; cursor: pointer; }
+.site-agent-trigger:hover { background: #d9ad6710; }
+.site-agent-trigger:focus-visible { outline: 2px solid #d9ad67; outline-offset: 3px; }
+@media (max-width: 767px) { .site-agent-trigger { padding: 8px; gap: 5px; } }
+@media print { .site-agent-trigger { display: none; } }
+</style>

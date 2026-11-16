@@ -4,6 +4,7 @@
       <NuxtPage />
     </NuxtLayout>
     <ClientOnly>
+      <SiteAgent />
       <Teleport :to="presenceTarget" :disabled="presenceTarget === 'body'">
         <div class="site-presence-root">
           <SitePresence />

@@ -243,3 +243,12 @@ records are separate from the current workflow configuration.
 ## License
 
 [MIT](LICENSE).
+
+## Site agent
+
+The header's Agent button opens a bilingual conversation drawer. Set the
+server-only `NUXT_OPENROUTER_API_KEY` to enable answers and optionally override
+`NUXT_AGENT_MODEL`. With no key, the drawer displays an offline state and a
+contact link. See [site agent documentation](docs/site-agent.md) for the public
+knowledge build, current publication/activity supplements, proxy configuration,
+limits and provider-free browser tests.
