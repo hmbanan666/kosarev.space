@@ -53,6 +53,10 @@ for (const locale of ['en', 'ru']) {
           await expect(edge).toHaveCSS('cursor', 'grab')
           await expect(card.locator('.canvas-grip')).toHaveCSS('opacity', '1')
           await capture(page, `hover-${locale}-${width}`)
+          await page.locator('[data-block="live"] h2 a').focus()
+          await page.keyboard.press('Tab')
+          await expect(page.locator('[data-block="dostigus"] .canvas-grip')).toBeFocused()
+          await expect(page.locator('[data-block="dostigus"]')).toBeInViewport({ ratio: 0.999 })
           await page.locator('.canvas-viewport').dispatchEvent('wheel', { deltaY: 1000, ctrlKey: true })
           await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', 'matrix(0.25, 0, 0, 0.25, 0, 0)')
           for (const id of ['dostigus', 'meloteka', 'startodel', 'chatgame', 'nextorders', 'publication']) {

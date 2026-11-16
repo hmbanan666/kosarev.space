@@ -179,7 +179,8 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     viewport.value?.scrollTo((event.clientX - rect.left) / rect.width * width.value * zoom.value - view.width * zoom.value / 2, (event.clientY - rect.top) / rect.height * height.value * zoom.value - view.height * zoom.value / 2)
   }
   async function reveal(event: FocusEvent) {
-    if (!enabled.value) {
+    // Pointer focus must not move a link between pointer-down and pointer-up.
+    if (!enabled.value || !(event.target as HTMLElement).matches(':focus-visible')) {
       return
     }
     const element = (event.target as HTMLElement).closest<HTMLElement>('[data-block]')
