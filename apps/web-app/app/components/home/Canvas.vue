@@ -1,7 +1,7 @@
 <template>
   <section
     class="home-canvas site-wrap"
-    :style="{ '--grid-gap': `${homeCanvas.gap}px`, '--canvas-type-scale': enabled ? Math.max(1, .78 / zoom) : 1 }"
+    :style="{ '--grid-gap': `${homeCanvas.gap}px`, '--canvas-type-scale': enabled ? Math.max(1, .78 / Math.max(zoom, initialZoom)) : 1 }"
     :class="{ 'canvas-enabled': enabled }"
     :aria-label="t('canvas.title')"
   >
@@ -60,6 +60,16 @@
                 @pointerdown="rememberPointer"
                 @click="openCard($event, block.id)"
               >
+                <span
+                  v-for="edge in enabled ? ['top', 'right', 'bottom', 'left'] : []"
+                  :key="edge"
+                  class="canvas-edge"
+                  :class="`canvas-edge-${edge}`"
+                  :style="{ '--edge-band': `${14 / zoom}px` }"
+                  aria-hidden="true"
+                  @pointerdown.stop="rememberPointer($event); start($event, block.id)"
+                  @click.stop
+                />
                 <button
                   v-if="enabled"
                   class="canvas-grip"
@@ -143,13 +153,15 @@ import { sortPublications } from '~~/shared/publications'
 import { canvasProducts } from '~/utils/activity-content'
 import { activityLayout, homeCanvas } from '~/utils/home-canvas'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const mounted = useMounted()
 const localePath = useLocalePath()
 const viewport = useTemplateRef<HTMLElement>('viewport')
 const { data: activity } = await useActivity()
-const defaults = computed(() => activityLayout(projectScores(activity.value)))
-const { enabled, blocks, feedback, zoom, fitZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, start, move, end, key, wheel, reveal, position } = useHomeCanvas(viewport, defaults)
+const { data } = await usePublications()
+const latest = computed(() => sortPublications(data.value ?? [])[0])
+const defaults = computed(() => activityLayout(projectScores(activity.value), !!latest.value))
+const { enabled, blocks, feedback, zoom, fitZoom, initialZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, start, move, end, key, wheel, reveal, position } = useHomeCanvas(viewport, defaults)
 const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
 const presenceDocked = useState('canvas-presence-docked', () => false)
 // Move the existing presence instance after its dock exists. Route changes
@@ -160,12 +172,11 @@ watch(presenceDock, (element) => {
 onBeforeUnmount(() => {
   presenceDocked.value = false
 })
-const { data } = await usePublications()
 const parts: Record<string, string> = { hero: 'A / 01', context: 'B / 01', k39: 'B / 02', writing: 'C / 01' }
-const latest = computed(() => sortPublications(data.value ?? [])[0])
 function blockLabel(id: string) {
   const labels: Record<string, string> = { hero: t('hero.name'), cv: t('nav.cv'), contacts: t('hero.contact'), writing: t('writing.title'), live: t('activity.liveTitle'), contributions: t('activity.contributions'), feed: t('activity.feed'), skills: t('activity.skills') }
-  return labels[id] ?? canvasProducts.find((product) => product.key === id)?.title ?? id
+  const product = canvasProducts.find((product) => product.key === id)
+  return labels[id] ?? (id === 'publication' ? latest.value?.locales[locale.value === 'en' ? 'en' : 'ru'].title : undefined) ?? (product?.titleKey ? t(product.titleKey) : product?.title) ?? id
 }
 const route = useRoute()
 const router = useRouter()

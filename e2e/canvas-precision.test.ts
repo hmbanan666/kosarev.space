@@ -7,7 +7,7 @@ for (const locale of ['en', 'ru']) {
   for (const width of sizes) {
     test.describe(`${width}px (${locale})`, () => {
       test.use({ hasTouch: width === 390, isMobile: width === 390 })
-      test(`shared horizontal grid and centered default canvas at ${width}px (${locale})`, async ({ page }) => {
+      test(`shared horizontal grid and aligned initial canvas at ${width}px (${locale})`, async ({ page }) => {
         await page.setViewportSize({ width, height: width === 390 ? 844 : width === 1920 ? 1080 : 800 })
         const errors: string[] = []
         page.on('pageerror', (error) => errors.push(error.message))
@@ -49,8 +49,10 @@ for (const locale of ['en', 'ru']) {
             const board = viewport.querySelector('[data-canvas-world]')!.getBoundingClientRect()
             return [board.left - frame.left, frame.right - board.right, board.top - frame.top, frame.bottom - board.bottom]
           })
-          expect(Math.min(...margins)).toBeGreaterThanOrEqual(0)
-          expect(Math.max(...margins) - Math.min(...margins)).toBeLessThan(1)
+          expect(margins[0]).toBeCloseTo(margins[2]!, 0)
+          expect(margins[0]).toBeGreaterThan(0)
+          expect(margins[1]).toBeLessThan(0)
+          expect(margins[3]).toBeLessThan(0)
           expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(width === 1920 ? 1080 : 800)
           const grid = await page.locator('[data-canvas-world]').evaluate((world) => {
             const scale = world.getBoundingClientRect().width / (world as HTMLElement).offsetWidth

@@ -2,9 +2,12 @@
   <header class="site-header">
     <a class="site-skip" href="#main-content">{{ t('site.skip') }}</a>
     <div class="site-wrap site-header-inner">
-      <NuxtLink :to="localePath('/')" class="site-brand">
-        {{ t('hero.name') }}
-      </NuxtLink>
+      <div class="site-identity">
+        <NuxtLink :to="localePath('/')" class="site-brand">
+          {{ t('hero.name') }}
+        </NuxtLink>
+        <LanguageSwitcher />
+      </div>
       <nav class="site-desktop-nav" :aria-label="t('site.navigation')">
         <NuxtLink
           v-for="link in links"
@@ -25,7 +28,6 @@
         >
           <UIcon name="i-lucide-bot" aria-hidden="true" />{{ t('agent.label') }}
         </button>
-        <LanguageSwitcher />
         <details
           ref="menu"
           class="site-mobile-menu"
@@ -91,7 +93,7 @@ onClickOutside(menu, () => closeMenu())
 </script>
 
 <style scoped>
-.site-agent-trigger { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 8px 12px; border: 1px solid #625039; color: #d9ad67; font-size: 13px; cursor: pointer; }
+.site-agent-trigger { white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 8px 12px; border: 1px solid #625039; color: #d9ad67; font-size: 13px; cursor: pointer; }
 .site-agent-trigger:hover { background: #d9ad6710; }
 .site-agent-trigger:focus-visible { outline: 2px solid #d9ad67; outline-offset: 3px; }
 @media (max-width: 767px) { .site-agent-trigger { padding: 8px; gap: 5px; } }

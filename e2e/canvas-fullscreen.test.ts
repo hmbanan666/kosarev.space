@@ -19,7 +19,7 @@ for (const locale of ['ru', 'en']) {
 }
 
 for (const viewport of [{ width: 1280, height: 800 }, { width: 1920, height: 1080 }]) {
-  test(`home fills the viewport with equal board gutters at ${viewport.width}`, async ({ page }) => {
+  test(`home fills the viewport with aligned starting gutters and a larger board at ${viewport.width}`, async ({ page }) => {
     await page.setViewportSize(viewport)
     await page.goto('/en')
     await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)
@@ -32,7 +32,9 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 1920, height: 108
       const board = element.querySelector('[data-canvas-world]')!.getBoundingClientRect()
       return [board.left - frame.left, frame.right - board.right, board.top - frame.top, frame.bottom - board.bottom]
     })
-    expect(Math.max(...gutters) - Math.min(...gutters)).toBeLessThan(1)
+    expect(gutters[0]).toBeCloseTo(gutters[2]!, 0)
+    expect(gutters[1]).toBeLessThan(0)
+    expect(gutters[3]).toBeLessThan(0)
     const left = await page.locator('.site-header-inner').evaluate((el) => el.getBoundingClientRect().left)
     expect(gutters[0]).toBeCloseTo(left, 0)
     expect(await page.locator('.canvas-viewport').evaluate((el) => el.clientWidth)).toBe(viewport.width)

@@ -38,20 +38,20 @@
   </template>
   <template v-else-if="product">
     <p class="canvas-eyebrow">
-      {{ t(id === 'dostigus' ? 'projects.statusPaused' : 'projects.statusActive') }}
+      {{ t(product.status, { year: product.closedYear ?? 0 }) }}
     </p>
     <h2>
       <NuxtLink v-if="product.page" :to="localePath(product.page)">
-        {{ product.title }}
+        {{ product.titleKey ? t(product.titleKey) : product.title }}
       </NuxtLink><a
         v-else
         :href="product.link"
         target="_blank"
         rel="noopener noreferrer"
-      >{{ product.title }}</a>
+      >{{ product.titleKey ? t(product.titleKey) : product.title }}</a>
     </h2>
     <p class="canvas-description">
-      {{ id === 'space' ? t('activity.spacePitch') : t(`projects.${id}.${id === 'context' ? 'description' : 'kind'}`) }}
+      {{ t(product.pitch) }}
     </p>
     <template v-if="repo">
       <HomeActivityGraph :days="miniDays" mini />
@@ -74,6 +74,22 @@
       class="canvas-source"
       :href="product.link"
     >{{ t('activity.live') }}<SiteLinkIcon external /></a>
+  </template>
+  <template v-else-if="id === 'publication' && latest">
+    <p class="canvas-eyebrow">
+      {{ t(`writing.types.${latest.type}`) }} · {{ latest.publishedAt }}
+    </p>
+    <h2>
+      <NuxtLink :to="localePath(`/writing/${latest.slug}`)">
+        {{ latest.locales[language].title }}
+      </NuxtLink>
+    </h2>
+    <p class="canvas-description">
+      {{ latest.locales[language].description }}
+    </p>
+    <NuxtLink class="canvas-source" :to="localePath(`/writing/${latest.slug}`)">
+      {{ t('writing.title') }}<SiteLinkIcon />
+    </NuxtLink>
   </template>
   <template v-else-if="id === 'writing'">
     <p class="canvas-eyebrow">

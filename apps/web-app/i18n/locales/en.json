@@ -494,7 +494,8 @@
     "calendarPrivacy": "GitHub profile contributions, including anonymous private counts when enabled on GitHub."
   },
   "agent": {
-    "label": "Agent",
+    "pending": "Queued",
+    "label": "AI Bot",
     "intro": "The site’s AI agent. Answers about Nikolai, his projects (K39, Context, Woodlands and more), and everything on this site.",
     "clear": "Clear history",
     "close": "Close agent",
