@@ -153,7 +153,7 @@ it('normalizes names and punctuation across provider deltas while preserving the
   provider.mockResolvedValue(new Response(`${[...text].map((content) => `data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`).join('')}data: [DONE]\n\n`))
   await ask('How can I contact Nikolay?', 'en')
   const answer = events.filter((event) => event.type === 'delta').map((event) => event.text).join('')
-  expect(answer).toBe('Nikolay , contact [Nikolay](/en/contact). Николай, Николая, Николаю, Николаем. nick@kosarev.space')
+  expect(answer).toBe('Nikolay: contact [Nikolay](/en/contact). Николай, Николая, Николаю, Николаем. nick@kosarev.space')
 })
 
 it.each(['What is K39?', 'напиши код на go'])('persists both turns and refusal metadata without waiting for the database: %s', async (question) => {
