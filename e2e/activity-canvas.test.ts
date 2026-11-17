@@ -235,8 +235,40 @@ test('missing public data leaves descriptions and links without empty data secti
   await page.route('**/api/activity', (route) => route.fulfill({ json: { ...snapshot, repos: [], items: [], calendar: [] } }))
   await page.goto('/en?card=context')
   const panel = page.getByRole('dialog')
+  await expect(panel).toBeVisible({ timeout: 20000 })
   await expect(panel).toContainText('A memory service')
-  await expect(panel.locator('h3, .activity-feed, .activity-graph, .canvas-footnote')).toHaveCount(0)
+  await expect(panel.locator('.activity-feed, .activity-graph, .canvas-footnote')).toHaveCount(0)
+  await expect(panel.getByRole('heading', { name: 'Stack', exact: true })).toBeVisible()
   await expect(panel.getByRole('link', { name: 'Project page' })).toBeVisible()
   await expect(panel.getByRole('link', { name: 'Public source' })).toHaveCount(0)
 })
+
+for (const locale of ['ru', 'en']) {
+  test(`${locale}: cursor drawer reflects the existing connection and hides unavailable counts`, async ({ page }) => {
+    await page.context().addCookies([{ name: 'i18n_redirected', value: locale, url: 'http://localhost:3333' }])
+    let connections = 0
+    let update!: (count: number) => void
+    let disconnect!: () => void
+    await page.routeWebSocket('**/_live-cursors-ws', (socket) => {
+      connections++
+      update = (count) => socket.send(JSON.stringify({ type: 'online', count, users: [] }))
+      disconnect = () => socket.close()
+      socket.send(JSON.stringify({ type: 'welcome', id: 'fixture-visitor', nameKey: 'cat', color: '#d9ad67', avatar: '', count: 3 }))
+      update(3)
+    })
+    await page.goto(`${locale === 'en' ? '/en' : '/'}?card=live`)
+    const panel = page.locator('#activity-detail-panel')
+    const count = panel.locator('.drawer-presence')
+    await expect(count).toHaveText(locale === 'en' ? 'Connected now: 3' : 'Сейчас подключено: 3')
+    update(2)
+    await expect(count).toHaveText(locale === 'en' ? 'Connected now: 2' : 'Сейчас подключено: 2')
+    expect(connections).toBe(1)
+    await expect(panel.locator('nav a')).toHaveCount(1)
+    await expect(panel.locator('nav a')).toHaveAttribute('href', 'https://github.com/hmbanan666/nuxt-live-cursors')
+    disconnect()
+    await expect(count).toHaveCount(0)
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await expect(page.locator('[data-live-cursors-bar]')).toHaveCount(0)
+    await expect(count).toHaveCount(0)
+  })
+}

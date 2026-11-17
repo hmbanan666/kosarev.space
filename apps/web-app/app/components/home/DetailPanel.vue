@@ -26,9 +26,12 @@
           <h3>{{ t('activity.pulls') }}</h3>
           <HomeActivityFeed :items="pulls" :limit="3" />
         </template>
-        <p v-if="stack.length" class="drawer-stack">
-          {{ t('drawer.builtWith', { stack: stack.join(', ') }) }}
-        </p>
+        <section v-if="stack.length">
+          <h3>{{ t('projects.sections.stack') }}</h3>
+          <p class="drawer-stack">
+            {{ t('drawer.builtWith', { stack: stack.join(', ') }) }}
+          </p>
+        </section>
       </template>
       <template v-if="contentId === 'hero' || contentId === 'cv'">
         <p class="drawer-facts">
@@ -52,9 +55,18 @@
       <p v-if="contentId === 'skills'" class="drawer-stack">
         {{ t('drawer.documentedTools', { stack: activityTechTags.join(', ') }) }}
       </p>
-      <p v-if="contentId === 'live'" class="drawer-facts">
-        {{ t('drawer.presence') }}
-      </p>
+      <template v-if="contentId === 'live'">
+        <p class="drawer-facts">
+          {{ t('drawer.presence') }}
+        </p>
+        <p
+          v-if="presenceCount !== null"
+          class="drawer-presence"
+          role="status"
+        >
+          <span aria-hidden="true" />{{ t('drawer.online', { count: presenceCount }) }}
+        </p>
+      </template>
       <template v-if="latest && ['publication', 'writing', 'hero'].includes(contentId ?? '')">
         <h3 v-if="contentId !== 'publication'">
           {{ t('drawer.latest') }}
@@ -106,6 +118,7 @@ const props = defineProps<{ id?: string, title: string, activity: ActivitySnapsh
 const emit = defineEmits<{ close: [] }>()
 const { t, locale, te, tm, rt } = useI18n()
 const localePath = useLocalePath()
+const presenceCount = useState<number | null>('site-presence-count', () => null)
 const relativeTime = useActivityTime()
 // Keep the last card's contents in place while its modal animates closed.
 const contentId = ref(props.id)
@@ -177,7 +190,7 @@ const links = computed(() => {
       add('https://github.com/hmbanan666', 'GitHub', true)
       break
     case 'live':
-      local('/cases/kosarev-live-cursors', 'drawer.cursorCase')
+      add('https://github.com/hmbanan666/nuxt-live-cursors', t('activity.source'), true)
       break
     case 'skills':
       local('/cv', 'site.viewCv')

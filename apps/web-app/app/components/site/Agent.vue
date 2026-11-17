@@ -24,7 +24,10 @@
       <div
         ref="scroll"
         class="agent-scroll"
-        @scroll="trackScroll"
+        @wheel.passive="releaseAnchor"
+        @touchstart.passive="releaseAnchor"
+        @pointerdown="releaseAnchor"
+        @keydown="releaseAnchor"
       >
         <div v-if="!messages.length" class="agent-empty">
           <span class="agent-mark" aria-hidden="true"><UIcon name="i-lucide-bot" /></span>
@@ -44,6 +47,7 @@
         <ol
           v-else
           class="agent-messages"
+          :style="{ paddingBottom: `${spacer}px` }"
           :aria-label="t('agent.history')"
         >
           <li
@@ -155,7 +159,9 @@ const { open, messages, busy, send, stop, clear } = useAgentConversation()
 const textarea = useTemplateRef<HTMLTextAreaElement>('textarea')
 const scroll = useTemplateRef<HTMLDivElement>('scroll')
 const input = ref('')
-let pinned = true
+const spacer = ref(0)
+let anchor: HTMLElement | undefined
+let followQuestion = false
 const project = computed(() => {
   const key = route.path.match(/\/projects\/([\w-]+)/)?.[1]
   return ({ k39: 'K39', context: 'Context', dostigus: 'Dostigus', woodlands: 'Woodlands' } as Record<string, string>)[key ?? '']
@@ -168,20 +174,41 @@ function close() {
 }
 async function focusInput() {
   await nextTick()
-  textarea.value?.focus()
+  textarea.value?.focus({ preventScroll: true })
 }
-function trackScroll() {
-  const element = scroll.value
-  pinned = !element || element.scrollHeight - element.scrollTop - element.clientHeight < 80
+function releaseAnchor() {
+  followQuestion = false
 }
-function submit(question: string) {
+function positionQuestion() {
+  const viewport = scroll.value
+  const list = viewport?.querySelector<HTMLElement>('.agent-messages')
+  if (!viewport || !list || !anchor?.isConnected) {
+    return
+  }
+  const padding = Number.parseFloat(getComputedStyle(viewport).paddingTop)
+  const bottomPadding = Number.parseFloat(getComputedStyle(viewport).paddingBottom)
+  const top = anchor.getBoundingClientRect().top
+  const end = list.lastElementChild!.getBoundingClientRect().bottom
+  spacer.value = Math.max(0, viewport.clientHeight - padding - bottomPadding - (end - top))
+  if (followQuestion) {
+    void nextTick(() => {
+      if (followQuestion && anchor?.isConnected) {
+        viewport.scrollTop += anchor.getBoundingClientRect().top - viewport.getBoundingClientRect().top - padding
+      }
+    })
+  }
+}
+async function submit(question: string) {
   if (!question.trim() || question.trim().length > 600) {
     return
   }
   input.value = ''
-  pinned = true
   void send(question, route.path, locale.value)
-  textarea.value?.focus()
+  textarea.value?.focus({ preventScroll: true })
+  await nextTick()
+  anchor = [...(scroll.value?.querySelectorAll<HTMLElement>('.agent-user') ?? [])].at(-1)
+  followQuestion = true
+  positionQuestion()
 }
 function enter(event: KeyboardEvent) {
   if (!event.isComposing) {
@@ -199,12 +226,8 @@ function shortcut(event: KeyboardEvent) {
     open.value = true
   }
 }
-watch(() => messages.value.map((message) => `${message.content}${message.status}`).join(''), async () => {
-  await nextTick()
-  if (pinned && scroll.value) {
-    scroll.value.scrollTop = scroll.value.scrollHeight
-  }
-})
+watch(() => messages.value.map((message) => `${message.content}${message.status}`).join(''), positionQuestion, { flush: 'post' })
+useResizeObserver(scroll, positionQuestion)
 onMounted(() => document.addEventListener('keydown', shortcut))
 onBeforeUnmount(() => document.removeEventListener('keydown', shortcut))
 </script>
@@ -214,7 +237,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', shortcut))
 button { cursor: pointer; }
 button:disabled { opacity: .35; cursor: default; }
 button:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid #d9ad67; outline-offset: 3px; }
-.agent-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 28px 24px; }
+.agent-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; overflow-anchor: none; padding: 28px 24px; }
 .agent-empty { padding-top: clamp(16px, 7vh, 64px); }
 .agent-mark { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #625039; color: #d9ad67; font-size: 25px; margin-bottom: 24px; }
 .agent-intro { color: #c7c5bf; margin-bottom: 30px; font-size: 16px; }
@@ -243,7 +266,7 @@ button:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-vis
 .agent-sources summary span { margin-left: 6px; color: #d9ad67; }
 .agent-sources ul { list-style: none; padding: 10px 0 0; }
 .agent-sources li + li { margin-top: 6px; }
-.agent-composer { border-top: 1px solid #353535; padding: 18px 24px max(20px, env(safe-area-inset-bottom)); background: #151515; }
+.agent-composer { flex: none; border-top: 1px solid #353535; padding: 18px 24px max(20px, env(safe-area-inset-bottom)); background: #151515; }
 .agent-composer textarea { display: block; width: 100%; resize: none; background: transparent; color: #f3f1eb; padding: 8px 0; min-height: 70px; font: inherit; }
 .agent-composer textarea::placeholder { color: #aaa8a2; }
 .agent-composer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }

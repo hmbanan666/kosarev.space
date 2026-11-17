@@ -56,7 +56,8 @@ the earlier direction that explicitly deprioritized employment.
   with shuffle, hide/show and the source-case link supplied through the public
   actions slot. Hide/show changes cursor visibility while keeping the connection
   active; the module retains that visibility choice during the app session.
-  There is no custom header switch, pointer renderer or connection counter.
+  There is no custom header switch or pointer renderer. The live-cursor drawer
+  shows the native connection count while the eligible session is connected.
   The home uses an optional coordinate target through a pinned package patch:
   peers share normalized canvas coordinates across viewport aspect ratios,
   pan, zoom and locales while retaining

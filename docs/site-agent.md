@@ -124,7 +124,9 @@ between provider events. Only an exact fenced quotation also present in
 retrieved site evidence, at most 200 characters and five lines of code, may
 pass. Longer, unmatched and unterminated blocks are discarded. A bounded
 streaming wording pass uses Nikolay / Николай (including Russian inflections),
-replaces em dashes, and preserves email addresses and URLs. The keyboard hint
+replaces prose dashes with colons and removes spaces before punctuation across
+delta boundaries. It preserves inline and fenced code, email addresses, URLs,
+decimals, ellipsis and Markdown list markers. The keyboard hint
 uses middots in Russian and is hidden on touch devices. Ordinary prose still
 streams; an entirely removed answer receives the canned refusal. These are
 bounded heuristics and prompt instructions, not a semantic proof of scope
@@ -147,7 +149,12 @@ pending user turn; the client drains these turns sequentially, using each
 question's original page and locale and only the completed preceding history.
 Stop aborts the current answer and continues the queue. Clear cancels the
 current answer and removes the queue. Each question still produces one API
-request.
+request. Terminal `done` and `error` events end client reading immediately,
+without waiting for the transport to close. EOF, abort and clear also release
+the busy state. Sending positions the new question at the top of the message
+viewport; answers grow below it. Manual scrolling releases that anchor. The
+shared drawer follows visual-viewport changes so the composer stays above an
+on-screen keyboard.
 
 The process-local limiter permits 20 attempts per IP per hour. Invalid attempts
 also count when the provider is configured. Counters expire after an hour, use a

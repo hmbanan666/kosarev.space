@@ -259,3 +259,5 @@
 .drawer-languages { display: grid; gap: 8px; }
 .drawer-languages > div { display: flex; justify-content: space-between; gap: 20px; }
 .drawer-languages dd { color: var(--ui-text-muted); text-align: right; }
+.drawer-presence { display: flex; align-items: center; gap: 10px; margin-top: 24px; color: var(--ui-text-muted); }
+.drawer-presence > span { width: 8px; height: 8px; border-radius: 50%; background: var(--ui-primary); }

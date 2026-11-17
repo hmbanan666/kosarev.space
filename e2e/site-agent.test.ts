@@ -135,3 +135,69 @@ for (const locale of ['ru', 'en']) {
     })
   })
 }
+
+for (const width of [1280, 390]) {
+  test(`new question stays at the top while the answer grows at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 })
+    await page.goto('/en/contact')
+    await openAgent(page, 'AI Bot')
+    // A controllable transport exercises deltas separately from terminal events.
+    await page.evaluate(() => {
+      const original = window.fetch
+      window.fetch = async (input, options) => {
+        if (input !== '/api/agent') {
+          return original(input, options)
+        }
+        return new Response(new ReadableStream({
+          start(controller) {
+            Object.assign(window, { answerEvent: (event: object) => controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(event)}\n\n`)) })
+          },
+        }))
+      }
+    })
+    const emit = (event: object) => page.evaluate((event) => (window as unknown as { answerEvent: (event: object) => void }).answerEvent(event), event)
+    const dialog = page.getByRole('dialog')
+    const viewport = dialog.locator('.agent-scroll')
+    const stop = dialog.getByRole('button', { name: 'Stop', exact: true })
+    for (const question of ['First question', 'Second question']) {
+      await dialog.locator('textarea').fill(question)
+      await dialog.getByRole('button', { name: 'Send', exact: true }).click()
+      await expect(stop).toBeVisible()
+      await emit({ type: 'delta', text: 'Start of the answer.\n\n' })
+      const bubble = dialog.locator('.agent-user').last()
+      const atTop = () => bubble.evaluate((el) => {
+        const viewport = el.closest('.agent-scroll')!.getBoundingClientRect()
+        return el.getBoundingClientRect().top - viewport.top
+      })
+      await expect.poll(atTop).toBeGreaterThanOrEqual(0)
+      await expect.poll(atTop).toBeLessThanOrEqual(30)
+      await emit({ type: 'delta', text: 'A longer paragraph that takes space.\n\n'.repeat(35) })
+      await expect(dialog.locator('.agent-markdown').last()).toContainText('longer paragraph')
+      await expect.poll(atTop).toBeGreaterThanOrEqual(0)
+      await expect.poll(atTop).toBeLessThanOrEqual(30)
+      if (width === 390 && question === 'First question') {
+        await page.evaluate(() => {
+          Object.defineProperty(window.visualViewport!, 'height', { configurable: true, value: 500 })
+          window.visualViewport!.dispatchEvent(new Event('resize'))
+        })
+        await expect.poll(() => dialog.locator('.agent-composer').evaluate((el) => el.getBoundingClientRect().bottom)).toBeLessThanOrEqual(501)
+        await expect.poll(atTop).toBeGreaterThanOrEqual(0)
+        await expect.poll(atTop).toBeLessThanOrEqual(30)
+        await page.evaluate(() => {
+          Reflect.deleteProperty(window.visualViewport!, 'height')
+          window.visualViewport!.dispatchEvent(new Event('resize'))
+        })
+      }
+      const beforeScroll = await viewport.evaluate((el) => el.scrollTop)
+      await viewport.hover()
+      await page.mouse.wheel(0, 120)
+      await expect.poll(() => viewport.evaluate((el) => el.scrollTop)).toBeGreaterThan(beforeScroll)
+      const manualTop = await viewport.evaluate((el) => el.scrollTop)
+      await emit({ type: 'delta', text: 'More text.\n\n'.repeat(10) })
+      await expect(dialog.locator('.agent-markdown').last()).toContainText('More text')
+      expect(await viewport.evaluate((el) => el.scrollTop)).toBeCloseTo(manualTop, 0)
+      await emit({ type: 'done' })
+      await expect(stop).toBeHidden()
+    }
+  })
+}

@@ -159,3 +159,36 @@ it('replaces an incomplete attempt in the same turn and keeps only the fallback 
   finish(1, 'Next answer')
   await next
 })
+
+it('finishes on done without waiting for transport close or appending late deltas', async () => {
+  const chat = useAgentConversation()
+  mount()
+  const done = chat.send('First', '/en', 'en')
+  requests[0]!.stream.enqueue(encoder.encode('data: {"type":"delta","text":"Complete"}\n\ndata: {"type":"done"}\n\ndata: {"type":"delta","text":"Complete"}\n\n'))
+  try {
+    await vi.waitFor(() => expect(chat.busy.value).toBe(false), { timeout: 200 })
+    await done
+    expect(chat.messages.value[1]).toMatchObject({ content: 'Complete', status: undefined })
+  } finally {
+    chat.stop()
+    await done
+  }
+})
+
+it.each(['error', 'eof', 'abort', 'clear'])('releases busy after %s', async (ending) => {
+  const chat = useAgentConversation()
+  mount()
+  const done = chat.send('First', '/en', 'en')
+  if (ending === 'error') {
+    requests[0]!.stream.enqueue(encoder.encode('data: {"type":"error","code":"error"}\n\n'))
+  } else if (ending === 'eof') {
+    requests[0]!.stream.close()
+  } else if (ending === 'abort') {
+    chat.stop()
+  } else {
+    chat.clear()
+  }
+  await done
+  expect(chat.busy.value).toBe(false)
+  expect(chat.messages.value.some((message) => message.status === 'streaming')).toBe(false)
+})

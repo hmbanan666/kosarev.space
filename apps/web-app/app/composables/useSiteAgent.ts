@@ -147,8 +147,10 @@ export function useAgentConversation() {
         } else if (event.type === 'error') {
           answer.status = ['offline', 'rateLimit'].includes(event.code) ? event.code : 'error'
           done = true
+          break
         } else if (event.type === 'done') {
           done = true
+          break
         }
       }
       if (!done) {
