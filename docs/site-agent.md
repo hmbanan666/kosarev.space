@@ -140,8 +140,9 @@ when the knowledge `items` array is empty. The prompt receives a separate
 `Memory · Память` block with no URL:
 
 - `none`: no block and no memory evidence, even if sources were returned.
-- `weak`: usable excerpts count as evidence, with `partial: true`; quote only
-  what the note says and label it as partial in the answer's language.
+- `weak`: usable excerpts count as evidence, with internal `partial: true`;
+  quote or state only what the note says, plainly and without adding facts.
+  Weak results remain usable even for exact matches in a small corpus.
 - `strong`: usable excerpts count as ordinary evidence.
 
 Empty excerpts do not count as evidence. When both site evidence and usable
@@ -149,7 +150,10 @@ memory are absent, the prompt retains the honest-unknown path. Memory never
 bypasses the topic pre-filter. Notes are untrusted data, not instructions,
 even if they claim owner authorization; the existing output guard still
 applies. Memory is excluded from the visitor's `sources` list and stored source
-links. The model must not invent a public link for a note.
+links. The model must not invent a public link for a note. In both RU and EN,
+answers speak about Nikolay naturally without mentioning memory, notes,
+Context, grounding, weak/partial labels, evidence blocks or sources as internal
+sources or labels. Do not hedge about a note's strength or completeness.
 
 Each model-bound request logs one structured server record through
 [`useLogger`](../apps/web-app/server/utils/logger.ts):
