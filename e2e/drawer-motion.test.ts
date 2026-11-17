@@ -1,12 +1,34 @@
+import type { Locator } from '@playwright/test'
 import { expect, test } from '@playwright/test'
+
+async function observeClosing(panel: Locator) {
+  // Capture the exit state atomically, before the 240ms transition can finish.
+  return panel.evaluateHandle((element) => {
+    const snapshots: { open: boolean, overflow: string, title: string | undefined }[] = []
+    const observer = new MutationObserver(() => {
+      if (element.getAttribute('data-state') !== 'closing') {
+        return
+      }
+      snapshots.push({
+        open: element.hasAttribute('open'),
+        overflow: getComputedStyle(document.body).overflow,
+        title: element.querySelector('h2')?.textContent?.trim(),
+      })
+      observer.disconnect()
+    })
+    observer.observe(element, { attributes: true, attributeFilter: ['data-state'] })
+    return snapshots
+  })
+}
 
 for (const width of [1280, 390]) {
   test(`shared drawer geometry, dismissal and focus at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/en?card=live')
     const card = page.locator('#activity-detail-panel')
-    await expect(card).toHaveAttribute('data-state', 'open')
+    await expect(card).toHaveAttribute('data-state', 'open', { timeout: 20000 })
     await expect(card).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
+    await expect(card).toHaveCSS('transition-duration', '0.24s')
     const geometry = await card.boundingBox()
     const backdrop = await card.evaluate((element) => {
       const style = getComputedStyle(element, '::backdrop')
@@ -17,8 +39,10 @@ for (const width of [1280, 390]) {
         const opener = page.locator('[data-block="live"] .canvas-open')
         await opener.focus()
         await opener.press('Enter')
+        await expect(card).toHaveAttribute('data-state', 'open')
         await expect(card).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
       }
+      const closing = await observeClosing(card)
       if (method === 'button') {
         await card.getByRole('button', { name: 'Close details' }).click()
       } else if (method === 'escape') {
@@ -27,12 +51,13 @@ for (const width of [1280, 390]) {
       } else {
         await page.mouse.click(10, 10)
       }
-      await expect(card).toHaveAttribute('data-state', 'closing')
-      await expect(card).toHaveAttribute('open', '')
-      await expect(card.locator('h2')).toHaveText('Live cursors')
-      await expect(page.locator('body')).toHaveCSS('overflow', 'hidden')
       await expect(card).not.toBeVisible()
+      expect(await closing.jsonValue()).toEqual([{ open: true, overflow: 'hidden', title: 'Live cursors' }])
+      await closing.dispose()
       await expect(card).toHaveAttribute('data-state', 'closed')
+      // Typed OM preserves percentages when the closed dialog has no layout box.
+      expect(await card.evaluate((element) => element.computedStyleMap().get('transform')?.toString()))
+        .toBe(width < 768 ? 'translate(0px, 100%)' : 'translate(100%, 0px)')
     }
     const launcher = page.locator('.site-agent-launcher')
     await launcher.click()
@@ -53,25 +78,43 @@ for (const width of [1280, 390]) {
   })
 }
 
-test('reduced motion disables the slide and still closes the modal', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.goto('/en?card=live')
-  const panel = page.locator('#activity-detail-panel')
-  await expect(panel).toBeVisible({ timeout: 20000 })
-  expect(await panel.evaluate((el) => Number.parseFloat(getComputedStyle(el).transitionDuration))).toBeLessThan(0.001)
-  await expect(panel).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
-  await page.keyboard.press('Escape')
-  await expect(panel).not.toBeVisible()
-  // Keyboard activation also works when headless Chromium stops delivering frames
-  // after an instant dismissal; pointer activation is covered above at both widths.
-  await page.locator('.site-agent-launcher').focus()
-  await page.keyboard.press('Enter')
-  const agent = page.locator('.site-agent')
-  await expect(agent).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
-  await expect(agent).toHaveAttribute('data-state', 'open')
-  await agent.getByRole('button', { name: 'Close agent' }).press('Enter')
-  await expect(agent).not.toBeVisible()
-})
+for (const width of [1280, 390]) {
+  test(`reduced motion keeps rendering and both drawers usable at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/en?card=live')
+    const panel = page.locator('#activity-detail-panel')
+    await expect(panel).toHaveAttribute('data-state', 'open', { timeout: 20000 })
+    await expect(panel).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
+    await page.keyboard.press('Escape')
+    await expect(panel).not.toBeVisible()
+    await expect(panel).toHaveAttribute('data-state', 'closed')
+    await expect(panel).not.toHaveAttribute('open')
+    await expect(page).toHaveURL('/en')
+    await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden')
+    // A closed dialog alone does not prove that the renderer is still producing frames.
+    expect(await page.evaluate(() => new Promise<boolean>((resolve) => {
+      const timeout = setTimeout(resolve, 1000, false)
+      requestAnimationFrame(() => {
+        clearTimeout(timeout)
+        resolve(true)
+      })
+    }))).toBe(true)
+    await expect(panel).toHaveCSS('transition-duration', '0s')
+    const launcher = page.locator('.site-agent-launcher')
+    await launcher.click()
+    const agent = page.locator('.site-agent')
+    await expect(agent).toHaveAttribute('data-state', 'open')
+    await expect(agent).toHaveCSS('transition-duration', '0s')
+    await expect(agent).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
+    await expect(agent.locator('textarea')).toBeFocused()
+    await agent.getByRole('button', { name: 'Close agent' }).click()
+    await expect(agent).not.toBeVisible()
+    await expect(agent).not.toHaveAttribute('open')
+    await expect(launcher).toBeFocused()
+    await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden')
+  })
+}
 
 test('reopening during exit cancels the pending close', async ({ page }) => {
   await page.goto('/en/contact')

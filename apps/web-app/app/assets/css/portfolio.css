@@ -106,7 +106,8 @@ body { background: var(--ui-bg); color: var(--ui-text); font-family: var(--font-
   .contact-email-row { gap: .3rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  /* A nonzero duration creates transitions even on elements with no transition rule. */
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
 }
 @media print {
   body:has(.cv-document) :is(.site-header,.site-footer) { display: none !important; }

@@ -135,7 +135,7 @@ onBeforeUnmount(cancelMotion)
 <style>
 .site-drawer { --canvas-type-scale: 1; position: fixed; inset: 0 0 0 auto; margin: 0; width: min(560px, 100%); height: 100dvh; max-height: 100dvh; max-width: 100%; padding: 0; overflow: hidden; color: var(--ui-text); background: #10100f; border: 0; border-left: 1px solid #d9ad6760; transform: translateX(100%); transition: transform 240ms ease-out; }
 .site-drawer[open] { display: flex; flex-direction: column; }
-.site-drawer[data-state="open"] { transform: translateX(0); }
+.site-drawer[data-state="open"] { transform: translate(0, 0); }
 .site-drawer::backdrop { background: #0009; backdrop-filter: blur(3px); opacity: 0; transition: opacity 240ms ease-out; }
 .site-drawer[data-state="open"]::backdrop { opacity: 1; }
 body:has(.site-drawer[open]) { overflow: hidden; }
@@ -149,13 +149,13 @@ body:has(.site-drawer[open]) { overflow: hidden; }
 .site-drawer-body { flex: 1; min-height: 0; padding: 28px 32px; overflow-y: auto; overscroll-behavior: contain; }
 .site-drawer-fixed-body .site-drawer-body { padding: 0; overflow: hidden; }
 @media (max-width: 767px) {
-  .site-drawer { inset: auto 0 0; width: 100%; height: 88dvh; border-top: 1px solid #d9ad6760; border-left: 0; }
+  .site-drawer { inset: auto 0 0; width: 100%; height: 88dvh; border-top: 1px solid #d9ad6760; border-left: 0; transform: translateY(100%); }
   .site-drawer-heading { padding: 16px 20px; gap: 12px; }
   .site-drawer-heading h2 { font-size: 1.25rem; }
   .site-drawer-body { padding: 24px 20px calc(24px + env(safe-area-inset-bottom)); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .site-drawer, .site-drawer[data-state="open"] { transform: translateX(0); transition: none; }
+  .site-drawer, .site-drawer[data-state="open"] { transform: translate(0, 0); transition: none; }
   .site-drawer::backdrop { transition: none; }
 }
 @media print { .site-drawer { display: none !important; } }
