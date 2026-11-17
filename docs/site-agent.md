@@ -2,8 +2,12 @@
 
 The shared header opens a persistent RU/EN agent drawer. `/` and Cmd/Ctrl+K open
 it (the slash shortcut ignores editable controls); Escape closes it and restores
-focus. The native modal dialog contains keyboard focus. Desktop retains the
-visible canvas behind a 460px drawer; mobile uses a full-height bottom sheet.
+focus after the closing animation. The agent and card details use the same
+[native drawer](../apps/web-app/app/components/site/Drawer.vue), with keyboard
+focus containment, a faded and blurred backdrop, and a 240ms slide from the
+right. Desktop width is at most 560px; mobile uses an 88dvh sheet. Reduced motion
+disables the slide. A timed close keeps dismissal working without discrete CSS
+transition support.
 Suggested questions follow the current project page. Print output hides the
 control.
 
@@ -213,9 +217,8 @@ before conversation processing do not create rows.
 Writes run in background request work and never delay SSE completion. A failed
 write is swallowed without logging content or credentials; it can lose those
 rows, but cannot fail the answer. There is no retention job or admin UI: rows
-are kept indefinitely. A RU/EN privacy line below the composer explains that
-questions to AI Bot are stored to improve answers. This server retention is
-independent of the drawer's local history controls.
+are kept indefinitely. Server retention is independent of the drawer's local
+history controls. The composer has no storage footer.
 
 ### Later operator query on de2 (documentation only)
 

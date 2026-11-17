@@ -175,9 +175,12 @@ Inner links keep their destinations; movement beyond six pixels suppresses a
 surface click. `?card=context` (and other card IDs) is shareable and participates
 in browser history. A native modal dialog supplies focus containment and Escape;
 outside clicks close it, and closing restores the card action's focus. Desktop
-uses a right sheet; mobile uses a bottom sheet. Project details include status,
-approved pitch, 30-day graph, observed commits/PRs, language bytes and available
-links. Repository/source information appears only after runtime public checks.
+uses a right sheet; mobile uses an 88dvh sheet. Card details and the site agent
+share one shell, header, close control and 240ms slide with a fading backdrop.
+Reduced motion disables the slide. Focus restoration waits until closing ends.
+Each card detail starts with a single title and a short explanation, followed by
+available public data and relevant links. Project details can include a 30-day
+graph, observed commits/PRs and language bytes; empty data sections are hidden. Repository/source information appears only after runtime public checks.
 
 ### Link icons
 

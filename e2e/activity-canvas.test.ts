@@ -191,3 +191,52 @@ test('the 90-day public fallback fits without a year total', async ({ page }) =>
   await expect(card.locator('.activity-year-total')).toHaveCount(0)
   expect(await card.evaluate((el) => el.scrollHeight <= el.clientHeight + 2)).toBe(true)
 })
+
+for (const locale of ['ru', 'en']) {
+  test(`${locale}: live cursor details have one title and no card labels`, async ({ page }) => {
+    await page.context().addCookies([{ name: 'i18n_redirected', value: locale, url: 'http://localhost:3333' }])
+    await page.goto(`${locale === 'en' ? '/en' : '/'}?card=live`)
+    const panel = page.getByRole('dialog')
+    await expect(panel).toBeVisible()
+    await expect(panel.locator('h2')).toHaveCount(1)
+    await expect(panel.locator('.canvas-eyebrow')).toHaveCount(0)
+    await expect(panel).not.toContainText(/Подробнее:|Open details:|WebSocket/)
+  })
+}
+
+for (const locale of ['ru', 'en']) {
+  test(`${locale}: every canvas card has dedicated, concise drawer content`, async ({ page }) => {
+    test.setTimeout(90000)
+    await page.context().addCookies([{ name: 'i18n_redirected', value: locale, url: 'http://localhost:3333' }])
+    await page.goto(locale === 'en' ? '/en' : '/')
+    const cards = page.locator('[data-block]')
+    await expect(cards).toHaveCount(18)
+    const ids = await cards.evaluateAll((cards) => cards.map((card) => card.getAttribute('data-block')!))
+    for (const id of ids) {
+      const button = page.locator(`[data-block="${id}"] .canvas-open`)
+      await button.focus()
+      await button.press('Enter')
+      const panel = page.locator('#activity-detail-panel')
+      await expect(panel).toHaveAttribute('data-state', 'open')
+      await expect(panel.locator('h2')).toHaveCount(1)
+      await expect(panel.locator('h1, .canvas-eyebrow, .activity-tags, .canvas-source')).toHaveCount(0)
+      await expect(panel).not.toContainText(/Подробнее:|Open details:/)
+      await expect(panel.locator('.site-drawer-body > p').first()).not.toBeEmpty()
+      const links = await panel.locator('nav a').evaluateAll((links) => links.map((link) => link.getAttribute('href')))
+      expect(new Set(links).size, id).toBe(links.length)
+      await page.keyboard.press('Escape')
+      await expect(panel).not.toBeVisible()
+      await expect(button).toBeFocused()
+    }
+  })
+}
+
+test('missing public data leaves descriptions and links without empty data sections', async ({ page }) => {
+  await page.route('**/api/activity', (route) => route.fulfill({ json: { ...snapshot, repos: [], items: [], calendar: [] } }))
+  await page.goto('/en?card=context')
+  const panel = page.getByRole('dialog')
+  await expect(panel).toContainText('A memory service')
+  await expect(panel.locator('h3, .activity-feed, .activity-graph, .canvas-footnote')).toHaveCount(0)
+  await expect(panel.getByRole('link', { name: 'Project page' })).toBeVisible()
+  await expect(panel.getByRole('link', { name: 'Public source' })).toHaveCount(0)
+})
