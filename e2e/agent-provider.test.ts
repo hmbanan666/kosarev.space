@@ -13,6 +13,7 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
   await dialog.getByRole('button', { name: 'What is K39?', exact: true }).click()
   await expect(dialog.locator('.agent-markdown')).toContainText('Калининграда')
   await expect(dialog.locator('.agent-sources')).toBeVisible()
+  await expect(dialog.getByRole('button', { name: 'Stop', exact: true })).toBeHidden()
   await page.locator('#site-agent-input').fill('K39 slow')
   await dialog.getByRole('button', { name: 'Send', exact: true }).click()
   await expect(dialog.locator('.agent-markdown').last()).toContainText('Partial answer')
@@ -54,7 +55,7 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
         answer += event.text
       }
     }
-    expect(answer).toContain('Калининграда')
+    expect(answer).toBe('K39: карта Калининграда. [K39](/projects/k39).')
     expect(answer).not.toContain('Incomplete')
     expect(types).not.toContain('error')
     expect(types.at(-1)).toBe('done')
