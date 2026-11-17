@@ -3,6 +3,7 @@ import { readSse } from '../../shared/agent-stream'
 import { agentEvidence } from '../agent/evidence'
 import { createRateLimit, isBlockedQuestion, looksOnTopic, scopeRefusal, validateAgentRequest } from '../agent/guard'
 import { buildPrompt, retrieve } from '../agent/knowledge'
+import { lookupMemory } from '../agent/memory'
 import { createOutputGuard } from '../agent/output'
 import { createAnswerWording } from '../agent/wording'
 
@@ -99,6 +100,7 @@ export default defineEventHandler(async (event) => {
   }
   const query = request.messages.filter((message) => message.role === 'user').slice(-3).map((message) => message.content).join(' ')
   const evidence = retrieve(chunks, query, request.page, request.locale)
+  const memory = await lookupMemory(config, question)
   const sourceByUrl = new Map<string, { title: string, url: string }>()
   for (const { title, url } of evidence) {
     // Preserve the reserved Profile title when a ranked excerpt shares its URL.
@@ -134,7 +136,7 @@ export default defineEventHandler(async (event) => {
     }
     return stream.push(JSON.stringify(value))
   }
-  const messages = buildPrompt(evidence, request.messages, request.page, request.locale)
+  const messages = buildPrompt(evidence, request.messages, request.page, request.locale, memory)
   const attempt = async (signal: AbortSignal) => {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
