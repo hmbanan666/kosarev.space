@@ -149,3 +149,40 @@ test('drawer remains usable without animation frames or transition events', asyn
   await expect(panel).not.toHaveAttribute('open')
   await expect(launcher).toBeFocused()
 })
+
+for (const width of [1280, 390]) {
+  test(`drawer bodies expose every month and language row at ${width}px`, async ({ page }) => {
+    test.setTimeout(120000)
+    const { default: snapshot } = await import('../apps/web-app/tests/fixtures/activity-snapshot.json', { with: { type: 'json' } })
+    await page.setViewportSize({ width, height: 844 })
+    await page.route('**/api/activity', (route) => route.fulfill({ json: snapshot }))
+    for (const id of ['contributions', 'context', 'k39', 'space', 'woodlands', 'dostigus', 'meloteka', 'startodel', 'chatgame', 'nextorders']) {
+      await page.goto(`/en?card=${id}`)
+      const panel = page.locator('#activity-detail-panel')
+      await expect(panel).toHaveAttribute('data-state', 'open', { timeout: 20000 })
+      const body = panel.locator('.site-drawer-body')
+      // Every child must be reachable inside the actual scrollport, with bottom breathing room.
+      const rows = panel.locator('.contribution-months li, .drawer-languages > div')
+      for (let index = 0; index < await rows.count(); index++) {
+        const row = rows.nth(index)
+        await row.scrollIntoViewIfNeeded()
+        expect(await row.evaluate((row) => {
+          const rect = row.getBoundingClientRect()
+          const body = row.closest('.site-drawer-body')!.getBoundingClientRect()
+          return rect.top >= body.top - 1 && rect.bottom <= body.bottom + 1
+        }), `${id} row ${index}`).toBe(true)
+      }
+      await body.evaluate((el) => {
+        el.scrollTop = el.scrollHeight
+      })
+      expect(await body.evaluate((el) => {
+        const last = el.lastElementChild!.getBoundingClientRect()
+        return el.getBoundingClientRect().bottom - last.bottom
+      }), `${id} bottom padding`).toBeGreaterThanOrEqual(23)
+      const stack = panel.locator('.drawer-stack')
+      if (await stack.count()) {
+        await expect(stack.locator('..').getByRole('heading', { name: 'Stack', exact: true })).toBeVisible()
+      }
+    }
+  })
+}

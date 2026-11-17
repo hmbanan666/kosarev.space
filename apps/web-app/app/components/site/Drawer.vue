@@ -5,6 +5,7 @@
     :class="{ 'site-drawer-fixed-body': fixedBody }"
     :aria-labelledby="titleId"
     :data-state="state"
+    :style="viewportStyle"
     @cancel.prevent="requestClose"
     @click="outside"
     @keydown.tab="trapFocus"
@@ -41,6 +42,16 @@ const state = ref<'closed' | 'opening' | 'open' | 'closing'>('closed')
 let timer: ReturnType<typeof setTimeout> | undefined
 let frame = 0
 let returnFocus: HTMLElement | null = null
+const viewportStyle = ref<Record<string, string>>({})
+function measureViewport() {
+  const viewport = window.visualViewport
+  viewportStyle.value = viewport
+    ? {
+        '--drawer-viewport-height': `${viewport.height}px`,
+        '--drawer-viewport-bottom': `${Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)}px`,
+      }
+    : {}
+}
 
 function cancelMotion() {
   clearTimeout(timer)
@@ -127,13 +138,22 @@ function trapFocus(event: KeyboardEvent) {
     first?.focus()
   }
 }
-onMounted(sync)
+onMounted(() => {
+  measureViewport()
+  window.visualViewport?.addEventListener('resize', measureViewport)
+  window.visualViewport?.addEventListener('scroll', measureViewport)
+  sync()
+})
 watch(() => props.open, sync, { flush: 'post' })
-onBeforeUnmount(cancelMotion)
+onBeforeUnmount(() => {
+  cancelMotion()
+  window.visualViewport?.removeEventListener('resize', measureViewport)
+  window.visualViewport?.removeEventListener('scroll', measureViewport)
+})
 </script>
 
 <style>
-.site-drawer { --canvas-type-scale: 1; position: fixed; inset: 0 0 0 auto; margin: 0; width: min(560px, 100%); height: 100dvh; max-height: 100dvh; max-width: 100%; padding: 0; overflow: hidden; color: var(--ui-text); background: #10100f; border: 0; border-left: 1px solid #d9ad6760; transform: translateX(100%); transition: transform 240ms ease-out; }
+.site-drawer { --canvas-type-scale: 1; position: fixed; inset: 0 0 0 auto; margin: 0; width: min(560px, 100%); height: var(--drawer-viewport-height, 100dvh); max-height: 100dvh; max-width: 100%; padding: 0; overflow: hidden; color: var(--ui-text); background: #10100f; border: 0; border-left: 1px solid #d9ad6760; transform: translateX(100%); transition: transform 240ms ease-out; }
 .site-drawer[open] { display: flex; flex-direction: column; }
 .site-drawer[data-state="open"] { transform: translate(0, 0); }
 .site-drawer::backdrop { background: #0009; backdrop-filter: blur(3px); opacity: 0; transition: opacity 240ms ease-out; }
@@ -146,10 +166,10 @@ body:has(.site-drawer[open]) { overflow: hidden; }
 .site-drawer-actions button:hover { color: var(--ui-primary); border-color: var(--ui-primary); }
 .site-drawer-actions button:disabled { opacity: .35; cursor: default; }
 .site-drawer-actions button:focus-visible { outline: 2px solid var(--ui-primary); outline-offset: 3px; }
-.site-drawer-body { flex: 1; min-height: 0; padding: 28px 32px; overflow-y: auto; overscroll-behavior: contain; }
+.site-drawer-body { flex: 1; min-height: 0; padding: 28px 32px calc(32px + env(safe-area-inset-bottom)); overflow-y: auto; scroll-padding-block: 28px; overscroll-behavior: contain; }
 .site-drawer-fixed-body .site-drawer-body { padding: 0; overflow: hidden; }
 @media (max-width: 767px) {
-  .site-drawer { inset: auto 0 0; width: 100%; height: 88dvh; border-top: 1px solid #d9ad6760; border-left: 0; transform: translateY(100%); }
+  .site-drawer { inset: auto 0 var(--drawer-viewport-bottom, 0px); width: 100%; height: min(88dvh, var(--drawer-viewport-height, 100dvh)); border-top: 1px solid #d9ad6760; border-left: 0; transform: translateY(100%); }
   .site-drawer-heading { padding: 16px 20px; gap: 12px; }
   .site-drawer-heading h2 { font-size: 1.25rem; }
   .site-drawer-body { padding: 24px 20px calc(24px + env(safe-area-inset-bottom)); }
