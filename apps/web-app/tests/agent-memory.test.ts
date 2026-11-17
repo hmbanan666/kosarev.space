@@ -101,6 +101,7 @@ it.each(['connect', 'callTool'] as const)('drops the client on a thrown %s error
 it.each([
   { isError: true, structuredContent: result(), content: [{ type: 'text', text: 'Failure' }] },
   { structuredContent: { ...result(), grounding: 'other' } },
+  { structuredContent: { ...result(), grounding: ['strong'] } },
   { structuredContent: { ...result(), scope: 'personal' } },
   { structuredContent: { ...result(), sources: [{ excerpt: { text: 42 } }] } },
   { structuredContent: null },

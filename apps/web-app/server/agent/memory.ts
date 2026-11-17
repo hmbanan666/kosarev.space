@@ -63,7 +63,7 @@ function parseMemory(response: unknown, scope: string): MemoryEvidence | null {
     }
   }
   if (!object(data) || !['string', 'number'].includes(typeof data.version) || data.scope !== scope || data.mode !== 'search'
-    || !['strong', 'weak', 'none'].includes(String(data.grounding)) || !Array.isArray(data.sources) || !Array.isArray(data.items)) {
+    || (data.grounding !== 'strong' && data.grounding !== 'weak' && data.grounding !== 'none') || !Array.isArray(data.sources) || !Array.isArray(data.items)) {
     throw new Error('Invalid memory result')
   }
   if (data.grounding === 'none') {
@@ -79,7 +79,7 @@ function parseMemory(response: unknown, scope: string): MemoryEvidence | null {
       excerpts.push(text)
     }
   }
-  return excerpts.length ? { grounding: data.grounding as 'strong' | 'weak', excerpts } : null
+  return excerpts.length ? { grounding: data.grounding, excerpts } : null
 }
 
 export async function lookupMemory(config: MemoryConfig, question: string): Promise<MemoryEvidence | null> {
