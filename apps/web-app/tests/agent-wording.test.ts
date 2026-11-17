@@ -39,3 +39,19 @@ it.each([
   const wording = createAnswerWording()
   expect([...input].map((character) => wording(character)).join('') + wording('', true)).toBe(expected)
 })
+
+it.each([
+  ['<think>Ник</think> [CV](/cv)</siehe><answer> ответ</answer>', 'Николай [CV](/cv) ответ'],
+  ['Text <note key="a>b">inside</note><br/> end', 'Text inside end'],
+  ['`<think>Nick</think>` and ``</answer>``.\n```xml\n<answer>Nick</answer>\n```\n</siehe>Done', '`<think>Nick</think>` and ``</answer>``.\n```xml\n<answer>Nick</answer>\n```\nDone'],
+  ['```xml\n<think>Nick</think>\n````\n<answer>Done</answer>', '```xml\n<think>Nick</think>\n````\nDone'],
+  ['~~~xml\n<think>Nick</think>\n~~~\n<answer>Done</answer>', '~~~xml\n<think>Nick</think>\n~~~\nDone'],
+  ['a < b and 2 > 1; <https://example.com> <nick@example.com> [site](https://example.com)', 'a < b and 2 > 1; <https://example.com> <nick@example.com> [site](https://example.com)'],
+])('removes stray tags outside code at every stream split: %s', (input, expected) => {
+  for (let split = 0; split <= input.length; split++) {
+    const wording = createAnswerWording()
+    expect(wording(input.slice(0, split)) + wording(input.slice(split)) + wording('', true), `split ${split}`).toBe(expected)
+  }
+  const wording = createAnswerWording()
+  expect([...input].map((character) => wording(character)).join('') + wording('', true)).toBe(expected)
+})
