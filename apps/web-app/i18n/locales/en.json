@@ -476,7 +476,6 @@
     "commits": "Recent commits",
     "pulls": "Recent pull requests",
     "languages": "Languages by code bytes",
-    "stack": "Main technologies",
     "source": "Public source",
     "project": "Project page",
     "live": "Live site",
@@ -489,7 +488,6 @@
     "liveTitle": "Live cursors",
     "updated": "Snapshot {time}",
     "bytes": "{count} bytes",
-    "status": "In development",
     "email": "Email",
     "legend": "Activity levels from less to more",
     "less": "Less",
@@ -504,7 +502,6 @@
     "contributionExplanation": "A GitHub contribution is a code change (commit), a proposed change (pull request), a code review or an issue; private work is counted only as anonymous numbers."
   },
   "agent": {
-    "privacy": "Questions to AI Bot are stored to improve answers.",
     "pending": "Queued",
     "label": "AI Bot",
     "intro": "The site’s AI agent. Answers about Nikolay, his projects (K39, Context, Woodlands and more), and everything on this site.",
@@ -540,5 +537,30 @@
       "status": "What stage is {name} at?",
       "link": "Where can I try {name}?"
     }
+  },
+  "drawer": {
+    "name": "Nikolay Kosarev",
+    "hero": "Nikolay builds web applications and tools for AI agents.",
+    "context": "A memory service for AI agents that stores notes and decisions for later conversations. Nikolay uses it as shared memory for his agents.",
+    "k39": "A travel guide to Kaliningrad Oblast with a map, routes and destination pages. The site is in active development.",
+    "woodlands": "Solitaire in Telegram with a shared daily deal, saved games and a weekly league. The game is in development.",
+    "space": "A portfolio with movable project cards, public activity and visitor cursors.",
+    "dostigus": "A platform for running your own AI bots. Development is paused and the code is published under MIT.",
+    "meloteka": "A music catalog with a web app, Telegram Mini App and audio transcoding. The project closed in 2026.",
+    "startodel": "A food-delivery website platform with menus, orders and payments. The project closed in 2026.",
+    "chatgame": "A Twitch game where viewers control the action through chat commands. The project closed in 2026.",
+    "nextorders": "An open-source food-ordering platform with a persistent cart and guest checkout.",
+    "feed": "Commits, pull requests and releases from Nikolay’s public repositories.",
+    "skills": "Languages in available public repositories and technologies from project descriptions. Code volume describes this sample, not proficiency in a language.",
+    "cv": "Nikolay’s experience building products, backend systems and tools for AI agents.",
+    "contacts": "You can reach Nikolay by email or Telegram.",
+    "writing": "Nikolay’s notes, digests and articles. Updates are available through RSS.",
+    "live": "Other visitors’ cursors update in real time.",
+    "presence": "The profile at the bottom of the page lets you hide or show cursors. Cursors are disabled on touch devices and when reduced motion is enabled in system settings.",
+    "builtWith": "The project uses {stack}.",
+    "documentedTools": "Project descriptions include {stack}.",
+    "latest": "Latest publication",
+    "cursorCase": "How the cursors work",
+    "read": "Read publication"
   }
 }

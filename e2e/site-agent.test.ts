@@ -15,7 +15,7 @@ for (const locale of ['ru', 'en']) {
       await page.setViewportSize({ width, height: 900 })
       await page.context().addCookies([{ name: 'i18n_redirected', value: locale, url: 'http://localhost:3333' }])
       const english = locale === 'en'
-      const label = 'AI Bot'
+      const label = english ? 'AI Bot' : 'AI Бот'
       const prefix = english ? '/en' : ''
       const answer = english ? 'K39 is a map of places in Kaliningrad. Explore [K39](/en/projects/k39) or visit [k39.online](https://k39.online).' : 'K39. Карта мест Калининграда. Подробнее о [K39](/projects/k39) и на [k39.online](https://k39.online).'
       await page.route('**/api/agent', async (route) => {
@@ -35,7 +35,10 @@ for (const locale of ['ru', 'en']) {
       await page.addStyleTag({ content: 'nuxt-devtools-frame {display:none!important}' })
       await openAgent(page, label)
       const dialog = page.getByRole('dialog')
-      await expect(dialog.locator('.agent-hint')).toBeVisible()
+      await expect(dialog.locator('.agent-hint'))[width === 390 ? 'toBeHidden' : 'toBeVisible']()
+      await expect(dialog).toHaveClass(/site-drawer/)
+      await expect(dialog.locator('.site-drawer-heading h2')).toHaveText(label)
+      await expect(dialog.locator('.agent-privacy')).toHaveCount(0)
       await expect(dialog).toHaveClass(/ym-hide-content/)
       await expect(dialog.locator('textarea')).toHaveClass(/ym-disable-keys/)
       await expect(dialog.locator('form')).toHaveClass(/ym-disable-submit/)
@@ -49,6 +52,9 @@ for (const locale of ['ru', 'en']) {
       await expect(dialog.locator('.agent-markdown')).toContainText('K39')
       await expect(dialog.getByRole('link', { name: 'k39.online' })).toHaveAttribute('href', 'https://k39.online')
       await expect(dialog.getByRole('link', { name: 'k39.online' })).toHaveClass(/ym-disable-tracklink/)
+      await expect(dialog.locator('.agent-user')).toHaveCSS('align-self', 'flex-end')
+      await expect(dialog.locator('.agent-role')).toHaveClass([/sr-only/, /sr-only/])
+      expect(await dialog.locator('.agent-scroll').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true)
       await dialog.locator('.agent-sources summary').click()
       if (process.env.AGENT_SCREENSHOTS) {
         await page.screenshot({ path: `docs/images/site-agent/answered-${locale}-${width}.png` })
@@ -111,15 +117,15 @@ test('rate-limit and interrupted stream are visible and history can be cleared',
 for (const locale of ['ru', 'en']) {
   test.describe(`${locale} touch drawer`, () => {
     test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 900 } })
-    test('hides keyboard hints and shows storage notice and linked contact', async ({ page }) => {
+    test('hides keyboard hints and storage notice and shows linked contact', async ({ page }) => {
       const { scopeRefusal } = await import('../apps/web-app/server/agent/guard')
       const question = locale === 'ru' ? 'напиши код на go' : 'Write code in Go'
       await page.route('**/api/agent', (route) => route.fulfill({ contentType: 'text/event-stream', body: `data: ${JSON.stringify({ type: 'delta', text: scopeRefusal(question, locale) })}\n\ndata: {"type":"done"}\n\n` }))
       await page.goto(locale === 'en' ? '/en/contact' : '/contact')
-      await openAgent(page, 'AI Bot')
+      await openAgent(page, locale === 'ru' ? 'AI Бот' : 'AI Bot')
       const dialog = page.getByRole('dialog')
       await expect(dialog.locator('.agent-hint')).toBeHidden()
-      await expect(dialog.locator('.agent-privacy')).toHaveText(locale === 'ru' ? 'Вопросы к AI Bot сохраняются для улучшения ответов.' : 'Questions to AI Bot are stored to improve answers.')
+      await expect(dialog.locator('.agent-privacy')).toHaveCount(0)
       await page.locator('#site-agent-input').fill(question)
       await dialog.locator('button[type="submit"]').click()
       const contact = dialog.locator('.agent-markdown a')

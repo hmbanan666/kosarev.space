@@ -21,7 +21,7 @@ for (const locale of ['en', 'ru']) {
         await page.route('**/api/activity', (route) => route.fulfill({ json: snapshot }))
         await page.goto(prefix || '/')
         const launcher = page.locator('.site-agent-launcher')
-        await expect(launcher).toHaveAccessibleName('AI Bot')
+        await expect(launcher).toHaveAccessibleName(locale === 'ru' ? 'AI Бот' : 'AI Bot')
         await page.evaluate(() => document.fonts.ready)
         await page.addStyleTag({ content: '#nuxt-devtools-container { display:none!important }' })
         await expect(page.locator('.site-header .site-language')).toBeVisible()

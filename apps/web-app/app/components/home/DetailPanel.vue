@@ -1,99 +1,105 @@
 <template>
-  <dialog
+  <SiteDrawer
     id="activity-detail-panel"
-    ref="dialog"
     class="activity-panel"
-    aria-labelledby="activity-panel-title"
-    @cancel.prevent="emit('close')"
-    @click="outside"
+    :open="!!id"
+    :title="contentTitle"
+    title-id="activity-panel-title"
+    :close-label="t('activity.close')"
+    @close="emit('close')"
   >
-    <header class="activity-panel-heading">
-      <div>
-        <p v-if="id !== 'contributions'" class="canvas-eyebrow">
-          {{ t('activity.open', { name: title }) }}
-        </p><h2 id="activity-panel-title">
-          {{ title }}
-        </h2>
-      </div>
-      <button
-        type="button"
-        :aria-label="t('activity.close')"
-        @click="emit('close')"
-      >
-        <UIcon name="i-lucide-x" />
-      </button>
-    </header>
-    <template v-if="product">
-      <p class="canvas-eyebrow">
-        {{ t('activity.status') }}
-      </p>
-      <p>{{ t(product.pitch) }}</p>
-      <template v-if="repo">
-        <h3>{{ t('activity.days30') }}</h3>
-        <HomeActivityGraph :days="miniDays" mini />
-        <h3>{{ t('activity.commits') }}</h3>
-        <HomeActivityFeed :items="items.filter(item => item.kind === 'commit').slice(0, 8)" />
-        <h3>{{ t('activity.pulls') }}</h3>
-        <HomeActivityFeed :items="items.filter(item => item.kind === 'pr').slice(0, 5)" />
-        <h3>{{ t('activity.languages') }}</h3>
-        <p class="activity-tags">
-          <span v-for="[name, bytes] in Object.entries(repo.languages).sort((a, b) => b[1] - a[1])" :key="name">{{ name }} <small>{{ t('activity.bytes', { count: bytes.toLocaleString(locale) }) }}</small></span>
-        </p>
-      </template>
-      <p v-else class="canvas-footnote">
-        {{ t('activity.noRepo') }}
-      </p>
-      <template v-if="stack.length">
-        <h3>{{ t('activity.stack') }}</h3>
-        <p class="activity-tags">
-          <span v-for="tag in stack" :key="tag">{{ tag }}</span>
-        </p>
-      </template>
-      <nav class="activity-panel-links" :aria-label="t('site.navigation')">
-        <NuxtLink v-if="product.page" :to="localePath(product.page)">
-          {{ t('activity.project') }}<SiteLinkIcon />
-        </NuxtLink>
-        <a v-if="product.link" :href="product.link">{{ t('activity.live') }}<SiteLinkIcon external /></a>
-        <a v-if="repo" :href="repo.url">{{ t('activity.source') }}<SiteLinkIcon external /></a>
-      </nav>
-    </template>
-    <HomeContributionDetails v-else-if="id === 'contributions'" :activity="activity" />
+    <HomeContributionDetails v-if="contentId === 'contributions'" :activity="activity" />
     <template v-else>
-      <div class="activity-panel-content">
-        <HomeBlockContent
-          v-if="id"
-          :id="id"
-          :activity="activity"
-          :latest="latest"
-        />
-      </div>
-      <p v-if="id === 'live'">
-        {{ t('site.presenceDescription') }}
+      <p v-if="contentId && contentId !== 'publication'">
+        {{ t(`drawer.${contentId}`) }}
       </p>
-      <p v-if="id === 'cv'">
-        {{ t('hero.description') }}
+      <template v-if="product">
+        <template v-if="items.length">
+          <h3>{{ t('activity.days30') }}</h3>
+          <HomeActivityGraph :days="miniDays" mini />
+        </template>
+        <template v-if="commits.length">
+          <h3>{{ t('activity.commits') }}</h3>
+          <HomeActivityFeed :items="commits" :limit="3" />
+        </template>
+        <template v-if="pulls.length">
+          <h3>{{ t('activity.pulls') }}</h3>
+          <HomeActivityFeed :items="pulls" :limit="3" />
+        </template>
+        <p v-if="stack.length" class="drawer-stack">
+          {{ t('drawer.builtWith', { stack: stack.join(', ') }) }}
+        </p>
+      </template>
+      <template v-if="contentId === 'hero' || contentId === 'cv'">
+        <p class="drawer-facts">
+          {{ t('cv.subtitle') }}<br>{{ t('cv.location') }} · {{ t('cv.since') }}
+        </p>
+      </template>
+      <template v-if="contentId === 'feed' && activity.items.length">
+        <h3>{{ t('activity.days30') }}</h3>
+        <HomeActivityGraph :days="feedDays" mini />
+        <HomeActivityFeed :items="activity.items" :limit="12" />
+      </template>
+      <template v-if="languages.length">
+        <h3>{{ t('activity.languages') }}</h3>
+        <dl class="drawer-languages">
+          <div v-for="[name, bytes] in languages" :key="name">
+            <dt>{{ name }}</dt>
+            <dd>{{ t('activity.bytes', { count: bytes.toLocaleString(locale) }) }}</dd>
+          </div>
+        </dl>
+      </template>
+      <p v-if="contentId === 'skills'" class="drawer-stack">
+        {{ t('drawer.documentedTools', { stack: activityTechTags.join(', ') }) }}
       </p>
+      <p v-if="contentId === 'live'" class="drawer-facts">
+        {{ t('drawer.presence') }}
+      </p>
+      <template v-if="latest && ['publication', 'writing', 'hero'].includes(contentId ?? '')">
+        <h3 v-if="contentId !== 'publication'">
+          {{ t('drawer.latest') }}
+        </h3>
+        <p v-if="contentId !== 'publication'">
+          <NuxtLink :to="localePath(`/writing/${latest.slug}`)">
+            {{ latest.locales[language].title }}<SiteLinkIcon />
+          </NuxtLink>
+        </p>
+        <p class="drawer-facts">
+          {{ latest.locales[language].description }}
+        </p>
+        <p class="canvas-footnote">
+          {{ t(`writing.types.${latest.type}`) }} · {{ latest.publishedAt }}
+        </p>
+      </template>
       <nav
-        v-if="id === 'contacts'"
+        v-if="links.length"
         class="activity-panel-links"
         :aria-label="t('site.navigation')"
       >
-        <a href="mailto:nick@kosarev.space">nick@kosarev.space</a><a href="https://t.me/hmbanan666">Telegram</a><a href="https://github.com/hmbanan666">GitHub</a>
+        <NuxtLink
+          v-for="link in links"
+          :key="link.href"
+          :to="link.href"
+          :external="link.external"
+        >
+          {{ link.label }}<SiteLinkIcon :external="link.external" />
+        </NuxtLink>
       </nav>
+      <p v-if="hasPublicData" class="canvas-footnote">
+        {{ t('activity.partial') }} <template v-if="activity.fetchedAt">
+          {{ t('activity.updated', { time: relativeTime(activity.fetchedAt) }) }}
+        </template>
+      </p>
     </template>
-    <p v-if="product || ['hero', 'feed', 'skills'].includes(id ?? '')" class="canvas-footnote">
-      {{ t('activity.partial') }} <template v-if="activity.fetchedAt">
-        {{ t('activity.updated', { time: relativeTime(activity.fetchedAt) }) }}
-      </template>
-    </p>
-  </dialog>
+  </SiteDrawer>
 </template>
 
 <script setup lang="ts">
 import type { ActivitySnapshot } from '~~/shared/activity'
 import type { PublicationSummary } from '~~/shared/publications'
 import { calendarDays } from '~~/shared/activity'
-import { canvasProducts } from '~/utils/activity-content'
+import { activityTechTags, canvasProducts } from '~/utils/activity-content'
+import { projects } from '~/utils/data'
 import { projectSectionsFor } from '~/utils/project-sections'
 
 const props = defineProps<{ id?: string, title: string, activity: ActivitySnapshot, latest?: PublicationSummary }>()
@@ -101,29 +107,95 @@ const emit = defineEmits<{ close: [] }>()
 const { t, locale, te, tm, rt } = useI18n()
 const localePath = useLocalePath()
 const relativeTime = useActivityTime()
-const dialog = useTemplateRef('dialog')
-const product = computed(() => canvasProducts.find((product) => product.key === props.id))
-const repo = computed(() => props.activity.repos.find((repo) => repo.project === props.id))
-const stack = computed(() => props.id ? projectSectionsFor(props.id, { te, tm, resolve: (message) => rt(message as Parameters<typeof rt>[0]) })?.stack ?? [] : [])
+// Keep the last card's contents in place while its modal animates closed.
+const contentId = ref(props.id)
+const contentTitle = ref(props.title)
+watch(() => [props.id, props.title] as const, ([id, title]) => {
+  if (id) {
+    contentId.value = id
+    contentTitle.value = title
+  }
+})
+const language = computed(() => locale.value === 'en' ? 'en' : 'ru')
+const product = computed(() => canvasProducts.find((product) => product.key === contentId.value))
+const repo = computed(() => props.activity.repos.find((repo) => repo.project === contentId.value))
+const stack = computed(() => {
+  if (!product.value) {
+    return []
+  }
+  return projectSectionsFor(product.value.key, { te, tm, resolve: (message) => rt(message as Parameters<typeof rt>[0]) })?.stack.slice(0, 4)
+    ?? projects.find((project) => project.key === product.value?.key)?.stack ?? []
+})
 const items = computed(() => props.activity.items.filter((item) => item.repo === repo.value?.name))
+const commits = computed(() => items.value.filter((item) => item.kind === 'commit'))
+const pulls = computed(() => items.value.filter((item) => item.kind === 'pr'))
 const miniDays = computed(() => calendarDays(items.value, props.activity.fetchedAt ?? new Date(0).toISOString(), 30))
-function sync() {
-  if (props.id && !dialog.value?.open) {
-    dialog.value?.showModal()
+const feedDays = computed(() => calendarDays(props.activity.items, props.activity.fetchedAt ?? new Date(0).toISOString(), 30))
+const languages = computed(() => {
+  const totals: Record<string, number> = {}
+  const repos = contentId.value === 'skills' ? props.activity.repos : repo.value ? [repo.value] : []
+  for (const repo of repos) {
+    for (const [name, bytes] of Object.entries(repo.languages)) {
+      if (bytes > 0) {
+        totals[name] = (totals[name] ?? 0) + bytes
+      }
+    }
   }
-  if (!props.id && dialog.value?.open) {
-    dialog.value.close()
+  return Object.entries(totals).sort((a, b) => b[1] - a[1])
+})
+const hasPublicData = computed(() => languages.value.length || items.value.length || (contentId.value === 'feed' && props.activity.items.length))
+const links = computed(() => {
+  const result: { href: string, label: string, external: boolean }[] = []
+  function add(href: string | undefined, label: string, external = false) {
+    if (href && !result.some((link) => link.href === href)) {
+      result.push({ href, label, external })
+    }
   }
-}
-onMounted(sync)
-watch(() => props.id, () => nextTick(sync))
-function outside(event: MouseEvent) {
-  if (!dialog.value || event.target !== dialog.value) {
-    return
+  function local(path: string, key: string) {
+    add(localePath(path), t(key))
   }
-  const rect = dialog.value.getBoundingClientRect()
-  if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
-    emit('close')
+  if (product.value) {
+    if (product.value.page) {
+      local(product.value.page, contentId.value === 'space' ? 'drawer.cursorCase' : 'activity.project')
+    }
+    add(product.value.link, t('activity.live'), true)
+    add(repo.value?.url, t('activity.source'), true)
   }
-}
+  switch (contentId.value) {
+    case 'hero':
+      local('/projects', 'hero.projects')
+      local('/cv', 'site.viewCv')
+      local('/contact', 'hero.contact')
+      break
+    case 'cv':
+      local('/cv', 'site.viewCv')
+      add(language.value === 'en' ? '/cv-en.pdf' : '/cv.pdf', t('cv.downloadPdf'), true)
+      break
+    case 'contacts':
+      add('mailto:nick@kosarev.space', 'nick@kosarev.space', true)
+      add('https://t.me/hmbanan666', 'Telegram', true)
+      add('https://github.com/hmbanan666', 'GitHub', true)
+      break
+    case 'live':
+      local('/cases/kosarev-live-cursors', 'drawer.cursorCase')
+      break
+    case 'skills':
+      local('/cv', 'site.viewCv')
+      local('/projects', 'hero.projects')
+      break
+    case 'feed':
+      add('https://github.com/hmbanan666', t('activity.githubProfile'), true)
+      break
+    case 'publication':
+      if (props.latest) {
+        local(`/writing/${props.latest.slug}`, 'drawer.read')
+      }
+      break
+    case 'writing':
+      local('/writing', 'writing.title')
+      add(language.value === 'en' ? '/en/writing/feed.xml' : '/writing/feed.xml', 'RSS', true)
+      break
+  }
+  return result
+})
 </script>

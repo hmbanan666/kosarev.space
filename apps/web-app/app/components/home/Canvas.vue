@@ -174,7 +174,7 @@ onBeforeUnmount(() => {
 })
 const parts: Record<string, string> = { hero: 'A / 01', context: 'B / 01', k39: 'B / 02', writing: 'C / 01' }
 function blockLabel(id: string) {
-  const labels: Record<string, string> = { hero: t('hero.name'), cv: t('nav.cv'), contacts: t('hero.contact'), writing: t('writing.title'), live: t('activity.liveTitle'), contributions: t('activity.contributions'), feed: t('activity.feed'), skills: t('activity.skills') }
+  const labels: Record<string, string> = { hero: t('drawer.name'), cv: t('nav.cv'), contacts: t('hero.contact'), writing: t('writing.title'), live: t('activity.liveTitle'), contributions: t('activity.contributions'), feed: t('activity.feed'), skills: t('activity.skills') }
   const product = canvasProducts.find((product) => product.key === id)
   return labels[id] ?? (id === 'publication' ? latest.value?.locales[locale.value === 'en' ? 'en' : 'ru'].title : undefined) ?? (product?.titleKey ? t(product.titleKey) : product?.title) ?? id
 }
@@ -182,7 +182,6 @@ const route = useRoute()
 const router = useRouter()
 const selectedCard = computed(() => typeof route.query.card === 'string' && defaults.value.some((block) => block.id === route.query.card) ? route.query.card : undefined)
 let openedHere = false
-let trigger: HTMLElement | null = null
 let pointer = { x: 0, y: 0 }
 function rememberPointer(event: PointerEvent) {
   pointer = { x: event.clientX, y: event.clientY }
@@ -194,7 +193,7 @@ function openCard(event: MouseEvent, id: string) {
   showCard(id)
 }
 function showCard(id: string) {
-  trigger = document.querySelector(`[data-block="${id}"] .canvas-open`)
+  const trigger = document.querySelector<HTMLElement>(`[data-block="${id}"] .canvas-open`)
   trigger?.focus({ preventScroll: true })
   openedHere = true
   void router.push({ query: { ...route.query, card: id } })
@@ -207,11 +206,9 @@ function closeCard() {
     void router.replace({ query })
   }
 }
-watch(selectedCard, async (value) => {
+watch(selectedCard, (value) => {
   if (!value) {
     openedHere = false
-    await nextTick()
-    trigger?.focus({ preventScroll: true })
   }
 })
 </script>

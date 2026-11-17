@@ -171,26 +171,17 @@
 .activity-feed p { color: var(--ui-text-muted); font-size: .8rem; margin-top: 4px; }
 .activity-languages, .activity-tags { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; font-size: .9rem; }
 .activity-languages small, .activity-tags small { color: var(--ui-primary); }
-.activity-panel { --canvas-type-scale: 1; position: fixed; inset: 0 0 0 auto; margin: 0; width: min(560px, 100%); height: 100dvh; max-height: 100dvh; max-width: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 32px; color: var(--ui-text); background: #10100f; border: 0; border-left: 1px solid #d9ad6760; }
-.activity-panel::backdrop { background: #0009; backdrop-filter: blur(3px); }
-body:has(.activity-panel[open]) { overflow: hidden; }
-.activity-panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
-.activity-panel-heading h2 { font-size: 2rem; }
-.activity-panel-heading button { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--ui-border); }
 .activity-panel h3 { font-size: 1rem; color: var(--ui-primary); margin-top: 28px; margin-bottom: 12px; }
 .activity-panel p { line-height: 1.7; }
 .activity-panel .activity-graph { margin-bottom: 24px; }
 .activity-panel .activity-feed a { -webkit-line-clamp: 3; }
 .activity-panel-links { display: flex; flex-wrap: wrap; gap: 20px; margin-block: 28px; color: var(--ui-primary); }
-.activity-panel-content { display: flex; flex-direction: column; gap: 12px; }
-.activity-panel-content .canvas-latest a { font-size: 1.25rem; }
 @media (max-width: 1100px) {
   .canvas-credits { gap: 10px; }
   .canvas-credits nav { gap: 10px; }
   .canvas-copyright { font-size: .65rem; }
 }
 @media (max-width: 767px) {
-  .activity-panel { inset: auto 0 0; width: 100%; height: 88dvh; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); border-top: 1px solid #d9ad6760; border-left: 0; }
   .home-canvas:not(.canvas-enabled) .blueprint-frame { min-height: 160px; }
   .canvas-block-hero .canvas-description { font-size: 1rem; }
 }
@@ -263,3 +254,8 @@ body:has(.activity-panel[open]) { overflow: hidden; }
   .activity-calendar-heading h2 { flex-basis: 100%; }
   .contribution-months li { grid-template-columns: 6.5rem 1fr 2.5rem; gap: 8px; }
 }
+
+.drawer-stack, .drawer-facts { margin-top: 16px; }
+.drawer-languages { display: grid; gap: 8px; }
+.drawer-languages > div { display: flex; justify-content: space-between; gap: 20px; }
+.drawer-languages dd { color: var(--ui-text-muted); text-align: right; }
