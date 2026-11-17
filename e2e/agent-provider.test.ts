@@ -108,6 +108,11 @@ test('real endpoint streams the mocked provider, includes sources, stops and lim
     }).toBe(4)
     const refused = await database.query('SELECT role, filtered, filtered_reason, content <> \'\' AS has_content FROM agent_messages WHERE session_id = $1', [refusalSession])
     expect(refused.rows.every((row: { filtered: boolean, filtered_reason: string, has_content: boolean }) => row.filtered && row.filtered_reason === 'blocked_question' && row.has_content)).toBe(true)
+    const cleaned = await database.query('SELECT content FROM agent_messages WHERE session_id = $1 AND role = \'assistant\' AND filtered_reason IS NULL', [retrySession])
+    expect(cleaned.rows.map((row: { content: string }) => row.content)).toEqual([
+      'K39: карта Калининграда. [K39](/projects/k39).',
+      'K39: карта Калининграда. [K39](/projects/k39).',
+    ])
     const saved = await database.query('SELECT count(*)::int AS count FROM agent_messages WHERE session_id = $1 AND role = \'assistant\' AND jsonb_array_length(sources) > 0 AND latency_ms >= 0', [sessionId])
     expect(saved.rows[0].count).toBeGreaterThan(0)
   } finally {

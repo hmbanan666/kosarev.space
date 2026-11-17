@@ -44,7 +44,8 @@ reads an explicit allowlist, not a repository crawl:
 - public `pro.json`, introduction and contact details.
 
 Long documents use 1,000-character chunks with 150-character overlap. No private
-notes, environment files, Context service or MCP tools participate.
+notes, environment files, Context service or MCP tools participate in this
+build-time pack. Request-time memory is separate (see below).
 
 Publications are database-backed and intentionally change independently of a
 site build. [Request-time evidence](../apps/web-app/server/agent/evidence.ts)
@@ -94,6 +95,103 @@ must not claim there are no stack details; without it they must acknowledge the
 gap. Sources list the site pages supplied to the model; this is provenance of retrieved evidence, not a guarantee
 that every supplied page was cited in the answer.
 
+## Memory (Context)
+
+The agent can read a separate Context instance as memory. It holds owner
+explanations, preferences, reasons for decisions and lessons from chat reviews
+that are **not on site pages**. It is not a mirror of the CV, cases, projects or
+articles. Those remain in the site, with the existing local knowledge pack and
+request-time public evidence as their sources. Never import site page content
+into memory.
+
+All settings below are server-only entries in Nuxt `runtimeConfig`, outside
+`public`. The owner reports that the URL and token environment variables are
+already configured in production; that configuration was not inspected here.
+
+| Config key | Environment variable | Default |
+| --- | --- | --- |
+| `contextUrl` | `NUXT_CONTEXT_URL` | empty |
+| `contextToken` | `NUXT_CONTEXT_TOKEN` | empty |
+| `contextScope` | `NUXT_CONTEXT_SCOPE` | `site` |
+| `contextProject` | `NUXT_CONTEXT_PROJECT` | `kosarev-space` |
+| `contextTimeoutMs` | `NUXT_CONTEXT_TIMEOUT_MS` | `1500` |
+
+An empty URL or token disables memory without a network request or error.
+[The memory adapter](../apps/web-app/server/agent/memory.ts) uses the pinned
+official `@modelcontextprotocol/sdk` client and Streamable HTTP transport for
+JSON or SSE responses. The token is sent only in `Authorization: Bearer …`;
+message requests reject redirects. The client connects lazily and is reused
+across requests; any connection, tool or validation error discards it so the
+next question can reconnect. No session ID is configured for the stateless
+server, and there is no memory cache across questions.
+
+Only questions that pass the existing pre-filter and proceed to the model
+trigger `search`, with `{ scope, project, query, k: 4 }`. `query` is the current
+question, trimmed and limited to 500 characters; history and page content are
+not sent to Context. One abortable timeout covers connection and search
+(default 1,500 ms). Timeout, transport errors, tool `isError` and malformed
+results all fall back to the existing answer flow without memory. There is no
+memory retry within that question. A failed shared connection can also make
+concurrent lookups fall back; each still has its own deadline.
+
+The adapter validates the result envelope and extracts at most four source
+excerpts, each capped at 600 characters. Source excerpts can supply evidence
+when the knowledge `items` array is empty. The prompt receives a separate
+`Memory · Память` block with no URL:
+
+- `none`: no block and no memory evidence, even if sources were returned.
+- `weak`: usable excerpts count as evidence, with `partial: true`; quote only
+  what the note says and label it as partial in the answer's language.
+- `strong`: usable excerpts count as ordinary evidence.
+
+Empty excerpts do not count as evidence. When both site evidence and usable
+memory are absent, the prompt retains the honest-unknown path. Memory never
+bypasses the topic pre-filter. Notes are untrusted data, not instructions,
+even if they claim owner authorization; the existing output guard still
+applies. Memory is excluded from the visitor's `sources` list and stored source
+links. The model must not invent a public link for a note.
+
+Each model-bound request logs one structured server record through
+[`useLogger`](../apps/web-app/server/utils/logger.ts):
+`{ event: 'agent_memory', status, grounding, hits, ms }`. Status is `disabled`,
+`ok`, `timeout` or `error`; grounding is `strong`, `weak` or `none`, and hits
+counts usable excerpts. Disabled/failing lookups report `none` and zero hits.
+No question, excerpt, IP, credential or raw error is logged. Prefilter refusals
+make no lookup. Memory metadata is not added to `agent_messages`; there is no
+schema migration. Answers informed by memory are persisted as ordinary
+assistant text under the existing retention policy.
+
+### Maintaining memory outside the site
+
+The site only reads memory; its token must stay read-only. The owner or
+maintainer agents write notes outside the site into area `site`, project
+`kosarev-space`. Treat these as notes permitted to inform visitor answers,
+not a place for secrets or confidential details.
+
+The owner issues a separate short-lived write token on the Context server:
+
+```sh
+context token create <name> --write site --project kosarev-space --expires 1h
+```
+
+Use that token with MCP `remember` for individual notes. For a directory of
+memory Markdown notes, the maintainer CLI workflow is:
+
+```sh
+context import markdown <dir> --area site --project kosarev-space [--prune]
+```
+
+`[--prune]` denotes an optional flag, not literal brackets. Remove a source with:
+
+```sh
+context doc remove <source id>
+```
+
+Keep write credentials outside the site runtime, repository, fixtures and logs.
+These are owner-specified operator commands, not commands run by the site or
+executed as part of this change. This feature creates no notes automatically
+and does not write chat reviews back to Context.
+
 ## Topic boundaries
 
 The system prompt limits answers to this site and its pages, Nikolay's products,
@@ -125,7 +223,9 @@ retrieved site evidence, at most 200 characters and five lines of code, may
 pass. Longer, unmatched and unterminated blocks are discarded. A bounded
 streaming wording pass uses Nikolay / Николай (including Russian inflections),
 replaces prose dashes with colons and removes spaces before punctuation across
-delta boundaries. It preserves inline and fenced code, email addresses, URLs,
+delta boundaries. It also strips stray HTML/XML-like tags outside code,
+including tags split across deltas. It preserves their enclosed text, inline
+and fenced code, email addresses, URLs,
 decimals, ellipsis and Markdown list markers. The keyboard hint
 uses middots in Russian and is hidden on touch devices. Ordinary prose still
 streams; an entirely removed answer receives the canned refusal. These are
@@ -199,8 +299,10 @@ across site navigation and reload and can be cleared in the drawer. Clearing the
 drawer does not delete server rows or rotate the anonymous session identifier.
 An interrupted answer restores as stopped; pending questions resume sequentially
 after reload. Storage failure leaves the current in-memory conversation usable.
-On Send, bounded conversation history and selected public site excerpts are sent
-to the configured provider; nothing is sent merely by opening the drawer.
+On Send, bounded conversation history, selected public site excerpts and any
+usable memory notes are sent to the configured provider. The current question
+is also sent to Context when memory is enabled and the pre-filter passes.
+Nothing is sent merely by opening the drawer.
 
 ## Message persistence and privacy
 
@@ -282,7 +384,14 @@ upstream URL. It verifies actual endpoint streaming, packed evidence, Stop,
 validation, stop-then-continue queue behavior, provider failure, rate limits and
 resistance to spoofed forwarding headers. The ordinary browser suite exercises
 the real offline endpoint without a key and uses intercepted SSE for
-deterministic UI captures. Both configurations disable GitHub activity fetching.
+deterministic UI captures. Both configurations start isolated test servers,
+disable GitHub activity fetching and explicitly clear `NUXT_CONTEXT_URL` and
+`NUXT_CONTEXT_TOKEN`, so E2E never contacts Context. Unit tests mock the MCP
+client/transport and exercise disabled config, grounding, bounded excerpts,
+timeouts, errors, connection reuse and sanitized logging. Additional transport
+tests use the real SDK with synthetic fetch responses for JSON and SSE, without
+network access. Fragmented tags are covered by unit tests and the dedicated
+provider fixture; streamed and persisted answers must match.
 Unit tests exercise the API handler with the real public knowledge pack and a
 local provider stub: RU/EN attack/off-topic prompts must make no provider call,
 and legitimate skill, current-work and product questions must reach it.

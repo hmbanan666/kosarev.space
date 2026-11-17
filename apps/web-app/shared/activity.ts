@@ -33,6 +33,10 @@ export function projectScores(snapshot: ActivitySnapshot): Record<string, number
   return Object.fromEntries(snapshot.repos.filter((repo) => repo.project).map((repo) => [repo.project!, activityScore(snapshot.items.filter((item) => item.repo === repo.name), snapshot.fetchedAt ?? '')]))
 }
 
+export function projectCommitItems(items: ActivityItem[]): ActivityItem[] {
+  return items.filter((item) => item.kind === 'commit' && !/^Merge (?:pull request|branch|remote-tracking branch)/.test(item.title))
+}
+
 // Keep raw observations for project graphs/ranking; collapse only feed rows.
 export function activityFeedItems(items: ActivityItem[]): ActivityItem[] {
   const pulls = new Map(items.filter((item) => item.kind === 'pr').map((item) => [`${item.repo}:${item.url.match(/\/pull\/(\d+)$/)?.[1]}`, item]))

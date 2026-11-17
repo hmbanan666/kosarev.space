@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@kosarev/database": "workspace:*",
+    "@modelcontextprotocol/sdk": "catalog:integrations",
     "@nuxt/ui": "catalog:integrations",
     "@nuxtjs/i18n": "catalog:integrations",
     "@nuxtjs/robots": "catalog:integrations",

@@ -25,7 +25,7 @@ export function createAnswerWording() {
           break
         }
         if (code) {
-          if (delimiter[0] === code[0] && delimiter.length === code.length) {
+          if (delimiter[0] === code[0] && (code.length >= 3 ? delimiter.length >= code.length : delimiter.length === code.length)) {
             code = ''
           }
         } else if (character === '`' || delimiter.length >= 3) {
@@ -40,6 +40,18 @@ export function createAnswerWording() {
         emit(character)
         pending = pending.slice(1)
         continue
+      }
+      if (character === '<') {
+        const tag = pending.match(/^<\/?[a-z][\w:.-]*(?:\s(?:[^<>"']|"[^"]*"|'[^']*')*)?\/?>/i)?.[0]
+        if (tag) {
+          pending = pending.slice(tag.length)
+          continue
+        }
+        // Hold a possible tag across deltas, without buffering unbounded prose.
+        const partial = /^<\/?(?:[a-z][\w:.-]*(?:\s[^<]*)?\/?)?$/i.test(pending)
+        if (!final && partial && pending.length < 1024) {
+          break
+        }
       }
       if (/\s/.test(character)) {
         whitespace += character

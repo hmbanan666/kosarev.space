@@ -109,7 +109,7 @@
 <script setup lang="ts">
 import type { ActivitySnapshot } from '~~/shared/activity'
 import type { PublicationSummary } from '~~/shared/publications'
-import { calendarDays } from '~~/shared/activity'
+import { calendarDays, projectCommitItems } from '~~/shared/activity'
 import { activityTechTags, canvasProducts } from '~/utils/activity-content'
 import { projects } from '~/utils/data'
 import { projectSectionsFor } from '~/utils/project-sections'
@@ -140,7 +140,7 @@ const stack = computed(() => {
     ?? projects.find((project) => project.key === product.value?.key)?.stack ?? []
 })
 const items = computed(() => props.activity.items.filter((item) => item.repo === repo.value?.name))
-const commits = computed(() => items.value.filter((item) => item.kind === 'commit'))
+const commits = computed(() => projectCommitItems(items.value))
 const pulls = computed(() => items.value.filter((item) => item.kind === 'pr'))
 const miniDays = computed(() => calendarDays(items.value, props.activity.fetchedAt ?? new Date(0).toISOString(), 30))
 const feedDays = computed(() => calendarDays(props.activity.items, props.activity.fetchedAt ?? new Date(0).toISOString(), 30))

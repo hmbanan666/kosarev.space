@@ -1,4 +1,3 @@
-import process from 'node:process'
 import { defineConfig } from '@playwright/test'
 
 const port = 3333
@@ -15,9 +14,9 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
   },
   webServer: {
-    command: `NUXT_GITHUB_ACTIVITY_DISABLED=true PORT=${port} pnpm --filter @kosarev/web-app dev`,
+    command: `NUXT_CONTEXT_URL='' NUXT_CONTEXT_TOKEN='' NUXT_GITHUB_ACTIVITY_DISABLED=true PORT=${port} pnpm --filter @kosarev/web-app dev`,
     url: `http://localhost:${port}`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120000,
   },
 })

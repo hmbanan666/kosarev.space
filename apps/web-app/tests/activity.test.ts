@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
 import { activityLayout, homeCanvas } from '../app/utils/home-canvas'
-import { activityFeedItems, activityScore, calendarDays } from '../shared/activity'
+import { activityFeedItems, activityScore, calendarDays, projectCommitItems } from '../shared/activity'
 
 it('weights recent public commits and PRs, ignoring releases, old and future entries', () => {
   const now = '2026-11-16T12:00:00Z'
@@ -32,4 +32,19 @@ it('shows a PR and its squash commit once, scoped to the same repository', () =>
   ]
   expect(activityFeedItems(items).map((item) => item.id)).toEqual(['c', 'b', 'd'])
   expect(items).toHaveLength(4)
+})
+
+it('omits merge subjects from project drawer commits while retaining ordinary commits in order', () => {
+  const items = [
+    { kind: 'commit' as const, title: 'Merge pull request #10 from owner/feature' },
+    { kind: 'commit' as const, title: 'Merge branch \'main\' into feature' },
+    { kind: 'commit' as const, title: 'Merge remote-tracking branch \'origin/main\'' },
+    { kind: 'commit' as const, title: 'Ship feature (#10)' },
+    { kind: 'pr' as const, title: 'Ship another feature' },
+    { kind: 'release' as const, title: 'v1.0' },
+    { kind: 'commit' as const, title: 'fix: Merge branch label in UI' },
+    { kind: 'commit' as const, title: 'Merge sort implementation' },
+  ].map((item, index) => ({ ...item, id: String(index), repo: 'owner/project', date: '2026-11-17', url: 'https://github.com/owner/project' }))
+  expect(projectCommitItems(items).map((item) => item.title)).toEqual(['Ship feature (#10)', 'fix: Merge branch label in UI', 'Merge sort implementation'])
+  expect(items).toHaveLength(8)
 })

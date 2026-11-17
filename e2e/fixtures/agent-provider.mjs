@@ -22,7 +22,7 @@ globalThis.fetch = async (input, options) => {
   }
   const text = question.includes('unsafe snippet')
     ? ['K39 overview.\n`', '``python\nsecret_code()\n`', '``\nContact Nick.']
-    : ['K39 — карта ', 'Калининграда. [K39](/projects/k39).']
+    : ['<answer>K39 — карта </s', 'iehe>Калининграда. [K39](/projects/k39).</answer>']
   let cancelled = false
   const stream = new ReadableStream({
     async start(controller) {

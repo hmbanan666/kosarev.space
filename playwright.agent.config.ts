@@ -11,7 +11,7 @@ export default defineConfig({
   use: { baseURL: 'http://localhost:3334' },
   webServer: {
     command: 'pnpm --filter @kosarev/web-app dev',
-    env: { PORT: '3334', NUXT_GITHUB_ACTIVITY_DISABLED: 'true', NUXT_OPENROUTER_API_KEY: 'test-fixture', NUXT_AGENT_MODEL: 'fixture-primary', NUXT_AGENT_FALLBACK_MODEL: 'fixture-fallback:free', NODE_OPTIONS: `--max-old-space-size=4096 --import=${preload}` },
+    env: { PORT: '3334', NUXT_CONTEXT_URL: '', NUXT_CONTEXT_TOKEN: '', NUXT_GITHUB_ACTIVITY_DISABLED: 'true', NUXT_OPENROUTER_API_KEY: 'test-fixture', NUXT_AGENT_MODEL: 'fixture-primary', NUXT_AGENT_FALLBACK_MODEL: 'fixture-fallback:free', NODE_OPTIONS: `--max-old-space-size=4096 --import=${preload}` },
     url: 'http://localhost:3334',
     reuseExistingServer: false,
     timeout: 120000,
