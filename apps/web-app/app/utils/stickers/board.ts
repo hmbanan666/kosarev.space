@@ -3,6 +3,7 @@ export interface Point { x: number, y: number }
 export interface PlacedSticker<Id> extends Point { id: Id }
 export interface StickerLayout<Id> {
   ids: readonly Id[]
+  legacyIds?: ReadonlyMap<string, Id>
   defaults: readonly PlacedSticker<Id>[]
   width: number
   height: number
@@ -30,9 +31,17 @@ export class StickerBoard<Id extends string> {
     try {
       const data = JSON.parse(this.store?.read() ?? 'null')
       // The original sheet stored its array directly under the same key.
-      const items = Array.isArray(data) ? data : data?.version === 1 && data.placed
+      const legacy = Array.isArray(data) || data?.version === 1
+      const saved = Array.isArray(data) ? data : data?.placed
+      if (!Array.isArray(saved) || (!legacy && data?.version !== 2)) {
+        return
+      }
+      const aliases = this.layout.legacyIds
+      const items = legacy && aliases
+        ? saved.map((s) => ({ ...s, id: aliases.get(s?.id) ?? s?.id }))
+        : saved
       const fraction = (n: number) => Number.isFinite(n) && n >= 0 && n <= 1
-      if (Array.isArray(items) && items.every((s) => s && this.layout.ids.includes(s.id) && fraction(s.x) && fraction(s.y))
+      if (items.every((s) => s && this.layout.ids.includes(s.id) && fraction(s.x) && fraction(s.y))
         && new Set(items.map((s) => s.id)).size === items.length) {
         this.placed = items
       }
@@ -130,7 +139,7 @@ export class StickerBoard<Id extends string> {
       const others = this.placed.filter((item) => item.id !== this.draft!.id)
       this.placed = action === 'stick' ? [...others, this.draft] : others
       try {
-        this.store?.write(JSON.stringify({ version: 1, placed: this.placed }))
+        this.store?.write(JSON.stringify({ version: 2, placed: this.placed }))
       } catch { /* The layout remains usable in memory. */ }
     }
     this.draft = null

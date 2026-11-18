@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { StickerBoard } from '../app/utils/stickers/board'
+import { homeSheet } from '../app/utils/stickers/home-sheet'
 
 const space = { left: 100, top: 50, width: 1000, height: 800, scale: 0.5 }
 const layout = { ids: ['orbit', 'wave'] as const, defaults: [{ id: 'orbit' as const, x: 0.5, y: 0.5 }], width: 104, height: 78 }
@@ -30,7 +31,7 @@ describe('sticker board', () => {
     expect(board.placed.map((item) => item.id)).toEqual(['wave'])
     board.pick('wave', press, space)
     board.finish('remove')
-    expect(JSON.parse(saved)).toEqual({ version: 1, placed: [] })
+    expect(JSON.parse(saved)).toEqual({ version: 2, placed: [] })
     const reopened = new StickerBoard(layout, store)
     reopened.restore()
     expect(reopened.placed).toEqual([])
@@ -85,9 +86,22 @@ describe('sticker board', () => {
     expect(board.placed).toEqual([...layout.defaults, { id: 'wave', x: 0.6, y: 0.4 }])
   })
 
-  it.each(['{', '{"version":2,"placed":[]}', '[null]', '[{"id":"wave","x":-1,"y":1}]', '[{"id":"unknown","x":0,"y":1}]', JSON.stringify([...layout.defaults, ...layout.defaults])])('retains defaults for unsupported or invalid storage: %s', (saved) => {
+  it.each(['{', '{"version":3,"placed":[]}', '[null]', '[{"id":"wave","x":-1,"y":1}]', '[{"id":"unknown","x":0,"y":1}]', JSON.stringify([...layout.defaults, ...layout.defaults])])('retains defaults for unsupported or invalid storage: %s', (saved) => {
     const board = new StickerBoard(layout, { read: () => saved, write: () => {} })
     board.restore()
     expect(board.placed).toEqual(layout.defaults)
   })
+})
+
+it.each([true, false])('restores the previous home artwork at its saved positions (raw array: %s)', (raw) => {
+  const previous = [{ id: 'caliper', x: 0.72, y: 0.13 }, { id: 'orbit', x: 0.21, y: 0.68 }]
+  let saved = JSON.stringify(raw ? previous : { version: 1, placed: previous })
+  const board = new StickerBoard(homeSheet, { read: () => saved, write: (value) => {
+    saved = value
+  } })
+  board.restore()
+  expect(board.placed).toEqual([{ id: 'monkey-pink-mug', x: 0.72, y: 0.13 }, { id: 'monkey-bright-idea', x: 0.21, y: 0.68 }])
+  board.pick('monkey-pink-mug', press, space)
+  board.finish('remove')
+  expect(JSON.parse(saved)).toEqual({ version: 2, placed: [{ id: 'monkey-bright-idea', x: 0.21, y: 0.68 }] })
 })

@@ -20,7 +20,7 @@
       class="sticker"
       :class="{ 'is-lifted': draft?.id === item.id, 'is-landed': landed === item.id }"
       :data-sticker="item.id"
-      :style="{ 'transform': `translate3d(${item.x * space.width}px, ${item.y * space.height}px, 0) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.id}.svg)` }"
+      :style="{ 'transform': `translate3d(${item.x * space.width}px, ${item.y * space.height}px, 0) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.id}.webp)` }"
       :tabindex="open && !draft ? 0 : -1"
       :aria-label="t('stickers.move', { name: name(item.id) })"
       @click.stop="!draft && lift(item.id)"
@@ -40,10 +40,10 @@
     <img
       v-for="item in placed"
       :key="item.id"
-      :src="`/stickers/${item.id}.svg`"
+      :src="`/stickers/${item.id}.webp`"
       :alt="name(item.id)"
       width="62"
-      height="47"
+      height="62"
     >
   </div>
   <Teleport v-if="enabled && dock" :to="dock">
@@ -87,7 +87,7 @@
             @click="lift(id)"
           >
             <img
-              :src="`/stickers/${id}.svg`"
+              :src="`/stickers/${id}.webp`"
               alt=""
               draggable="false"
             >
@@ -233,17 +233,22 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 .sticker-layer.is-carrying { pointer-events: auto; cursor: crosshair; touch-action: none; }
 .sticker { position: absolute; top: 0; left: 0; width: var(--paper-width); height: var(--paper-height); pointer-events: none; user-select: none; touch-action: none; }
 .paper, .paper-face, .paper-corner { position: absolute; inset: 0; pointer-events: none; }
-.paper { filter: drop-shadow(0 2px 1px #0007); }
+.paper, .sheet-grid img, .sticker-strip img {
+  --rim: 2px;
+  --die-cut: drop-shadow(var(--rim) 0 0 white) drop-shadow(calc(-1 * var(--rim)) 0 0 white)
+    drop-shadow(0 var(--rim) 0 white) drop-shadow(0 calc(-1 * var(--rim)) 0 white);
+  filter: var(--die-cut) drop-shadow(0 2px 1.5px #0009);
+}
+.sheet-grid img, .sticker-strip img { --rim: 1px; }
 .paper-face, .paper-corner { background: var(--paper-image) center / contain no-repeat; }
 /* Both halves share a diagonal hinge through the printed upper-right edge. */
 .paper-face { clip-path: polygon(0 0, 50% 0, 100% 75%, 100% 100%, 0 100%); }
 .paper-corner { clip-path: polygon(49.5% 0, 100% 0, 100% 76%); transform-origin: 50% 0; }
 .paper-corner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 45%, #fff4cd 76%, #a49c87); mask: var(--paper-image) center / contain no-repeat; opacity: 0; }
-.sticker[data-sticker="caliper"] .paper { rotate: -13deg; }
 .is-editing .sticker { pointer-events: auto; cursor: grab; }
 .is-carrying .sticker { pointer-events: none; }
 .sticker.is-lifted { z-index: 1; }
-.is-lifted .paper { filter: drop-shadow(4px 8px 3px #0008); }
+.is-lifted .paper { filter: var(--die-cut) drop-shadow(4px 9px 4px #0009); }
 .sticker-tools { position: relative; width: max-content; }
 .sheet-toggle, .sheet-heading button, .sheet-actions button { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 32px; }
 .sheet-toggle { gap: 6px; padding: 0 8px; color: var(--ui-text-toned); border: 1px solid var(--ui-border); }
@@ -252,10 +257,10 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 .sheet-heading, .sheet-actions { display: flex; justify-content: space-between; align-items: center; }
 .sheet-heading { margin-bottom: 8px; font: .85rem var(--font-mono); }
 .sheet-heading button { width: 32px; font-size: 16px; }
-.sheet-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-left: 1px solid #49453c; border-top: 1px solid #49453c; }
+.sheet-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-left: 1px solid #49453c; border-top: 1px solid #49453c; }
 .sheet-grid button { position: relative; display: grid; justify-items: center; align-content: center; gap: 3px; height: 76px; border: solid #49453c; border-width: 0 1px 1px 0; font-size: 11px; cursor: pointer; }
-.sheet-grid img { width: 54px; height: 41px; }
-.sheet-grid .on-board img { opacity: .5; }
+.sheet-grid img { width: 48px; height: 48px; }
+.sheet-grid .on-board img { opacity: .78; }
 .sheet-grid .on-board::before { content: ''; position: absolute; top: 6px; right: 6px; width: 4px; height: 4px; background: var(--ui-primary); }
 .sheet-grid button:is(:hover, :focus-visible, .is-chosen) { background: #d9ad6717; color: var(--ui-primary); }
 .sticker-sheet p { margin-top: 12px; color: var(--ui-text-muted); line-height: 1.5; }
@@ -267,7 +272,7 @@ useEventListener('keydown', (event: KeyboardEvent) => {
   .paper-corner { transition: transform 140ms ease-out; }
   .paper-corner::after { transition: opacity 140ms ease-out; }
   .is-lifted .paper { transform: perspective(260px) translateY(-3px) rotateX(9deg) rotate(-4deg); }
-  .is-lifted .paper-corner { transform: perspective(140px) rotate3d(52, 58.5, 0, -39deg); }
+  .is-lifted .paper-corner { transform: perspective(140px) rotate3d(2, 3, 0, -39deg); }
   .is-lifted .paper-corner::after { opacity: .85; }
   .is-landed .paper { animation: press-paper 210ms ease-out; }
   @keyframes press-paper {

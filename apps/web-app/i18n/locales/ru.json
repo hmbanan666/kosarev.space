@@ -450,14 +450,15 @@
     "close": "Закрыть лист наклеек",
     "position": "Положение: {x}% слева, {y}% сверху.",
     "lifted": "Отклеена наклейка «{name}»",
-    "orbit": "Орбита",
-    "caliper": "Штангенциркуль",
-    "contours": "Горизонтали",
-    "prism": "Призма",
-    "wave": "Осциллограмма",
-    "compass": "Циркуль",
-    "spool": "Катушка",
-    "section": "Разрез"
+    "monkey-bright-idea": "Есть идея",
+    "monkey-pink-mug": "Кофе-брейк",
+    "monkey-love-lab": "Химия любви",
+    "monkey-skull-laptop": "Хакер в капюшоне",
+    "monkey-heart-eyes": "Влюблённый взгляд",
+    "monkey-grumpy-reader": "Хмурый читатель",
+    "monkey-money-hat": "Богач в шляпе",
+    "monkey-thumbs-up-trophy": "Золотой лайк",
+    "monkey-laptop-panic": "Паника за ноутбуком"
   },
   "canvas": {
     "title": "Холст",

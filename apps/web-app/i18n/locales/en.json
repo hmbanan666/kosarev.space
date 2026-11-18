@@ -450,14 +450,15 @@
     "close": "Close sticker sheet",
     "position": "Position: {x}% from the left, {y}% from the top.",
     "lifted": "Lifted {name}",
-    "orbit": "Orbit",
-    "caliper": "Caliper",
-    "contours": "Contours",
-    "prism": "Prism",
-    "wave": "Waveform",
-    "compass": "Compass",
-    "spool": "Spool",
-    "section": "Section"
+    "monkey-bright-idea": "Bright idea",
+    "monkey-pink-mug": "Coffee break",
+    "monkey-love-lab": "Love chemistry",
+    "monkey-skull-laptop": "Hooded hacker",
+    "monkey-heart-eyes": "Heart eyes",
+    "monkey-grumpy-reader": "Grumpy reader",
+    "monkey-money-hat": "High roller",
+    "monkey-thumbs-up-trophy": "Golden thumbs-up",
+    "monkey-laptop-panic": "Laptop panic"
   },
   "canvas": {
     "title": "Canvas",

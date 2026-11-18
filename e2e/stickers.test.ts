@@ -5,10 +5,17 @@ test('pick, place and return a sticker with the keyboard across visits', async (
   const tray = page.getByRole('button', { name: 'Stickers', exact: true })
   await tray.click()
   const sheet = page.getByRole('group', { name: 'Sticker sheet' })
-  await sheet.getByRole('button', { name: 'Pick up Contours' }).press('Enter')
+  const drawings = sheet.locator('img')
+  await expect(drawings).toHaveCount(9)
+  const sources = await drawings.evaluateAll(async (images) => {
+    await Promise.all(images.map((image) => image.decode()))
+    return images.map((image) => image.currentSrc)
+  })
+  expect(new Set(sources).size).toBe(9)
+  await sheet.getByRole('button', { name: 'Pick up Love chemistry' }).press('Enter')
   await page.keyboard.press('ArrowRight')
   await page.keyboard.press('Enter')
-  const sticker = page.getByRole('group', { name: 'Stickers', exact: true }).getByRole('button', { name: 'Move Contours' })
+  const sticker = page.getByRole('group', { name: 'Stickers', exact: true }).getByRole('button', { name: 'Move Love chemistry' })
   await expect(sticker).toBeVisible()
   const placed = await sticker.getAttribute('style')
   await page.reload()
@@ -25,7 +32,7 @@ test('pick, place and return a sticker with the keyboard across visits', async (
   await expect(sticker).toHaveCount(0)
   await page.reload()
   await tray.click()
-  await expect(sheet.getByRole('button', { name: 'Pick up Contours' })).toBeVisible()
+  await expect(sheet.getByRole('button', { name: 'Pick up Love chemistry' })).toBeVisible()
 })
 
 test('stickers follow the world through zoom and pan, and release the card underneath', async ({ page }) => {
@@ -35,22 +42,22 @@ test('stickers follow the world through zoom and pan, and release the card under
   const viewport = page.locator('.canvas-viewport')
   const hero = page.locator('[data-block="hero"]')
   await expect(tray).toHaveAttribute('aria-expanded', 'false')
-  const orbit = page.locator('[data-sticker="orbit"]')
-  const original = await orbit.getAttribute('style')
-  const start = (await orbit.boundingBox())!
+  const idea = page.locator('[data-sticker="monkey-bright-idea"]')
+  const original = await idea.getAttribute('style')
+  const start = (await idea.boundingBox())!
   const card = (await hero.boundingBox())!
   const destination = { x: card.x + card.width * 0.7, y: card.y + card.height * 0.28 }
   await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2)
   await page.mouse.down()
   await page.mouse.move(destination.x, destination.y, { steps: 6 })
-  await expect(orbit).toHaveClass(/is-lifted/)
-  await expect(orbit.locator('.paper-corner')).not.toHaveCSS('transform', 'none')
+  await expect(idea).toHaveClass(/is-lifted/)
+  await expect(idea.locator('.paper-corner')).not.toHaveCSS('transform', 'none')
   await page.mouse.up()
-  await expect(orbit).toHaveClass(/is-landed/)
+  await expect(idea).toHaveClass(/is-landed/)
   await expect(tray).toHaveAttribute('aria-expanded', 'false')
-  await expect(orbit).not.toHaveAttribute('style', original!)
+  await expect(idea).not.toHaveAttribute('style', original!)
   await expect(page.getByRole('dialog')).toHaveCount(0)
-  const overlap = () => orbit.evaluate((el) => {
+  const overlap = () => idea.evaluate((el) => {
     const decal = el.getBoundingClientRect()
     const card = document.querySelector('[data-block="hero"]')!.getBoundingClientRect()
     return Math.abs((decal.x + decal.width / 2 - card.x) / card.width - 0.7) < 0.03
@@ -65,16 +72,16 @@ test('stickers follow the world through zoom and pan, and release the card under
   await viewport.press('ArrowRight')
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0)
   await expect.poll(overlap).toBe(true)
-  await orbit.scrollIntoViewIfNeeded()
-  const rect = (await orbit.boundingBox())!
-  const stuck = await orbit.getAttribute('style')
+  await idea.scrollIntoViewIfNeeded()
+  const rect = (await idea.boundingBox())!
+  const stuck = await idea.getAttribute('style')
   await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2)
   await page.mouse.down()
   await page.mouse.move(rect.x + rect.width, rect.y)
-  await expect(orbit).toHaveClass(/is-lifted/)
+  await expect(idea).toHaveClass(/is-lifted/)
   await page.keyboard.press('Escape')
   await page.mouse.up()
-  await expect(orbit).toHaveAttribute('style', stuck!)
+  await expect(idea).toHaveAttribute('style', stuck!)
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2)
   await expect(page).toHaveURL(/card=hero/)
@@ -86,15 +93,15 @@ test('stickers follow the world through zoom and pan, and release the card under
   await grip.scrollIntoViewIfNeeded()
   const handle = (await grip.boundingBox())!
   await tray.click()
-  await page.getByRole('button', { name: 'Pick up Prism' }).click()
+  await page.getByRole('button', { name: 'Pick up Hooded hacker' }).click()
   await page.mouse.click(handle.x + handle.width / 2, handle.y + handle.height / 2)
   await expect(tray).toHaveAttribute('aria-expanded', 'true')
   await tray.click()
-  const prism = page.locator('[data-sticker="prism"]')
-  const onGrip = (await prism.boundingBox())!
+  const hacker = page.locator('[data-sticker="monkey-skull-laptop"]')
+  const onGrip = (await hacker.boundingBox())!
   expect(Math.abs(onGrip.x + onGrip.width / 2 - handle.x - handle.width / 2)).toBeLessThan(handle.width / 2)
   expect(Math.abs(onGrip.y + onGrip.height / 2 - handle.y - handle.height / 2)).toBeLessThan(handle.height / 2)
-  const decalPosition = await prism.getAttribute('style')
+  const decalPosition = await hacker.getAttribute('style')
   const before = await hero.getAttribute('style')
   await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2)
   await page.mouse.down()
@@ -102,7 +109,7 @@ test('stickers follow the world through zoom and pan, and release the card under
   await expect(page.locator('.canvas-target')).toBeVisible()
   await page.mouse.up()
   await expect(hero).not.toHaveAttribute('style', before!)
-  await expect(prism).toHaveAttribute('style', decalPosition!)
+  await expect(hacker).toHaveAttribute('style', decalPosition!)
   await expect(page.getByRole('dialog')).toHaveCount(0)
 })
 
@@ -111,11 +118,11 @@ test('placing by click and cancelling a lift preserve the sheet on mobile', asyn
   await page.goto('/en')
   await page.getByRole('button', { name: 'Stickers', exact: true }).click()
   const sheet = page.getByRole('group', { name: 'Sticker sheet' })
-  await sheet.getByRole('button', { name: 'Pick up Waveform' }).click()
+  await sheet.getByRole('button', { name: 'Pick up Laptop panic' }).click()
   const card = (await page.locator('[data-block="contributions"]').boundingBox())!
   await page.mouse.click(card.x + card.width / 2, card.y + card.height / 2)
   await expect(page.getByRole('dialog')).toHaveCount(0)
-  const item = page.getByRole('group', { name: 'Stickers', exact: true }).getByRole('button', { name: 'Move Waveform' })
+  const item = page.getByRole('group', { name: 'Stickers', exact: true }).getByRole('button', { name: 'Move Laptop panic' })
   const before = await item.getAttribute('style')
   await item.click()
   await expect(item).toHaveClass(/is-lifted/)
@@ -126,7 +133,7 @@ test('placing by click and cancelling a lift preserve the sheet on mobile', asyn
   await page.setViewportSize({ width: 390, height: 844 })
   await expect(page.getByRole('button', { name: 'Stickers', exact: true })).toHaveCount(0)
   const collection = page.getByRole('group', { name: 'Stickers' })
-  await expect(collection.getByRole('img', { name: 'Waveform' })).toBeVisible()
+  await expect(collection.getByRole('img', { name: 'Laptop panic' })).toBeVisible()
   await expect(collection.getByRole('img')).toHaveCount(3)
 })
 
@@ -141,13 +148,13 @@ test('release follows the current viewport when a scroll and drop share a frame'
   })
   await page.goto('/en')
   await page.locator('.sheet-toggle').click()
-  await page.locator('[data-pick="wave"]').click()
+  await page.locator('[data-pick="monkey-laptop-panic"]').click()
   const view = (await page.locator('.canvas-viewport').boundingBox())!
   const x = view.x + view.width / 2
   const y = view.y + view.height / 2
   await page.mouse.click(x, y)
   await expect(page.locator('.sticker.is-lifted')).toHaveCount(0)
-  const paper = (await page.locator('[data-sticker="wave"]').boundingBox())!
+  const paper = (await page.locator('[data-sticker="monkey-laptop-panic"]').boundingBox())!
   expect(Math.abs(x - paper.x - paper.width / 2)).toBeLessThan(paper.width / 4)
   expect(Math.abs(y - paper.y - paper.height / 2)).toBeLessThan(paper.height / 4)
 })
