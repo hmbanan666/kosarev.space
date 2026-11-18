@@ -27,27 +27,32 @@
             :placeholder="t('site.searchPlaceholder')"
           >
         </label>
-        <SiteCaseSelect
-          id="case-area"
-          v-model="form.focus"
-          name="focus"
-          :label="t('site.area')"
-          :items="areaItems"
-        />
-        <SiteCaseSelect
-          id="case-technology"
-          v-model="form.tech"
-          name="tech"
-          :label="t('site.technology')"
-          :items="technologyItems"
-        />
+        <details class="case-refine" :open="Boolean(filters.focus || filters.tech)">
+          <summary>{{ t('site.refineCases') }}</summary>
+          <div class="case-refine-fields">
+            <SiteCaseSelect
+              id="case-area"
+              v-model="form.focus"
+              name="focus"
+              :label="t('site.area')"
+              :items="areaItems"
+            />
+            <SiteCaseSelect
+              id="case-technology"
+              v-model="form.tech"
+              name="tech"
+              :label="t('site.technology')"
+              :items="technologyItems"
+            />
+          </div>
+        </details>
         <button class="site-button" type="submit">
           {{ t('site.apply') }}
         </button>
       </form>
-      <div class="case-result-meta">
+      <div v-if="!error && status !== 'pending' && matchingCases.length" class="case-result-meta">
         <p role="status" aria-live="polite">
-          {{ t('site.workCount', { count: matchingCases.length }) }}
+          {{ showMore ? t('site.featuredCount', { shown: visibleCases.length, total: matchingCases.length }) : t('site.workCount', { count: matchingCases.length }) }}
         </p>
         <NuxtLink
           v-if="hasFilters"
@@ -71,7 +76,7 @@
           {{ t('site.retry') }}
         </button>
       </div>
-      <p v-else-if="status === 'pending'">
+      <p v-else-if="status === 'pending'" role="status">
         {{ t('site.loading') }}
       </p>
       <div
@@ -86,9 +91,22 @@
         />
       </div>
       <div v-else class="case-empty">
-        <p>{{ t('cases.noResults') }}</p>
-        <NuxtLink :to="localePath('/cases')" class="site-text-link">
+        <p role="status">
+          {{ hasFilters ? t('cases.noResults') : t('cases.empty') }}
+        </p>
+        <NuxtLink
+          v-if="hasFilters"
+          :to="localePath('/cases')"
+          class="site-text-link"
+        >
           {{ t('site.reset') }}
+        </NuxtLink>
+        <NuxtLink
+          v-else
+          :to="localePath('/projects')"
+          class="site-text-link"
+        >
+          {{ t('projects.title') }}
         </NuxtLink>
       </div>
       <NuxtLink
@@ -131,7 +149,7 @@ function applyFilters() {
 </script>
 
 <style scoped>
-.case-filters { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) auto; gap: 1rem; align-items: end; padding: 1.5rem; background: var(--ui-bg-elevated); border: 1px solid var(--ui-border); border-radius: .75rem; }
+.case-filters { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: end; padding: 1rem; background: var(--ui-bg-elevated); border: 1px solid var(--ui-border); border-radius: .75rem; }
 .case-search { display: grid; gap: .5rem; font-size: .8rem; font-weight: 550; min-width: 0; }
 .case-search input { height: 3rem; width: 100%; min-width: 0; padding: .7rem .875rem; background: var(--ui-bg); color: var(--ui-text); border: 1px solid var(--ui-border-accented); border-radius: .375rem; font-size: .875rem; font-weight: 400; }
 .case-search input:hover { border-color: var(--ui-text-muted); }
@@ -140,12 +158,20 @@ function applyFilters() {
 .case-results { display: grid; grid-template-columns: 1fr 1fr; column-gap: 3rem; }
 .case-empty { padding-block: 2rem; display: grid; justify-items: start; gap: 1rem; }
 .case-show-all { margin-top: 2rem; }
-@media (max-width: 1100px) {
-  .case-filters { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
-  .case-search, .case-filters > button { grid-column: 1/-1; }
+.case-filters .case-search { grid-column: 1 / -1; }
+.case-refine { grid-column: 1; align-self: center; }
+.case-refine[open] { grid-column: 1 / -1; }
+.case-filters > button { grid-column: 2; }
+.case-refine summary { width: fit-content; padding-block: .5rem; font-size: .875rem; color: var(--ui-primary); cursor: pointer; }
+.case-refine-fields { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: .5rem; }
+@media (min-width: 651px) {
+  .case-filters:not(:has(details[open])) { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .case-filters:not(:has(details[open])) > * { grid-column: auto; }
+  .case-refine:not([open]) { align-self: end; min-height: 3rem; align-content: center; }
 }
 @media (max-width: 650px) {
-  .case-filters { grid-template-columns: minmax(0,1fr); padding: 1rem; }
+  .case-filters { gap: .5rem .75rem; }
+  .case-refine-fields { grid-template-columns: 1fr; }
   .case-results { grid-template-columns: 1fr; }
 }
 </style>

@@ -18,7 +18,7 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const { data: items, error } = await usePublications()
 if (error.value) {
-  throw createError({ statusCode: 503, statusMessage: 'Publications unavailable' })
+  throw createError({ fatal: true, statusCode: 503, statusMessage: 'Publications unavailable' })
 }
 const canonical = computed(() => `https://kosarev.space${localePath('/writing')}`)
 const ogImage = computed(() => `https://kosarev.space/og/${locale.value === 'en' ? 'en' : 'ru'}/writing.png`)

@@ -22,5 +22,6 @@ const route = useRoute()
 .site-agent-launcher:hover { background: #292319; }
 .site-agent-launcher:focus-visible { outline: 2px solid #d9ad67; outline-offset: 4px; }
 @media (min-width: 768px) { .site-agent-launcher.above-canvas { bottom: calc(68px + env(safe-area-inset-bottom)); } }
+@media (max-width: 767px) { .site-agent-launcher { display: none; } }
 @media print { .site-agent-launcher { display: none; } }
 </style>

@@ -254,12 +254,13 @@ function renderText(text: string) {
     .replace(RE_BOLD, '<strong class="text-highlighted font-medium">$1</strong>')
 }
 
-const { data } = await useFetch(`/api/cases/${route.params.key}`, {
+const { data, error } = await useFetch(`/api/cases/${route.params.key}`, {
   query: { locale },
 })
 
 if (!data.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Case not found' })
+  const missing = error.value?.statusCode === 404
+  throw createError({ fatal: true, statusCode: missing ? 404 : 503, statusMessage: missing ? 'Case not found' : 'Case unavailable' })
 }
 
 onMounted(() => {
@@ -293,6 +294,7 @@ useSeoMeta({
 })
 
 useHead({
+  htmlAttrs: { lang: locale },
   link: [
     { rel: 'canonical', href: canonicalUrl },
     ...writingFeedLinks,

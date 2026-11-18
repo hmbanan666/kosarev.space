@@ -29,7 +29,7 @@ const route = useRoute()
 const key = String(route.params.key)
 const found = portfolioPages.find((item) => item.key === key)
 if (!found) {
-  throw createError({ statusCode: 404, statusMessage: 'Project not found' })
+  throw createError({ fatal: true, statusCode: 404, statusMessage: 'Project not found' })
 }
 const entry = found
 

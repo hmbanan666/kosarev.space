@@ -59,7 +59,7 @@ for (const width of [1280, 390]) {
       expect(await card.evaluate((element) => element.computedStyleMap().get('transform')?.toString()))
         .toBe(width < 768 ? 'translate(0px, 100%)' : 'translate(100%, 0px)')
     }
-    const launcher = page.locator('.site-agent-launcher')
+    const launcher = page.locator(width === 390 ? '.site-agent-trigger' : '.site-agent-launcher')
     await launcher.click()
     const agent = page.locator('.site-agent')
     await expect(agent).toHaveClass(/site-drawer/)
@@ -101,7 +101,7 @@ for (const width of [1280, 390]) {
       })
     }))).toBe(true)
     await expect(panel).toHaveCSS('transition-duration', '0s')
-    const launcher = page.locator('.site-agent-launcher')
+    const launcher = page.locator(width === 390 ? '.site-agent-trigger' : '.site-agent-launcher')
     await launcher.click()
     const agent = page.locator('.site-agent')
     await expect(agent).toHaveAttribute('data-state', 'open')

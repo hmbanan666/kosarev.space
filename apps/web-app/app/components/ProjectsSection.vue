@@ -14,7 +14,7 @@
       <ActiveProducts />
       <PausedProjects />
       <div class="section-intro archive-intro">
-        <h3>{{ t('projects.archiveTitle') }}</h3>
+        <h2>{{ t('projects.archiveTitle') }}</h2>
         <p>{{ t('site.archiveIntro') }}</p>
       </div>
       <div class="project-list">
@@ -34,9 +34,9 @@
             >
           </div>
           <div class="project-copy">
-            <h4 class="project-title">
+            <h3 class="project-title">
               {{ project.titleKey ? t(project.titleKey) : project.title }}
-            </h4>
+            </h3>
             <p
               v-if="closedProjectYears[project.key]"
               :data-project-archive="project.key"

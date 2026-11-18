@@ -41,6 +41,7 @@ test('case discovery exposes all work and keeps a shareable search context throu
 
 test('case selects support keyboard selection, dismissal and a visible focus indicator', async ({ page }) => {
   await openCatalog(page)
+  await page.getByText('Area and technology', { exact: true }).click()
   const area = page.getByRole('combobox', { name: 'Area of work', exact: true })
   await area.focus()
   await page.keyboard.press('Space')
@@ -68,6 +69,7 @@ test('case selects support keyboard selection, dismissal and a visible focus ind
 
 test('area and technology filters combine, explain no results, and can reset', async ({ page }) => {
   await openCatalog(page)
+  await page.getByText('Area and technology', { exact: true }).click()
   await page.getByRole('combobox', { name: 'Area of work', exact: true }).click()
   await page.getByRole('option', { name: 'Infrastructure', exact: true }).click()
   await page.getByRole('button', { name: 'Find cases', exact: true }).click()
@@ -93,7 +95,7 @@ test('contact copy confirms success and preserves a visible mail link', async ({
   await page.locator('main').getByRole('button', { name: 'Copy email address', exact: true }).click()
   await expect(page.locator('main').getByText('Email address copied.', { exact: true })).toBeVisible()
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('nick@kosarev.space')
-  await expect(page.locator('footer a[href="mailto:nick@kosarev.space"]')).toBeVisible()
+  await expect(page.getByRole('main').getByRole('link', { name: 'nick@kosarev.space', exact: true })).toBeVisible()
 })
 
 test('clipboard failure offers a focused manually selectable address', async ({ page }) => {
@@ -148,6 +150,7 @@ test('case filters and critical content work without JavaScript', async ({ brows
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Nick Kosarev')
   await page.goto('/en/cases')
   await page.getByRole('searchbox', { name: 'Search work', exact: true }).fill('cache')
+  await page.getByText('Area and technology', { exact: true }).click()
   await page.getByRole('combobox', { name: 'Area of work', exact: true }).selectOption('delivery')
   await page.getByRole('button', { name: 'Find cases', exact: true }).click()
   await expect(page).toHaveURL(/q=cache.*focus=delivery/)
@@ -281,4 +284,13 @@ test('touch and reduced-motion visitors never open a live cursor connection', as
       await context.close()
     }
   }
+})
+
+test('a temporarily unavailable case offers a path back to the catalog', async ({ page }) => {
+  await openCatalog(page)
+  await page.route('**/api/cases/qa-invoice?*', (route) => route.fulfill({ status: 503, json: {} }))
+  await page.getByRole('link', { name: 'Read case: Invoice reconciliation reference' }).click()
+  await expect(page.getByRole('main').getByRole('heading', { level: 1, name: 'Something went wrong', exact: true })).toBeVisible()
+  await page.getByRole('main').getByRole('link', { name: 'All cases', exact: true }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Case studies')
 })

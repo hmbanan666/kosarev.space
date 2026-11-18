@@ -15,7 +15,7 @@ const localePath = useLocalePath()
 const language = computed(() => locale.value === 'en' ? 'en' : 'ru')
 const { data: publication, error } = await useFetch(() => `/api/publications/${encodeURIComponent(String(route.params.slug))}`)
 if (error.value || !publication.value) {
-  throw createError({ statusCode: error.value?.statusCode === 404 ? 404 : 503, statusMessage: error.value?.statusCode === 404 ? 'Publication not found' : 'Publication unavailable' })
+  throw createError({ fatal: true, statusCode: error.value?.statusCode === 404 ? 404 : 503, statusMessage: error.value?.statusCode === 404 ? 'Publication not found' : 'Publication unavailable' })
 }
 const text = computed(() => publication.value!.locales[language.value])
 const canonical = computed(() => `https://kosarev.space${localePath(publicationPath(publication.value!))}`)

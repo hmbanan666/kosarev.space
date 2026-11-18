@@ -20,7 +20,11 @@ for (const locale of ['en', 'ru']) {
         await page.context().addCookies([{ name: 'i18n_redirected', value: locale, url: 'http://localhost:3333' }])
         await page.route('**/api/activity', (route) => route.fulfill({ json: snapshot }))
         await page.goto(prefix || '/')
-        const launcher = page.locator('.site-agent-launcher')
+        const launcher = page.locator(width === 390 ? '.site-agent-trigger' : '.site-agent-launcher')
+        if (width === 390) {
+          await page.locator('.site-agent-launcher').waitFor({ state: 'attached' })
+          await expect(page.getByRole('button', { name: locale === 'ru' ? 'AI Бот' : 'AI Bot', exact: true })).toHaveCount(1)
+        }
         await expect(launcher).toHaveAccessibleName(locale === 'ru' ? 'AI Бот' : 'AI Bot')
         await page.evaluate(() => document.fonts.ready)
         await page.addStyleTag({ content: '#nuxt-devtools-container { display:none!important }' })
@@ -118,7 +122,7 @@ for (const locale of ['en', 'ru']) {
           await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"type":"delta","text":"K39"}\n\ndata: {"type":"done"}\n\n' })
         })
         await launcher.click()
-        await expect(launcher).toBeHidden()
+        await expect(page.locator('.site-agent-launcher')).toBeHidden()
         const input = page.locator('#site-agent-input')
         await input.fill(locale === 'en' ? 'What is K39?' : 'Что такое K39?')
         await input.press('Enter')
