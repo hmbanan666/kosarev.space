@@ -1,8 +1,8 @@
 <template>
   <section class="active-products" aria-labelledby="active-products-title">
-    <h3 id="active-products-title" class="active-heading">
+    <h2 id="active-products-title" class="active-heading">
       {{ t('projects.activeTitle') }}
-    </h3>
+    </h2>
     <div class="active-list">
       <article
         v-for="product in activeProducts"
@@ -11,40 +11,14 @@
         :data-active-product="product.key"
         class="active-product"
       >
-        <figure class="active-figure">
-          <div class="active-image-wrap">
-            <img
-              v-if="product.image"
-              :src="product.image"
-              :alt="t(`projects.${product.key}.imageAlt`)"
-              :width="product.width"
-              :height="product.height"
-              loading="lazy"
-              class="active-image"
-            >
-            <p v-else class="active-text-mark">
-              {{ product.title }}
-            </p>
-          </div>
-          <figcaption class="active-caption">
-            {{ t(`projects.${product.key}.caption`) }}
-            <template v-if="product.key === 'k39'">
-              · © <a
-                href="https://www.openstreetmap.org/copyright"
-                target="_blank"
-                rel="noopener noreferrer"
-              >OpenStreetMap contributors</a>
-              · © <a
-                href="https://protomaps.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >Protomaps</a>
-            </template>
-          </figcaption>
-        </figure>
-        <h4 class="active-title">
-          {{ product.title }}
-        </h4>
+        <h3 class="active-title">
+          <NuxtLink v-if="product.page" :to="localePath(product.page)">
+            {{ product.title }}<SiteLinkIcon />
+          </NuxtLink>
+          <template v-else>
+            {{ product.title }}
+          </template>
+        </h3>
         <p class="active-kind">
           {{ t(`projects.${product.key}.kind`) }}
         </p>
@@ -55,9 +29,6 @@
           {{ t(`projects.${product.key}.work`) }}
         </p>
         <div class="active-links">
-          <NuxtLink v-if="product.page" :to="localePath(product.page)">
-            {{ t('projects.pageLink') }}<SiteLinkIcon />
-          </NuxtLink>
           <a
             v-if="product.link"
             :href="product.link"
@@ -76,6 +47,33 @@
           </a>
           <WritingRelatedPublications kind="project" :work-key="product.key" />
         </div>
+        <figure v-if="product.image" class="active-figure">
+          <div class="active-image-wrap">
+            <img
+              :src="product.image"
+              :alt="t(`projects.${product.key}.imageAlt`)"
+              :width="product.width"
+              :height="product.height"
+              loading="lazy"
+              class="active-image"
+            >
+          </div>
+          <figcaption class="active-caption">
+            {{ t(`projects.${product.key}.caption`) }}
+            <template v-if="product.key === 'k39'">
+              · © <a
+                href="https://www.openstreetmap.org/copyright"
+                target="_blank"
+                rel="noopener noreferrer"
+              >OpenStreetMap contributors</a>
+              · © <a
+                href="https://protomaps.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >Protomaps</a>
+            </template>
+          </figcaption>
+        </figure>
       </article>
     </div>
   </section>
@@ -88,20 +86,19 @@ const localePath = useLocalePath()
 
 <style scoped>
 .active-heading { margin-bottom: 1.25rem; }
-.active-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
-.active-product { min-width: 0; scroll-margin-top: 6rem; }
-.active-figure { margin: 0 0 1.25rem; }
-.active-image-wrap { height: 19rem; padding: 1rem; background: #242019; border: 1px solid #51432C; border-radius: .5rem; }
-.active-image { width: 100%; height: 100%; object-fit: contain; }
-.active-text-mark { display: flex; align-items: center; justify-content: center; height: 100%; margin: 0; font: 500 2.4rem/1.15 var(--font-serif); text-align: center; }
-.active-caption { font-size: .7rem; line-height: 1.5; color: var(--ui-text-muted); margin-top: .5rem; }
+.active-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+.active-product { min-width: 0; scroll-margin-top: 6rem; padding-top: 1rem; border-top: 1px solid var(--ui-border-accented); }
+.active-figure { margin: 1.25rem 0 0; }
+.active-image-wrap { padding: .75rem; background: #242019; border: 1px solid #51432c; }
+.active-image { width: 100%; height: 13rem; object-fit: contain; }
+.active-caption { font-size: .75rem; line-height: 1.5; color: var(--ui-text-muted); margin-top: .5rem; }
 .active-caption a { text-decoration: underline; }
-.active-title { margin: 0; font: 600 1.3rem/1.4 var(--font-sans); }
-.active-kind { margin-top: .25rem !important; color: var(--ui-primary); font-size: .85rem; }
-.active-description, .active-work { margin-top: .8rem !important; max-width: 65ch; font-size: .9rem; }
+.active-title { margin: 0; font: 500 1.65rem/1.25 var(--font-serif); }
+.active-title a:hover, .active-title a:focus-visible { color: var(--ui-primary); text-decoration: underline; }
+.active-kind { margin-top: .35rem !important; color: var(--ui-primary); font-size: .875rem; }
+.active-description, .active-work { margin-top: .75rem !important; max-width: 65ch; font-size: .95rem; }
 .active-work { color: var(--ui-text-muted); }
-.active-links { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; margin-top: 1.25rem; font-size: .85rem; }
+.active-links { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; margin-top: 1rem; font-size: .875rem; }
 .active-links a { display: inline-flex; align-items: center; gap: .4rem; color: var(--ui-primary); text-decoration: underline; }
-@media (max-width: 850px) { .active-list { grid-template-columns: 1fr; gap: 2.5rem; } }
-@media (max-width: 400px) { .active-image-wrap { height: 16rem; padding: .75rem; } }
+@media (max-width: 850px) { .active-list { grid-template-columns: 1fr; gap: 2rem; } }
 </style>
