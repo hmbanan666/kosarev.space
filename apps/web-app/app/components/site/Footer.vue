@@ -1,22 +1,24 @@
 <template>
   <footer id="contacts" class="site-footer">
     <div class="site-wrap">
-      <div class="site-footer-heading">
-        <BlueprintMark kind="zone">
-          02 / {{ t('hero.contact') }}
-        </BlueprintMark>
-        <span>kosarev.space</span>
-      </div>
-      <div class="contact-layout">
-        <div>
-          <h2>{{ t('site.contactTitle') }}</h2>
-          <p>{{ t('site.contactDescription') }}</p>
-          <p class="contact-prompt">
-            {{ t('site.contactPrompt') }}
-          </p>
+      <template v-if="!route.meta.hideFooterContact">
+        <div class="site-footer-heading">
+          <BlueprintMark kind="zone">
+            02 / {{ t('hero.contact') }}
+          </BlueprintMark>
+          <span>kosarev.space</span>
         </div>
-        <SiteContactLinks />
-      </div>
+        <div class="contact-layout">
+          <div>
+            <h2>{{ t('site.contactTitle') }}</h2>
+            <p>{{ t('site.contactDescription') }}</p>
+            <p class="contact-prompt">
+              {{ t('site.contactPrompt') }}
+            </p>
+          </div>
+          <SiteContactLinks />
+        </div>
+      </template>
       <div ref="presenceDock" class="site-footer-presence" />
       <div class="site-footer-bottom">
         <p>{{ t('footer.copyright', { year: new Date().getFullYear() }) }}</p>
@@ -40,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+const route = useRoute()
 const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
 const footerDocked = useState('footer-presence-docked', () => false)
 watch(presenceDock, (element) => {
