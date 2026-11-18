@@ -441,7 +441,7 @@
     "sheet": "Sticker sheet",
     "pick": "Pick up {name}",
     "move": "Move {name}",
-    "choose": "Choose a sticker, or drag one on the canvas.",
+    "choose": "Choose a sticker to add or return. You can drag a placed sticker with the sheet closed.",
     "placing": "Click to stick. Use arrow keys and Enter, or Esc to cancel.",
     "remove": "Return to sheet",
     "cancel": "Cancel",

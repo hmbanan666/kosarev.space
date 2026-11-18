@@ -3,37 +3,32 @@
     v-if="enabled"
     ref="layer"
     class="sticker-layer"
+    :style="{ '--paper-width': `${homeSheet.width}px`, '--paper-height': `${homeSheet.height}px` }"
     :class="{ 'is-editing': open, 'is-carrying': draft }"
     :inert="!open"
     role="group"
     :aria-label="t('stickers.title')"
     :aria-describedby="draft ? 'sticker-help' : undefined"
     tabindex="-1"
-    @pointerdown.stop="down"
-    @pointermove.stop="follow"
-    @pointerup.stop="up"
-    @pointercancel.stop="cancelPointer"
-    @lostpointercapture.stop="cancelPointer"
     @keydown="keys"
     @click.stop
   >
     <button
-      v-for="item in artwork"
+      v-for="item in board.artwork"
       :key="item.id"
       type="button"
       class="sticker"
       :class="{ 'is-lifted': draft?.id === item.id, 'is-landed': landed === item.id }"
       :data-sticker="item.id"
-      :style="{ left: `${item.x * 100}%`, top: `${item.y * 100}%` }"
+      :style="{ 'transform': `translate3d(${item.x * space.width}px, ${item.y * space.height}px, 0) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.id}.svg)` }"
       :tabindex="open && !draft ? 0 : -1"
       :aria-label="t('stickers.move', { name: name(item.id) })"
-      @click.stop="!draft && lift(item.id, item)"
+      @click.stop="!draft && lift(item.id)"
     >
-      <img
-        :src="`/stickers/${item.id}.svg`"
-        alt=""
-        draggable="false"
-      >
+      <span class="paper" aria-hidden="true">
+        <span class="paper-face" />
+        <span class="paper-corner" />
+      </span>
     </button>
   </div>
   <div
@@ -121,37 +116,40 @@
 </template>
 
 <script setup lang="ts">
-import type { StickerPoint } from '~/composables/useStickerSheet'
+import type { StickerHost } from '~/composables/useStickerSheet'
+import type { StickerId } from '~/utils/stickers/home-sheet'
+import { homeSheet, ids } from '~/utils/stickers/home-sheet'
 
-const props = defineProps<{ enabled: boolean, dock: HTMLElement | null, viewport: HTMLElement | null, suspended: boolean }>()
+const props = defineProps<StickerHost & { dock: HTMLElement | null }>()
 const { t } = useI18n()
-const ids = ['orbit', 'caliper', 'contours', 'prism', 'wave', 'compass', 'spool', 'section'] as const
-type Id = typeof ids[number]
-const { placed, draft, artwork, lift: liftSticker, move, finish: finishSticker } = useStickerSheet<Id>(ids, [
-  { id: 'orbit', x: 0.36, y: 0.192 },
-  { id: 'caliper', x: 0.263, y: 0.49 },
-], 'portfolio-stickers-v1')
-
 const open = ref(false)
 const layer = useTemplateRef<HTMLElement>('layer')
 const toggle = useTemplateRef<HTMLButtonElement>('toggle')
 const tray = useTemplateRef<HTMLElement>('tray')
+const { board, cancel } = useStickerSheet(props, open, layer)
+const placed = computed(() => board.placed)
+const draft = computed(() => board.draft)
+const name = (id: StickerId) => t(`stickers.${id}`)
+const isPlaced = (id: StickerId) => placed.value.some((s) => s.id === id)
+const landed = ref<StickerId | null>(null)
 const message = ref('')
-const name = (id: Id) => t(`stickers.${id}`)
-const isPlaced = (id: Id) => placed.value.some((s) => s.id === id)
-const landed = ref<Id | null>(null)
-let gesture: { pointer: number, x: number, y: number, offset: StickerPoint, liftedHere: boolean } | undefined
 
-function clearGesture() {
-  const pointer = gesture?.pointer
-  gesture = undefined
-  if (pointer !== undefined && layer.value?.hasPointerCapture(pointer)) {
-    layer.value.releasePointerCapture(pointer)
+watch(() => board.draft?.id, (id) => {
+  if (id) {
+    landed.value = null
+    message.value = t('stickers.lifted', { name: name(id) })
   }
-}
+}, { flush: 'sync' })
+watch(placed, () => {
+  const id = draft.value?.id
+  if (id && isPlaced(id)) {
+    landed.value = id
+    message.value = t('stickers.placed', { name: name(id) })
+  }
+}, { flush: 'sync' })
+
 function close() {
-  clearGesture()
-  finishSticker('cancel')
+  cancel()
   open.value = false
   message.value = ''
 }
@@ -160,27 +158,9 @@ watch(() => props.enabled && !props.suspended, (available) => {
     close()
   }
 })
-
-function bounded(point: StickerPoint): StickerPoint {
-  const el = layer.value!
-  const xInset = Math.min(0.5, 52 / el.clientWidth)
-  const yInset = Math.min(0.5, 39 / el.clientHeight)
-  return {
-    x: Math.min(1 - xInset, Math.max(xInset, point.x)),
-    y: Math.min(1 - yInset, Math.max(yInset, point.y)),
-  }
-}
-function worldPoint(x: number, y: number): StickerPoint {
-  const rect = layer.value!.getBoundingClientRect()
-  return { x: (x - rect.left) / rect.width, y: (y - rect.top) / rect.height }
-}
-function lift(id: Id, point?: StickerPoint) {
-  clearGesture()
+function lift(id: StickerId) {
   const view = props.viewport!.getBoundingClientRect()
-  const origin = point ?? bounded(worldPoint(view.left + view.width / 2, view.top + view.height / 2))
-  liftSticker(id, origin)
-  landed.value = null
-  message.value = t('stickers.lifted', { name: name(id) })
+  board.pick(id, { x: view.left + view.width / 2, y: view.top + view.height / 2 }, props.space)
   layer.value?.focus({ preventScroll: true })
 }
 function finish(action: 'stick' | 'remove' | 'cancel') {
@@ -188,74 +168,27 @@ function finish(action: 'stick' | 'remove' | 'cancel') {
   if (!item) {
     return
   }
-  clearGesture()
-  finishSticker(action)
-  if (action === 'stick') {
-    landed.value = item.id
-    message.value = t('stickers.placed', { name: name(item.id) })
-  } else if (action === 'remove') {
-    message.value = t('stickers.removed', { name: name(item.id) })
-  } else {
+  if (action === 'cancel') {
+    cancel()
     message.value = ''
-  }
-  nextTick(() => tray.value?.querySelector<HTMLButtonElement>(`[data-pick="${item.id}"]`)?.focus({ preventScroll: true }))
-}
-function down(event: PointerEvent) {
-  if (!event.isPrimary || event.button !== 0 || gesture) {
-    return
-  }
-  const el = layer.value!
-  const liftedHere = !draft.value
-  if (liftedHere) {
-    const id = (event.target as HTMLElement).closest<HTMLElement>('[data-sticker]')?.dataset.sticker
-    const item = placed.value.find((s) => s.id === id)
-    if (!item) {
-      return
+  } else {
+    board.finish(action)
+    if (action === 'remove') {
+      message.value = t('stickers.removed', { name: name(item.id) })
     }
-    lift(item.id, item)
   }
-  event.preventDefault()
-  const point = worldPoint(event.clientX, event.clientY)
-  const offset = liftedHere ? { x: draft.value!.x - point.x, y: draft.value!.y - point.y } : { x: 0, y: 0 }
-  gesture = { pointer: event.pointerId, x: event.clientX, y: event.clientY, offset, liftedHere }
-  el.setPointerCapture(event.pointerId)
-}
-function follow(event: PointerEvent) {
-  if (!draft.value || !event.isPrimary || (gesture && gesture.pointer !== event.pointerId)) {
-    return
-  }
-  const point = worldPoint(event.clientX, event.clientY)
-  move(bounded({ x: point.x + (gesture?.offset.x ?? 0), y: point.y + (gesture?.offset.y ?? 0) }))
-}
-function up(event: PointerEvent) {
-  if (!gesture || gesture.pointer !== event.pointerId) {
-    return
-  }
-  const travel = Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y)
-  if (gesture.liftedHere && travel < 5) {
-    clearGesture()
-    return
-  }
-  follow(event)
-  finish('stick')
-}
-function cancelPointer(event: PointerEvent) {
-  if (gesture?.pointer === event.pointerId) {
-    finish('cancel')
+  if (open.value) {
+    nextTick(() => tray.value?.querySelector<HTMLButtonElement>(`[data-pick="${item.id}"]`)?.focus({ preventScroll: true }))
   }
 }
 function keys(event: KeyboardEvent) {
-  if (!draft.value || !layer.value) {
+  if (!draft.value) {
     return
   }
-  const { clientWidth, clientHeight } = layer.value
-  const arrows: Record<string, StickerPoint> = {
-    ArrowLeft: { x: -24 / clientWidth, y: 0 }, ArrowRight: { x: 24 / clientWidth, y: 0 },
-    ArrowUp: { x: 0, y: -24 / clientHeight }, ArrowDown: { x: 0, y: 24 / clientHeight },
-  }
+  const arrows: Record<string, [number, number]> = { ArrowLeft: [-24, 0], ArrowRight: [24, 0], ArrowUp: [0, -24], ArrowDown: [0, 24] }
   const delta = arrows[event.key]
   if (delta) {
-    move(bounded({ x: draft.value.x + delta.x, y: draft.value.y + delta.y }))
+    board.nudge(...delta, props.space)
     message.value = t('stickers.position', { x: Math.round(draft.value.x * 100), y: Math.round(draft.value.y * 100) })
     nextTick(() => layer.value?.querySelector('.is-lifted')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }))
   } else if (event.key === 'Enter' || event.key === ' ') {
@@ -277,14 +210,16 @@ useEventListener('pointerdown', (event: PointerEvent) => {
   }
 }, { capture: true })
 useEventListener('keydown', (event: KeyboardEvent) => {
-  if (!open.value || event.key !== 'Escape' || props.suspended) {
+  if (event.key !== 'Escape' || props.suspended) {
     return
   }
   if (draft.value) {
     finish('cancel')
-  } else {
+  } else if (open.value) {
     close()
     toggle.value?.focus()
+  } else {
+    cancel()
   }
 })
 </script>
@@ -292,13 +227,19 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 <style scoped>
 .sticker-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; outline: 0; }
 .sticker-layer.is-carrying { pointer-events: auto; cursor: crosshair; touch-action: none; }
-.sticker { position: absolute; width: 104px; height: 78px; transform: translate(-50%, -50%); pointer-events: none; user-select: none; touch-action: none; }
-.sticker img { width: 100%; height: 100%; filter: drop-shadow(0 2px 1px #0007); pointer-events: none; }
-.sticker[data-sticker="caliper"] img { rotate: -13deg; }
+.sticker { position: absolute; top: 0; left: 0; width: var(--paper-width); height: var(--paper-height); pointer-events: none; user-select: none; touch-action: none; }
+.paper, .paper-face, .paper-corner { position: absolute; inset: 0; pointer-events: none; }
+.paper { filter: drop-shadow(0 2px 1px #0007); }
+.paper-face, .paper-corner { background: var(--paper-image) center / contain no-repeat; }
+/* Both halves share a diagonal hinge through the printed upper-right edge. */
+.paper-face { clip-path: polygon(0 0, 50% 0, 100% 75%, 100% 100%, 0 100%); }
+.paper-corner { clip-path: polygon(49.5% 0, 100% 0, 100% 76%); transform-origin: 50% 0; }
+.paper-corner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 45%, #fff4cd 76%, #a49c87); mask: var(--paper-image) center / contain no-repeat; opacity: 0; }
+.sticker[data-sticker="caliper"] .paper { rotate: -13deg; }
 .is-editing .sticker { pointer-events: auto; cursor: grab; }
 .is-carrying .sticker { pointer-events: none; }
 .sticker.is-lifted { z-index: 1; }
-.is-lifted img { transform: rotate(-7deg) scale(1.08); filter: drop-shadow(5px 9px 3px #0008); }
+.is-lifted .paper { filter: drop-shadow(4px 8px 3px #0008); }
 .sticker-tools { position: relative; width: max-content; }
 .sheet-toggle, .sheet-heading button, .sheet-actions button { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 32px; }
 .sheet-toggle { gap: 6px; padding: 0 8px; color: var(--ui-text-toned); border: 1px solid var(--ui-border); }
@@ -318,16 +259,17 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 .sheet-actions button { color: var(--ui-primary); text-decoration: underline; text-underline-offset: 3px; }
 .sticker-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-block: 12px; }
 @media (prefers-reduced-motion: no-preference) {
-  .sticker img, .sheet-grid img { transition: transform 130ms ease, filter 130ms ease; transform-origin: 24% 80%; }
-  .is-editing .sticker:not(.is-lifted):hover img, .sheet-grid button:hover img { transform: rotate(-4deg) translateY(-2px); }
-  .is-landed img { animation: press-paper 220ms ease-out; }
+  .paper { transform-origin: 20% 78%; transition: filter 150ms ease-out, transform 160ms ease-out; }
+  .paper-corner { transition: transform 140ms ease-out; }
+  .paper-corner::after { transition: opacity 140ms ease-out; }
+  .is-lifted .paper { transform: perspective(260px) translateY(-3px) rotateX(9deg) rotate(-4deg); }
+  .is-lifted .paper-corner { transform: perspective(140px) rotate3d(52, 58.5, 0, -39deg); }
+  .is-lifted .paper-corner::after { opacity: .85; }
+  .is-landed .paper { animation: press-paper 210ms ease-out; }
   @keyframes press-paper {
-    from { transform: rotate(-7deg) scale(1.08); }
-    65% { transform: rotate(1deg) scale(.97); }
+    from { transform: perspective(260px) translateY(-3px) rotateX(9deg) rotate(-4deg); }
+    72% { transform: scale(1.014, .982); }
     to { transform: none; }
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .is-lifted img { transform: none; }
 }
 </style>

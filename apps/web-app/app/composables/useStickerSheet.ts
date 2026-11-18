@@ -1,48 +1,98 @@
-import { computed, onMounted, readonly, shallowRef } from 'vue'
+import type { StickerSpace } from '~/utils/stickers/board'
+import { StickerBoard } from '~/utils/stickers/board'
+import { homeSheet, storageKey } from '~/utils/stickers/home-sheet'
 
-/** The center of a sticker, expressed as a fraction of the world on each axis. */
-export interface StickerPoint { x: number, y: number }
-export interface PlacedSticker<Id extends string> extends StickerPoint { id: Id }
+export interface StickerHost {
+  viewport: HTMLElement | null
+  space: StickerSpace
+  enabled: boolean
+  suspended: boolean
+  reservesDrag: (target: Element) => boolean
+}
 
-export function useStickerSheet<Id extends string>(ids: readonly Id[], seeds: PlacedSticker<Id>[], storageKey: string) {
-  const placed = shallowRef([...seeds])
-  const draft = shallowRef<PlacedSticker<Id> | null>(null)
-  const artwork = computed(() => {
-    const lifted = draft.value
-    return lifted ? [...placed.value.filter((item) => item.id !== lifted.id), lifted] : placed.value
-  })
-  const valid = (point: StickerPoint) => [point.x, point.y].every((n) => Number.isFinite(n) && n >= 0 && n <= 1)
-  onMounted(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(storageKey) ?? 'null')
-      if (Array.isArray(saved) && new Set(saved.map((p) => p.id)).size === saved.length && saved.every((p) => ids.includes(p.id) && valid(p))) {
-        placed.value = saved
+export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Ref<HTMLElement | null>) {
+  const board = shallowReactive(new StickerBoard(homeSheet, {
+    read: () => localStorage.getItem(storageKey),
+    write: (value) => localStorage.setItem(storageKey, value),
+  }))
+  onMounted(() => board.restore())
+
+  let swallowClick = false
+  const sample = (e: PointerEvent) => ({ pointerId: e.pointerId, x: e.clientX, y: e.clientY })
+  const viewport = computed(() => host.viewport)
+  const capture = { capture: true } as const
+  function cancel() {
+    const id = board.pointerId
+    if (id !== undefined) {
+      swallowClick = true
+    }
+    board.finish('cancel')
+    if (id !== undefined && viewport.value?.hasPointerCapture(id)) {
+      viewport.value.releasePointerCapture(id)
+    }
+  }
+
+  useEventListener(viewport, 'pointerdown', (e) => {
+    if (!host.enabled || host.suspended || !e.isPrimary || e.button !== 0 || !(e.target instanceof Element)) {
+      return
+    }
+    swallowClick = false
+    const claim = board.down({
+      ...sample(e),
+      editing: open.value,
+      touch: e.pointerType === 'touch',
+      reserved: host.reservesDrag(e.target),
+    }, host.space)
+    if (claim !== 'host') {
+      // Reserve the drag from the pan handler. The underlying card still sees its native press and click.
+      e.preventDefault()
+      if (claim === 'capture') {
+        viewport.value?.setPointerCapture(e.pointerId)
       }
-    } catch { /* Keep the seed sheet when storage is unavailable or invalid. */ }
+    }
+  }, capture)
+
+  useEventListener('pointermove', (e: PointerEvent) => {
+    const following = board.draft && layer.value && e.composedPath().includes(layer.value)
+    if (!e.isPrimary || (board.pointerId === undefined && !following)) {
+      return
+    }
+    if (board.move(sample(e), host.space) && board.pointerId === e.pointerId) {
+      swallowClick = true
+      if (!viewport.value?.hasPointerCapture(e.pointerId)) {
+        viewport.value?.setPointerCapture(e.pointerId)
+      }
+    }
+  }, capture)
+  useEventListener('pointerup', (e: PointerEvent) => {
+    if (board.pointerId === e.pointerId) {
+      const result = board.up(sample(e), host.space)
+      swallowClick = result !== 'host'
+      if (result === 'lifted') {
+        layer.value?.focus({ preventScroll: true })
+      }
+    }
+  }, capture)
+  useEventListener(viewport, 'click', (e) => {
+    if (swallowClick && e.detail > 0) {
+      swallowClick = false
+      e.preventDefault()
+      e.stopImmediatePropagation()
+    }
+  }, capture)
+
+  function interrupted(e: PointerEvent) {
+    if (board.pointerId === e.pointerId) {
+      cancel()
+    }
+  }
+  useEventListener('pointercancel', interrupted, capture)
+  useEventListener(viewport, 'lostpointercapture', (e) => {
+    if (e.target === viewport.value) {
+      interrupted(e)
+    }
   })
-  function save(next: PlacedSticker<Id>[]) {
-    placed.value = next
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(next))
-    } catch { /* Editing still works for this visit. */ }
-  }
-  function lift(id: Id, point: StickerPoint) {
-    if (ids.includes(id) && valid(point)) {
-      draft.value = { id, x: point.x, y: point.y }
-    }
-  }
-  function move(point: StickerPoint) {
-    if (draft.value) {
-      lift(draft.value.id, point)
-    }
-  }
-  function finish(action: 'stick' | 'remove' | 'cancel') {
-    const item = draft.value
-    if (item && action !== 'cancel') {
-      const others = placed.value.filter((sticker) => sticker.id !== item.id)
-      save(action === 'stick' ? [...others, item] : others)
-    }
-    draft.value = null
-  }
-  return { placed: readonly(placed), draft: readonly(draft), artwork, lift, move, finish }
+  useEventListener('blur', cancel)
+  onBeforeUnmount(cancel)
+  return { board, cancel }
 }
