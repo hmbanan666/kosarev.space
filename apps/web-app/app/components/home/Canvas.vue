@@ -95,6 +95,12 @@
                 />
               </BlueprintFrame>
             </template>
+            <HomeStickers
+              :enabled="enabled"
+              :dock="stickerDock"
+              :viewport="viewport"
+              :suspended="!!selectedCard"
+            />
             <div
               v-if="target"
               class="canvas-target"
@@ -117,9 +123,12 @@
     </div>
     <footer v-if="enabled" class="canvas-chrome">
       <div class="canvas-tools">
-        <p class="canvas-copyright">
-          {{ t('footer.copyright', { year: new Date().getFullYear() }) }}
-        </p>
+        <div class="canvas-footer-start">
+          <p class="canvas-copyright">
+            {{ t('footer.copyright', { year: new Date().getFullYear() }) }}
+          </p>
+          <div ref="stickerDock" />
+        </div>
         <div ref="presenceDock" class="canvas-presence" />
         <div class="canvas-credits">
           <nav :aria-label="t('site.navigation')">
@@ -158,6 +167,7 @@ const { data } = await usePublications()
 const latest = computed(() => sortPublications(data.value ?? [])[0])
 const defaults = computed(() => activityLayout(projectScores(activity.value), !!latest.value))
 const { enabled, blocks, feedback, zoom, fitZoom, initialZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, start, move, end, key, wheel, reveal, position } = useHomeCanvas(viewport, defaults)
+const stickerDock = useTemplateRef<HTMLElement>('stickerDock')
 const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
 const presenceDocked = useState('canvas-presence-docked', () => false)
 // Move the existing presence instance after its dock exists. Route changes
@@ -208,3 +218,7 @@ watch(selectedCard, (value) => {
   }
 })
 </script>
+
+<style scoped>
+.canvas-footer-start { display: flex; align-items: center; gap: clamp(8px, 1.8vw, 28px); }
+</style>
