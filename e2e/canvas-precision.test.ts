@@ -28,7 +28,8 @@ for (const locale of ['en', 'ru']) {
         }
         await page.evaluate(() => document.fonts.ready)
         await page.mouse.move(0, 0)
-        await page.addStyleTag({ content: '#nuxt-devtools-container { display: none !important; }' })
+        // Measure the fitted cells after layout, independent of card travel during resize.
+        await page.addStyleTag({ content: '#nuxt-devtools-container { display: none !important; } .canvas-enabled .blueprint-frame { transition: none; }' })
         // Opt-in, reviewable evidence on the same browser path as the assertions.
         if (process.env.CANVAS_SCREENSHOTS) {
           await page.evaluate(() => Promise.all([...document.images].filter((img) => img.complete).map((img) => img.decode().catch(() => {}))))

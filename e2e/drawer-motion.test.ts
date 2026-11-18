@@ -160,6 +160,8 @@ for (const width of [1280, 390]) {
       await page.goto(`/en?card=${id}`)
       const panel = page.locator('#activity-detail-panel')
       await expect(panel).toHaveAttribute('data-state', 'open', { timeout: 20000 })
+      // The panel can open with the empty server snapshot before the fixture arrives.
+      await expect(page.locator('[data-block="feed"] .activity-feed li')).toHaveCount(3)
       const body = panel.locator('.site-drawer-body')
       // Every child must be reachable inside the actual scrollport, with bottom breathing room.
       const rows = panel.locator('.contribution-months li, .drawer-languages > div')

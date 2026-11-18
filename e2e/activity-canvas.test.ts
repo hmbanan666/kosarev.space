@@ -209,6 +209,7 @@ for (const locale of ['ru', 'en']) {
     test.setTimeout(90000)
     await page.context().addCookies([{ name: 'i18n_redirected', value: locale, url: 'http://localhost:3333' }])
     await page.goto(locale === 'en' ? '/en' : '/')
+    await expect(page.locator('[data-block="feed"] .activity-feed li')).toHaveCount(3)
     const cards = page.locator('[data-block]')
     await expect(cards).toHaveCount(18)
     const ids = await cards.evaluateAll((cards) => cards.map((card) => card.getAttribute('data-block')!))
@@ -226,6 +227,7 @@ for (const locale of ['ru', 'en']) {
       expect(new Set(links).size, id).toBe(links.length)
       await page.keyboard.press('Escape')
       await expect(panel).not.toBeVisible()
+      await expect(page).not.toHaveURL(/\?card=/)
       await expect(button).toBeFocused()
     }
   })
