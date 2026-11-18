@@ -45,6 +45,7 @@ test('stickers follow the world through zoom and pan, and release the card under
   await page.mouse.down()
   await page.mouse.move(destination.x, destination.y, { steps: 6 })
   await page.mouse.up()
+  await expect(tray).toHaveAttribute('aria-expanded', 'true')
   await expect(orbit).not.toHaveAttribute('style', original!)
   await expect(page.getByRole('dialog')).toHaveCount(0)
   const overlap = () => orbit.evaluate((el) => {
@@ -63,6 +64,7 @@ test('stickers follow the world through zoom and pan, and release the card under
   await expect.poll(() => viewport.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0)
   await expect.poll(overlap).toBe(true)
   await tray.click()
+  await expect(tray).toHaveAttribute('aria-expanded', 'false')
   const decal = page.locator('[data-sticker="orbit"]')
   await decal.scrollIntoViewIfNeeded()
   const rect = (await decal.boundingBox())!

@@ -270,11 +270,12 @@ function keys(event: KeyboardEvent) {
   event.preventDefault()
   event.stopPropagation()
 }
-onClickOutside(tray, () => {
-  if (open.value) {
+useEventListener('pointerdown', (event: PointerEvent) => {
+  const path = event.composedPath()
+  if (open.value && ![tray.value, toggle.value, layer.value].some((el) => el && path.includes(el))) {
     close()
   }
-}, { ignore: [toggle, layer] })
+}, { capture: true })
 useEventListener('keydown', (event: KeyboardEvent) => {
   if (!open.value || event.key !== 'Escape' || props.suspended) {
     return
