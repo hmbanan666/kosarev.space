@@ -34,7 +34,7 @@ for (const locale of ['en', 'ru']) {
           await page.evaluate(() => Promise.all([...document.images].filter((img) => img.complete).map((img) => img.decode().catch(() => {}))))
           await page.screenshot({ path: `docs/images/canvas-fullscreen/${process.env.CANVAS_SCREENSHOTS}-${locale}-${width}.png`, fullPage: true, animations: 'disabled' })
         }
-        const edges = await page.locator(width >= 768 ? '.site-header-inner, .canvas-tools' : '.site-header-inner, .canvas-heading, .canvas-viewport, .site-footer > .site-wrap').evaluateAll((elements) => elements.map((element) => {
+        const edges = await page.locator(width >= 768 ? '.site-header-inner, .canvas-tools' : '.site-header-inner, .canvas-viewport, .site-footer > .site-wrap').evaluateAll((elements) => elements.map((element) => {
           const rect = element.getBoundingClientRect()
           return { name: element.className, left: rect.left, right: rect.right }
         }))
@@ -42,6 +42,11 @@ for (const locale of ['en', 'ru']) {
           expect(Math.abs(edge.left - edges[0]!.left), `${edge.name} left`).toBeLessThan(1)
           expect(Math.abs(edge.right - edges[0]!.right), `${edge.name} right`).toBeLessThan(1)
           expect(Math.abs(edge.left - (width - edge.right)), `${edge.name} equal gutters`).toBeLessThan(1)
+        }
+        if (width === 390) {
+          const header = await page.locator('.site-header').boundingBox()
+          const firstCard = await page.locator('[data-block="hero"]').boundingBox()
+          expect(firstCard!.y - (header!.y + header!.height)).toBe(16)
         }
         if (width >= 768) {
           const margins = await page.locator('.canvas-viewport').evaluate((viewport) => {
