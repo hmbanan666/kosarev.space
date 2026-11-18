@@ -134,10 +134,16 @@ const isPlaced = (id: StickerId) => placed.value.some((s) => s.id === id)
 const landed = ref<StickerId | null>(null)
 const message = ref('')
 
-watch(() => board.draft?.id, (id) => {
+watch(() => board.draft?.id, (id, previous) => {
   if (id) {
     landed.value = null
     message.value = t('stickers.lifted', { name: name(id) })
+  } else if (previous && open.value) {
+    nextTick(() => {
+      if (open.value && document.hasFocus()) {
+        tray.value?.querySelector<HTMLButtonElement>(`[data-pick="${previous}"]`)?.focus({ preventScroll: true })
+      }
+    })
   }
 }, { flush: 'sync' })
 watch(placed, () => {
@@ -160,6 +166,7 @@ watch(() => props.enabled && !props.suspended, (available) => {
 })
 function lift(id: StickerId) {
   const view = props.viewport!.getBoundingClientRect()
+  props.space.refresh()
   board.pick(id, { x: view.left + view.width / 2, y: view.top + view.height / 2 }, props.space)
   layer.value?.focus({ preventScroll: true })
 }
@@ -176,9 +183,6 @@ function finish(action: 'stick' | 'remove' | 'cancel') {
     if (action === 'remove') {
       message.value = t('stickers.removed', { name: name(item.id) })
     }
-  }
-  if (open.value) {
-    nextTick(() => tray.value?.querySelector<HTMLButtonElement>(`[data-pick="${item.id}"]`)?.focus({ preventScroll: true }))
   }
 }
 function keys(event: KeyboardEvent) {

@@ -171,15 +171,15 @@ const latest = computed(() => sortPublications(data.value ?? [])[0])
 const defaults = computed(() => activityLayout(projectScores(activity.value), !!latest.value))
 const { enabled, blocks, feedback, zoom, fitZoom, initialZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, start, move, end, key, wheel, reveal, position } = useHomeCanvas(viewport, defaults)
 const world = useTemplateRef<HTMLElement>('world')
-const origin = shallowRef({ left: 0, top: 0 })
+const stickerSpace = reactive({ left: 0, top: 0, width, height, scale: zoom, refresh: measureStickerOrigin })
 function measureStickerOrigin() {
   if (enabled.value && world.value) {
     const { left, top } = world.value.getBoundingClientRect()
-    origin.value = { left, top }
+    stickerSpace.left = left
+    stickerSpace.top = top
   }
 }
 watch([enabled, width, height, zoom], measureStickerOrigin, { flush: 'post' })
-const stickerSpace = computed(() => ({ ...origin.value, width: width.value, height: height.value, scale: zoom.value }))
 function reservesDrag(target: Element) {
   return !!target.closest('.canvas-grip, .canvas-edge, a, button, input, select, textarea, summary, [role="button"], [contenteditable="true"]')
 }

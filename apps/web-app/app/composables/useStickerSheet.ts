@@ -4,7 +4,7 @@ import { homeSheet, storageKey } from '~/utils/stickers/home-sheet'
 
 export interface StickerHost {
   viewport: HTMLElement | null
-  space: StickerSpace
+  space: StickerSpace & { refresh: () => void }
   enabled: boolean
   suspended: boolean
   reservesDrag: (target: Element) => boolean
@@ -37,6 +37,7 @@ export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Re
       return
     }
     swallowClick = false
+    host.space.refresh()
     const claim = board.down({
       ...sample(e),
       editing: open.value,
@@ -66,6 +67,8 @@ export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Re
   }, capture)
   useEventListener('pointerup', (e: PointerEvent) => {
     if (board.pointerId === e.pointerId) {
+      // Native scroll can take effect before its scroll event reaches the host.
+      host.space.refresh()
       const result = board.up(sample(e), host.space)
       swallowClick = result !== 'host'
       if (result === 'lifted') {

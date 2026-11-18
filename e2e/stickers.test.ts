@@ -129,3 +129,25 @@ test('placing by click and cancelling a lift preserve the sheet on mobile', asyn
   await expect(collection.getByRole('img', { name: 'Waveform' })).toBeVisible()
   await expect(collection.getByRole('img')).toHaveCount(3)
 })
+
+test('release follows the current viewport when a scroll and drop share a frame', async ({ page }) => {
+  // Scroll in the same input turn, before the browser delivers its next scroll event.
+  await page.addInitScript(() => {
+    window.addEventListener('pointerup', () => {
+      if (document.querySelector('.sticker.is-lifted')) {
+        document.querySelector('.canvas-viewport')?.scrollBy({ left: 180, behavior: 'instant' })
+      }
+    }, { capture: true })
+  })
+  await page.goto('/en')
+  await page.locator('.sheet-toggle').click()
+  await page.locator('[data-pick="wave"]').click()
+  const view = (await page.locator('.canvas-viewport').boundingBox())!
+  const x = view.x + view.width / 2
+  const y = view.y + view.height / 2
+  await page.mouse.click(x, y)
+  await expect(page.locator('.sticker.is-lifted')).toHaveCount(0)
+  const paper = (await page.locator('[data-sticker="wave"]').boundingBox())!
+  expect(Math.abs(x - paper.x - paper.width / 2)).toBeLessThan(paper.width / 4)
+  expect(Math.abs(y - paper.y - paper.height / 2)).toBeLessThan(paper.height / 4)
+})
