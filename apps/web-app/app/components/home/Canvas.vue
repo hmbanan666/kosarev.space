@@ -5,18 +5,13 @@
     :class="{ 'canvas-enabled': enabled }"
     :aria-label="t('canvas.title')"
   >
-    <div class="canvas-heading">
-      <BlueprintMark kind="zone">
-        01 / {{ t('canvas.title') }}
-      </BlueprintMark>
-      <p v-if="enabled" id="canvas-help">
-        {{ t('canvas.help') }}
-      </p>
-      <BlueprintMark kind="title">
-        <span>kosarev.space</span>
-        <span>01 / {{ homeCanvas.columns }} × {{ homeCanvas.rows }}</span>
-      </BlueprintMark>
-    </div>
+    <p
+      v-if="enabled"
+      id="canvas-help"
+      class="sr-only"
+    >
+      {{ t('canvas.help') }}
+    </p>
     <div class="canvas-stage">
       <div
         ref="viewport"
@@ -84,13 +79,14 @@
                 </button>
                 <button
                   v-if="mounted"
-                  class="canvas-open sr-only"
+                  type="button"
+                  class="canvas-open"
                   aria-haspopup="dialog"
                   aria-controls="activity-detail-panel"
                   :aria-label="t('activity.open', { name: blockLabel(block.id) })"
                   @click.stop="showCard(block.id)"
                 >
-                  {{ t('activity.open', { name: blockLabel(block.id) }) }}
+                  <UIcon name="i-lucide-maximize-2" aria-hidden="true" />
                 </button>
                 <HomeBlockContent
                   :id="block.id"

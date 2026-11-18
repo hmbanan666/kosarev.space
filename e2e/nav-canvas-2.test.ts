@@ -56,6 +56,24 @@ for (const locale of ['en', 'ru']) {
           expect(clipped).toBe(true)
         }
         await capture(page, `home-${locale}-${width}`)
+        const details = page.locator('[data-block="hero"] button[aria-haspopup="dialog"]')
+        if (width === 390) {
+          const target = await details.boundingBox()
+          expect(target!.width).toBeGreaterThanOrEqual(44)
+          expect(target!.height).toBeGreaterThanOrEqual(44)
+          await details.tap()
+        } else {
+          await page.locator('[data-block="hero"] .canvas-grip').focus()
+          await page.keyboard.press('Tab')
+          await expect(details).toBeFocused()
+          await expect(details).toHaveCSS('opacity', '1')
+          expect((await details.boundingBox())!.width).toBeGreaterThan(16)
+          await page.keyboard.press('Enter')
+        }
+        await expect(page.getByRole('dialog')).toBeVisible()
+        await page.keyboard.press('Escape')
+        await expect(page.getByRole('dialog')).toHaveCount(0)
+        await expect(details).toBeFocused()
         if (width === 1440) {
           const card = page.locator('[data-block="context"]')
           const edge = card.locator('.canvas-edge-left')

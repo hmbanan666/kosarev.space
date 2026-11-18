@@ -27,10 +27,6 @@
 .blueprint-title { padding-left: 12px; border-left: 1px solid #d9ad6730; }
 .blueprint-hatching { display: block; height: 8px; background: repeating-linear-gradient(135deg, transparent 0 5px, #d9ad671a 5px 6px); }
 .home-canvas { padding-block: 24px 0; }
-.canvas-heading { display: flex; align-items: center; gap: 24px; min-height: 40px; margin-bottom: var(--grid-gap); }
-.canvas-heading p { font: .7rem/1.5 var(--font-mono); color: var(--ui-text-muted); }
-.canvas-heading .blueprint-title { margin-left: auto; display: flex; align-items: center; gap: 24px; border: 1px solid #d9ad6730; padding: 8px 12px; }
-.canvas-heading .blueprint-title span + span { border-left: 1px solid #d9ad6730; padding-left: 12px; color: var(--ui-primary); }
 .canvas-viewport { position: relative; background-image: linear-gradient(var(--blueprint-grid) 1px, transparent 1px),linear-gradient(90deg,var(--blueprint-grid) 1px,transparent 1px); background-size: calc(var(--grid-cell) / 4) calc(var(--grid-cell) / 4); }
 .canvas-viewport:focus-visible { outline: 1px solid var(--ui-primary); outline-offset: 4px; }
 .canvas-world { position: relative; transform-origin: 0 0; }
@@ -64,6 +60,11 @@
 .canvas-block-contacts .canvas-email { font-size: 1.65rem; overflow-wrap: anywhere; }
 .canvas-latest { margin-top: 12px; }
 .canvas-latest a { display: block; margin-top: 12px; font-size: 1.1rem; line-height: 1.5; }
+.canvas-open { position: absolute; top: var(--grip-inset); right: var(--grip-inset); width: var(--control-height); height: var(--control-height); display: grid; place-items: center; color: var(--ui-text-muted); font-size: 18px; cursor: pointer; }
+.canvas-open:is(:hover, :focus-visible) { color: var(--ui-primary); }
+.canvas-enabled .canvas-open { right: 48px; opacity: 0; pointer-events: none; }
+.canvas-enabled .canvas-open:focus-visible { opacity: 1; background: var(--ui-bg); z-index: 3; pointer-events: auto; }
+.home-canvas:not(.canvas-enabled) .blueprint-frame:has(.canvas-open) > .canvas-eyebrow { padding-right: var(--control-height); }
 .canvas-grip { position: absolute; right: var(--grip-inset); top: var(--grip-inset); width: 32px; height: 32px; display: grid; place-items: center; color: #969087; cursor: grab !important; opacity: 0; touch-action: none; z-index: 3; }
 .blueprint-frame:hover .canvas-grip, .blueprint-frame:focus-within .canvas-grip { opacity: 1; }
 .canvas-grip:focus-visible { outline-offset: 0 !important; }
@@ -92,14 +93,8 @@
 .home-canvas:not(.canvas-enabled) .canvas-source { margin-top: 16px; }
 .home-canvas:not(.canvas-enabled) :is(.canvas-crosshair, .blueprint-part) { display: none; }
 .home-canvas:not(.canvas-enabled) .canvas-intro h1 { font-size: 2rem; }
-@media (max-width: 1100px) {
-  .canvas-heading p { max-width: 32ch; }
-}
 @media (max-width: 767px) {
   .home-canvas { padding-block: 16px 24px; }
-  .canvas-heading { margin-bottom: 0; }
-  .canvas-heading .blueprint-title { border: 0; padding: 0; }
-  .canvas-heading .blueprint-title span + span { display: none; }
   .canvas-intro { gap: 16px; }
   .canvas-intro img { width: 84px; height: 108px; }
   .canvas-description { font-size: .9rem; }
@@ -128,7 +123,6 @@
 .site-shell:has(.canvas-enabled) > main { flex: 1; min-height: 0; }
 .site-shell:has(.canvas-enabled) > .site-footer { display: none; }
 .home-canvas.canvas-enabled { width: 100%; height: 100%; padding: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); }
-.canvas-enabled .canvas-heading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .canvas-stage { min-height: 0; min-width: 0; position: relative; }
 .canvas-chrome { border-top: 1px solid var(--ui-border); padding-inline: var(--site-gutter); background: var(--ui-bg); }
 .canvas-credits { display: flex; align-items: center; justify-content: flex-end; gap: 20px; font: inherit; color: var(--ui-text-muted); }
