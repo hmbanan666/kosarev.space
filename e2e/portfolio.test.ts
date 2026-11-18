@@ -290,7 +290,7 @@ test('a temporarily unavailable case offers a path back to the catalog', async (
   await openCatalog(page)
   await page.route('**/api/cases/qa-invoice?*', (route) => route.fulfill({ status: 503, json: {} }))
   await page.getByRole('link', { name: 'Read case: Invoice reconciliation reference' }).click()
-  await expect(page.getByRole('main').getByRole('heading', { level: 1 })).toHaveText('Something went wrong')
+  await expect(page.getByRole('main').getByRole('heading', { level: 1, name: 'Something went wrong', exact: true })).toBeVisible()
   await page.getByRole('main').getByRole('link', { name: 'All cases', exact: true }).click()
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Case studies')
 })
