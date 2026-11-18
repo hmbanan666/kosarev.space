@@ -41,6 +41,7 @@ const dialog = useTemplateRef<HTMLDialogElement>('dialog')
 const state = ref<'closed' | 'opening' | 'open' | 'closing'>('closed')
 let timer: ReturnType<typeof setTimeout> | undefined
 let frame = 0
+let closeRequested = false
 let returnFocus: HTMLElement | null = null
 const viewportStyle = ref<Record<string, string>>({})
 function measureViewport() {
@@ -81,13 +82,15 @@ function endTransition(event: TransitionEvent) {
   }
 }
 function requestClose() {
-  if (!dialog.value?.open || state.value === 'closing') {
+  if (!dialog.value?.open || closeRequested || state.value === 'closing') {
     return
   }
-  close()
+  // Keep focus in the modal until the parent commits the close (including browser Back).
+  closeRequested = true
   emit('close')
 }
 function sync() {
+  closeRequested = false
   if (!props.open) {
     close()
     return

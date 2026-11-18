@@ -116,6 +116,35 @@ for (const width of [1280, 390]) {
   })
 }
 
+test('card focus returns after browser Back commits the dismissal', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/en')
+  const card = page.locator('[data-block="context"] .canvas-open')
+  await card.press('Enter')
+  const panel = page.locator('#activity-detail-panel')
+  await expect(panel).toHaveAttribute('data-state', 'open')
+  const pending = await panel.evaluateHandle((dialog) => {
+    const go = history.go.bind(history)
+    return {
+      modalAtBack: new Promise<boolean>((resolve) => {
+        history.go = (delta) => {
+          // Hold the browser traversal beyond the drawer's reduced-motion exit.
+          setTimeout(() => {
+            resolve((dialog as HTMLDialogElement).open)
+            history.go = go
+            go(delta)
+          }, 100)
+        }
+      }),
+    }
+  })
+  await page.keyboard.press('Escape')
+  expect(await pending.evaluate((result) => result.modalAtBack)).toBe(true)
+  await expect(page).toHaveURL(/\/en$/)
+  await expect(panel).not.toBeVisible()
+  await expect(card).toBeFocused()
+})
+
 test('reopening during exit cancels the pending close', async ({ page }) => {
   await page.goto('/en/contact')
   await page.locator('.site-agent-launcher').click()
