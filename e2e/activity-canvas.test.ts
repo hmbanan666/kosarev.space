@@ -200,7 +200,9 @@ for (const locale of ['ru', 'en']) {
     await expect(panel).toBeVisible()
     await expect(panel.locator('h2')).toHaveCount(1)
     await expect(panel.locator('.canvas-eyebrow')).toHaveCount(0)
-    await expect(panel).not.toContainText(/Подробнее:|Open details:|WebSocket/)
+    await expect(panel).not.toContainText(/Подробнее:|Open details:/)
+    await expect(panel).toContainText(locale === 'en' ? 'Everyone shares this board.' : 'Это общая доска.')
+    await expect(panel.locator('.drawer-facts')).toContainText(/WebSocket.*PostgreSQL/)
   })
 }
 
