@@ -1,6 +1,5 @@
 /* Website colors stay dark independently of saved color-mode preferences. */
 :root, .dark {
-  --sticker-outline: #d9d8d4;
   color-scheme: dark;
   --site-gutter: clamp(20px, 3.125vw, 48px);
   --site-max-width: 1664px;
@@ -10,6 +9,7 @@
   --site-paper: #F3F1EB;
   --site-muted: #AAA8A2;
   --site-amber: #D9AD67;
+  --sticker-outline: var(--site-amber);
   --ui-bg: var(--site-carbon);
   --ui-bg-muted: var(--site-surface);
   --ui-bg-elevated: var(--site-surface);
