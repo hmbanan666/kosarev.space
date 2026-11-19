@@ -12,11 +12,14 @@ test('pick, place and return a sticker with the keyboard across visits', async (
     return images.map((image) => image.currentSrc)
   })
   expect(new Set(sources).size).toBe(9)
-  await sheet.getByRole('button', { name: 'Pick up Love chemistry' }).press('Enter')
+  const choice = sheet.getByRole('button', { name: 'Pick up Love chemistry' })
+  await expect(choice).toHaveText('')
+  await choice.press('Enter')
   await page.keyboard.press('ArrowRight')
   await page.keyboard.press('Enter')
   const sticker = page.getByRole('group', { name: 'Stickers', exact: true }).getByRole('button', { name: 'Move Love chemistry' })
   await expect(sticker).toBeVisible()
+  await expect(sticker).toHaveClass(/is-landed/)
   const placed = await sticker.getAttribute('style')
   await page.reload()
   await tray.click()
@@ -49,11 +52,24 @@ test('stickers follow the world through zoom and pan, and release the card under
   const destination = { x: card.x + card.width * 0.7, y: card.y + card.height * 0.28 }
   await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2)
   await page.mouse.down()
+  await expect(idea).toHaveClass(/is-peeling/)
+  await expect(idea).not.toHaveClass(/is-lifted/)
   await page.mouse.move(destination.x, destination.y, { steps: 6 })
   await expect(idea).toHaveClass(/is-lifted/)
   await expect(idea.locator('.paper-corner')).not.toHaveCSS('transform', 'none')
   await page.mouse.up()
   await expect(idea).toHaveClass(/is-landed/)
+  expect(await idea.locator('.paper').evaluate((paper) => {
+    const animation = paper.getAnimations().find((a) => a instanceof CSSAnimation)
+    if (!animation) {
+      return false
+    }
+    animation.pause()
+    animation.currentTime = Number(animation.effect!.getTiming().duration) * 0.35
+    const matrix = new DOMMatrix(getComputedStyle(paper).transform)
+    animation.play()
+    return matrix.a < 1 && matrix.d < matrix.a
+  })).toBe(true)
   await expect(tray).toHaveAttribute('aria-expanded', 'false')
   await expect(idea).not.toHaveAttribute('style', original!)
   await expect(page.getByRole('dialog')).toHaveCount(0)
@@ -127,6 +143,8 @@ test('placing by click and cancelling a lift preserve the sheet on mobile', asyn
   await item.click()
   await expect(item).toHaveClass(/is-lifted/)
   await expect(item.locator('.paper-corner')).toHaveCSS('transform', 'none')
+  await expect(item.locator('.paper-travel')).toHaveCSS('transform', 'none')
+  await expect(item.locator('.paper')).toHaveCSS('transform', 'none')
   await page.keyboard.press('ArrowUp')
   await page.keyboard.press('Escape')
   await expect(item).toHaveAttribute('style', before!)

@@ -9,6 +9,7 @@
   --site-paper: #F3F1EB;
   --site-muted: #AAA8A2;
   --site-amber: #D9AD67;
+  --sticker-outline: var(--site-amber);
   --ui-bg: var(--site-carbon);
   --ui-bg-muted: var(--site-surface);
   --ui-bg-elevated: var(--site-surface);

@@ -1,10 +1,12 @@
+import { bank, clampLag, follow, paperMotion } from './motion'
+
 export interface Point { x: number, y: number }
 /** Normalized world coordinates, with the sticker anchored at its center. */
-export interface PlacedSticker<Id> extends Point { id: Id }
+export interface PlacedSticker<Id> extends Point { id: Id, rotation: number }
 export interface StickerLayout<Id> {
   ids: readonly Id[]
   legacyIds?: ReadonlyMap<string, Id>
-  defaults: readonly PlacedSticker<Id>[]
+  defaults: readonly Omit<PlacedSticker<Id>, 'rotation'>[]
   width: number
   height: number
 }
@@ -21,15 +23,33 @@ function fromScreen(point: Point, space: StickerSpace): Point {
 export class StickerBoard<Id extends string> {
   placed: readonly PlacedSticker<Id>[]
   draft: PlacedSticker<Id> | null = null
+  landed: Id | null = null
+  paper: (Point & { id: Id, vx: number, vy: number }) | null = null
+  corner = 1
   private gesture: { start: Press, item: PlacedSticker<Id>, offset: Point } | null = null
 
-  constructor(readonly layout: StickerLayout<Id>, private readonly store?: StickerStore) {
-    this.placed = layout.defaults
+  constructor(readonly layout: StickerLayout<Id>, private readonly store?: StickerStore, private readonly random = Math.random) {
+    this.placed = layout.defaults.map((item) => ({ ...item, rotation: 0 }))
+  }
+
+  private angle() {
+    return Math.round((this.random() * 2 - 1) * paperMotion.rotationRange * 10) / 10
+  }
+
+  private save() {
+    try {
+      this.store?.write(JSON.stringify({ version: 2, placed: this.placed }))
+    } catch { /* The layout remains usable in memory. */ }
   }
 
   restore() {
     try {
       const data = JSON.parse(this.store?.read() ?? 'null')
+      if (data === null) {
+        this.placed = this.layout.defaults.map((item) => ({ ...item, rotation: this.angle() }))
+        this.save()
+        return
+      }
       // The original sheet stored its array directly under the same key.
       const legacy = Array.isArray(data) || data?.version === 1
       const saved = Array.isArray(data) ? data : data?.placed
@@ -43,13 +63,69 @@ export class StickerBoard<Id extends string> {
       const fraction = (n: number) => Number.isFinite(n) && n >= 0 && n <= 1
       if (items.every((s) => s && this.layout.ids.includes(s.id) && fraction(s.x) && fraction(s.y))
         && new Set(items.map((s) => s.id)).size === items.length) {
-        this.placed = items
+        let assigned = false
+        this.placed = items.map(({ id, x, y, rotation }) => {
+          if (Number.isFinite(rotation) && Math.abs(rotation) <= paperMotion.rotationRange) {
+            return { id, x, y, rotation }
+          }
+          assigned = true
+          return { id, x, y, rotation: this.angle() }
+        })
+        if (assigned) {
+          this.save()
+        }
       }
     } catch { /* Storage is optional, including browsers that deny access. */ }
   }
 
   get pointerId() {
     return this.gesture?.start.pointerId
+  }
+
+  get lifted() {
+    return this.draft?.id ?? this.gesture?.item.id
+  }
+
+  private liftPaper(item: PlacedSticker<Id>, corner: number) {
+    this.landed = null
+    this.corner = corner
+    this.paper = { id: item.id, x: item.x, y: item.y, vx: 0, vy: 0 }
+  }
+
+  settlePaper() {
+    const item = this.draft ?? this.gesture?.item
+    this.paper = item ? { id: item.id, x: item.x, y: item.y, vx: 0, vy: 0 } : null
+  }
+
+  frame(elapsedMs: number, space: StickerSpace) {
+    const paper = this.paper
+    const target = this.draft ?? this.placed.find((item) => item.id === paper?.id)
+    if (!paper || !target) {
+      return false
+    }
+    const x = follow(paper.x, paper.vx, target.x, space.width, elapsedMs / 1000)
+    const y = follow(paper.y, paper.vy, target.y, space.height, elapsedMs / 1000)
+    const moving = Math.hypot((x.position - target.x) * space.width, (y.position - target.y) * space.height) > 0.05
+      || Math.hypot(x.velocity * space.width, y.velocity * space.height) > 1
+    if (moving) {
+      this.paper = { id: target.id, x: x.position, y: y.position, vx: x.velocity, vy: y.velocity }
+    } else {
+      this.settlePaper()
+    }
+    return moving
+  }
+
+  pose(item: PlacedSticker<Id>, space: StickerSpace) {
+    const paper = this.paper
+    if (paper?.id !== item.id) {
+      return
+    }
+    return {
+      x: clampLag((paper.x - item.x) * space.width),
+      y: clampLag((paper.y - item.y) * space.height),
+      roll: bank(paper.vx * space.width),
+      pitch: -bank(paper.vy * space.height),
+    }
   }
 
   get artwork() {
@@ -60,8 +136,9 @@ export class StickerBoard<Id extends string> {
   pick(id: Id, screenCenter: Point, space: StickerSpace) {
     this.gesture = null
     const existing = this.placed.find((s) => s.id === id)
-    this.draft = existing ?? { id, ...fromScreen(screenCenter, space) }
+    this.draft = existing ?? { id, ...fromScreen(screenCenter, space), rotation: this.angle() }
     this.position(this.draft, space)
+    this.liftPaper(this.draft, 1)
   }
 
   nudge(dx: number, dy: number, space: StickerSpace) {
@@ -80,6 +157,9 @@ export class StickerBoard<Id extends string> {
       && Math.abs(item.y - point.y) * space.height <= this.layout.height / 2)
     if (!item) {
       return 'host'
+    }
+    if (!this.draft) {
+      this.liftPaper(item, point.x < item.x ? -1 : 1)
     }
     const offset = this.draft ? { x: 0, y: 0 } : { x: item.x - point.x, y: item.y - point.y }
     this.gesture = { start, item, offset }
@@ -120,6 +200,7 @@ export class StickerBoard<Id extends string> {
       this.draft = gesture.item
       return 'lifted'
     }
+    this.paper = null
     return 'host'
   }
 
@@ -129,18 +210,20 @@ export class StickerBoard<Id extends string> {
         const edge = Math.min(0.5, inset)
         return Math.max(edge, Math.min(1 - edge, value))
       }
-      this.draft = { id: this.draft.id, x: clamp(point.x, this.layout.width / 2 / space.width), y: clamp(point.y, this.layout.height / 2 / space.height) }
+      this.draft = { ...this.draft, x: clamp(point.x, this.layout.width / 2 / space.width), y: clamp(point.y, this.layout.height / 2 / space.height) }
     }
   }
 
   finish(action: 'stick' | 'remove' | 'cancel') {
     this.gesture = null
+    this.landed = action === 'stick' && this.draft ? this.draft.id : null
+    if (!this.landed) {
+      this.paper = null
+    }
     if (this.draft && action !== 'cancel') {
       const others = this.placed.filter((item) => item.id !== this.draft!.id)
       this.placed = action === 'stick' ? [...others, this.draft] : others
-      try {
-        this.store?.write(JSON.stringify({ version: 2, placed: this.placed }))
-      } catch { /* The layout remains usable in memory. */ }
+      this.save()
     }
     this.draft = null
   }
