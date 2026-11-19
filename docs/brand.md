@@ -51,22 +51,15 @@ the earlier direction that explicitly deprioritized employment.
   from production claims; digests require primary sources and author commentary.
 - Email and Telegram are directly visible. Email copying confirms success or
   offers manual selection if clipboard access fails. No contact backend exists.
-- The native `nuxt-live-cursors` component starts automatically on fine-pointer
-  portfolio and case pages. Its familiar bottom pill opens the native profile,
-  with shuffle, hide/show and the source-case link supplied through the public
-  actions slot. Hide/show changes cursor visibility while keeping the connection
-  active; the module retains that visibility choice during the app session.
-  There is no custom header switch or pointer renderer. The live-cursor drawer
-  shows the native connection count while the eligible session is connected.
-  The home uses an optional coordinate target through a pinned package patch:
-  peers share normalized canvas coordinates across viewport aspect ratios,
-  pan, zoom and locales while retaining
-  the native face renderer. The `#coordinates-v2` room suffix separates this protocol from older open
-  tabs; Y uses 10,000 integer units to preserve precision in the native transport.
-  Other pages retain page coordinates.
-  Coarse pointers, reduced motion and CV/print keep the component unmounted.
-  The home docks the native pill in the middle of its canvas control bar.
-  Other pages dock the pill in the normal page footer, below the contact links.
+- The app owns the cursor renderer and profile actions originally provided by
+  `nuxt-live-cursors`. One Nitro WebSocket carries visitor presence, block
+  movement and stickers. The home uses normalized canvas cursor coordinates,
+  including across locales, pan and zoom. Other pages use page coordinates.
+  Fine-pointer portfolio and case pages show the profile pill in the canvas
+  controls or footer. Visitors can shuffle their profile or hide the overlay.
+  The home receives the board on coarse pointers and with reduced motion too.
+  Below 768px a read-only overview in the live cursors card follows the shared
+  arrangement alongside the readable list.
 
 
 ## Visual principles
@@ -129,13 +122,13 @@ portrait remain prominent at centre-left; contact is a small edge card.
 Grid lines share the cards' coordinate space during pan and zoom. Four quiet
 crosshairs and coordinate marks frame the board.
 
-The project layout is deterministic. For each project, the score is the sum of
+The initial project layout is deterministic. For each project, the score is the sum of
 `max(0, 30 − floor(days since latest observed commit/PR))`, the number of observed
 commits/PRs in 30 days, and the number in 14 days. Releases do not affect rank;
 future dates are excluded. Equal scores use project-key order. The highest
 rank occupies the central 7 by 3 slot; remaining projects use staggered 4 by 3 and 5 by 3
 edge slots.
-The same rank orders the mobile list. Dostigus, Meloteka, Startodel, ChatGame
+Current activity rank orders the mobile list. Dostigus, Meloteka, Startodel, ChatGame
 and NextOrders reuse their existing project descriptions in outer slots. A
 separate latest-publication card appears only when published content is available.
 Contact remains last in reading order and near the outer edge. The algorithm is in
@@ -214,12 +207,12 @@ Move blocks from a 14px band along any edge, or with the grip and its arrow keys
 The grip appears on hover or keyboard focus. Body taps still open details.
 Positions snap to cells and
 colliding neighbours move to nearby free positions. If no placement is possible,
-the move is rejected. Escape cancels a drag. Versioned localStorage keeps only
-this device's layout, including card sizes; invalid or inaccessible data falls
-back to current activity defaults. Layout storage version 4 discards earlier
-arrangements for the expanded board. Layouts are
-never sent to the server. The common presence coordinate system describes
-positions, not a shared arrangement of blocks.
+the move is rejected. Escape cancels a drag. PostgreSQL seeds one board from the
+initial layout and stores committed blocks and stickers, including their angles.
+The first visitor to grab a piece holds it until release, cancellation or
+disconnect. Other visitors see the drag before the drop. Each pick from the
+sheet makes a new sticker, and the oldest placement is evicted at 300 stickers.
+The home ignores earlier browser layouts.
 
 ### Public activity
 

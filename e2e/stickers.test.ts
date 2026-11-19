@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './board-fixture'
 
-test('pick, place and return a sticker with the keyboard across visits', async ({ page }) => {
+test('pick, place and return a sticker with the keyboard across visits', { tag: '@board-write' }, async ({ page }) => {
   await page.goto('/en')
   const tray = page.getByRole('button', { name: 'Stickers', exact: true })
   await tray.click()
@@ -38,7 +38,7 @@ test('pick, place and return a sticker with the keyboard across visits', async (
   await expect(sheet.getByRole('button', { name: 'Pick up Love chemistry' })).toBeVisible()
 })
 
-test('stickers follow the world through zoom and pan, and release the card underneath', async ({ page }) => {
+test('stickers follow the world through zoom and pan, and release the card underneath', { tag: '@board-write' }, async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto('/en')
   const tray = page.getByRole('button', { name: 'Stickers', exact: true })
@@ -129,7 +129,7 @@ test('stickers follow the world through zoom and pan, and release the card under
   await expect(page.getByRole('dialog')).toHaveCount(0)
 })
 
-test('placing by click and cancelling a lift preserve the sheet on mobile', async ({ page }) => {
+test('placing by click and cancelling a lift preserve the sheet on mobile', { tag: '@board-write' }, async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/en')
   await page.getByRole('button', { name: 'Stickers', exact: true }).click()
@@ -155,7 +155,7 @@ test('placing by click and cancelling a lift preserve the sheet on mobile', asyn
   await expect(collection.getByRole('img')).toHaveCount(3)
 })
 
-test('release follows the current viewport when a scroll and drop share a frame', async ({ page }) => {
+test('release follows the current viewport when a scroll and drop share a frame', { tag: '@board-write' }, async ({ page }) => {
   // Scroll in the same input turn, before the browser delivers its next scroll event.
   await page.addInitScript(() => {
     window.addEventListener('pointerup', () => {

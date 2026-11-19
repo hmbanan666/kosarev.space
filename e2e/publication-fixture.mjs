@@ -53,6 +53,7 @@ export async function removeFixture(client, slug) {
 export default async function setup() {
   const client = await openTestDatabase()
   try {
+    await client.query('DELETE FROM home_board')
     await removeFixture(client, fixture.slug)
     await removeFixture(client, 'unpublished-fixture')
     const saved = await saveDraft(client, fixture)

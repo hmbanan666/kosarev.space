@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { expect, test } from '@playwright/test'
+import { expect, test } from './board-fixture'
 
 async function openCanvas(page: Page, locale = 'en') {
   await page.setViewportSize({ width: 1280, height: 900 })
@@ -96,7 +96,7 @@ test('canvas pans by wheel, background drag and arrows after pinch zoom, with bo
   await expect(page.locator('[data-canvas-world]')).toHaveCSS('transform', minimumZoom)
 })
 
-test('block moves show a target, survive reload and support keyboard cancellation', async ({ page }) => {
+test('block moves show a target, survive reload and support keyboard cancellation', { tag: '@board-write' }, async ({ page }) => {
   await openCanvas(page)
   const block = page.locator('[data-block="context"]')
   const grip = block.getByRole('button', { name: 'Move block: Context' })
@@ -134,7 +134,7 @@ test('block moves show a target, survive reload and support keyboard cancellatio
   await expect(movable).toHaveAttribute('style', beforeCancel!)
 })
 
-test('blocks lift and highlight on hover, then ease to a snapped position', async ({ page }) => {
+test('blocks lift and highlight on hover, then ease to a snapped position', { tag: '@board-write' }, async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await openCanvas(page)
   const movable = page.locator('[data-block="space"]')

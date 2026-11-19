@@ -8,6 +8,10 @@ export default defineConfig({
   globalSetup: './e2e/publication-fixture.mjs',
   timeout: 30000,
   workers: 2,
+  projects: [
+    { name: 'visitors', grepInvert: /@board-write/ },
+    { name: 'board', grep: /@board-write/, workers: 1, dependencies: ['visitors'] },
+  ],
   // Nuxt dev can take more than five seconds to hydrate on a constrained runner.
   expect: { timeout: 10000 },
   use: {

@@ -1,8 +1,8 @@
 import type { Page } from '@playwright/test'
 import { mkdir } from 'node:fs/promises'
 import process from 'node:process'
-import { expect, test } from '@playwright/test'
 import snapshot from '../apps/web-app/tests/fixtures/activity-snapshot.json' with { type: 'json' }
+import { expect, test } from './board-fixture'
 
 async function capture(page: Page, name: string) {
   if (process.env.NAV_CANVAS_SCREENSHOTS) {
@@ -145,7 +145,7 @@ for (const locale of ['en', 'ru']) {
   }
 }
 
-test('every card edge drags, while body taps open details', async ({ page }) => {
+test('every card edge drags, while body taps open details', { tag: '@board-write' }, async ({ page }) => {
   test.setTimeout(45000)
   // Motion has separate coverage; keep hit-target checks on settled cards.
   await page.emulateMedia({ reducedMotion: 'reduce' })
@@ -173,7 +173,7 @@ test('every card edge drags, while body taps open details', async ({ page }) => 
 
 test.describe('tablet touch', () => {
   test.use({ hasTouch: true, isMobile: true })
-  test('edge movement does not steal body taps', async ({ page }) => {
+  test('edge movement does not steal body taps', { tag: '@board-write' }, async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 900 })
     await page.goto('/en')
     await expect(page.locator('.home-canvas')).toHaveClass(/canvas-enabled/)

@@ -84,6 +84,13 @@ jobs:
       - name: E2E tests
         run: pnpm run test:e2e
 
+      - name: Attach shared-board browser captures
+        uses: actions/upload-artifact@v7
+        with:
+          name: shared-board-screenshots
+          path: test-results/**/shared-*.png
+          if-no-files-found: error
+
       - name: Site agent provider integration
         run: pnpm run test:agent
 
