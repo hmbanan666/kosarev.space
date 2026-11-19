@@ -138,14 +138,14 @@
     <a class="canvas-source" href="mailto:nick@kosarev.space">{{ t('activity.email') }}<SiteLinkIcon external /></a>
   </template>
   <template v-else-if="id === 'live'">
-    <p class="canvas-eyebrow">
-      {{ t('activity.sharedBoard') }}
-    </p>
     <h2>
       <NuxtLink :to="localePath('/cases/kosarev-live-cursors')">
         {{ t('activity.liveTitle') }}<SiteLinkIcon />
       </NuxtLink>
     </h2>
+    <p class="board-summary">
+      {{ t('activity.sharedBoard') }}
+    </p>
     <p class="canvas-footnote">
       WebSocket · PostgreSQL
     </p>

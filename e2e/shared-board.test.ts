@@ -34,7 +34,7 @@ test('visitors share live drags and durable drops across locales and mobile', { 
       }).toBeLessThan(8)
       const name = index === 0 ? 'block' : 'sticker'
       const path = info.outputPath(`shared-${name}.png`)
-      await observer.screenshot({ path })
+      await observer.screenshot({ path, style: '#nuxt-devtools-container { display: none !important; }' })
       await info.attach(`Remote ${name} and cursor`, { path, contentType: 'image/png' })
       await actor.mouse.up()
       await expect(observed).not.toHaveAttribute('data-held-by')

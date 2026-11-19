@@ -14,7 +14,7 @@ export function activityLayout(scores: Record<string, number> = {}, hasPublicati
     { id: 'skills', x: 0, y: 10, w: 6, h: 2 },
     { id: 'cv', x: 0, y: 0, w: 3, h: 2 },
     { id: 'writing', x: 13, y: 7, w: 3, h: 2 },
-    { id: 'live', x: 4, y: 0, w: 2, h: 2 },
+    { id: 'live', x: 4, y: 0, w: 3, h: 2 },
     { id: 'dostigus', x: 21, y: 3, w: 5, h: 3 },
     { id: 'meloteka', x: 22, y: 8, w: 5, h: 3 },
     { id: 'startodel', x: 17, y: 14, w: 5, h: 3 },
