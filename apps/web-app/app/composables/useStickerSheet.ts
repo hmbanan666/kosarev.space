@@ -17,6 +17,28 @@ export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Re
   }))
   onMounted(() => board.restore())
 
+  const reducedMotion = usePreferredReducedMotion()
+  let frame = 0
+  let last = 0
+  function animate(now: number) {
+    const moving = board.frame(Math.max(0, now - last), host.space)
+    last = now
+    frame = moving ? requestAnimationFrame(animate) : 0
+  }
+  watch([() => board.draft, () => board.landed, reducedMotion], () => {
+    if (reducedMotion.value === 'reduce') {
+      board.settlePaper()
+    }
+    if (!board.paper || reducedMotion.value === 'reduce') {
+      cancelAnimationFrame(frame)
+      frame = 0
+    } else if (!frame) {
+      last = performance.now()
+      frame = requestAnimationFrame(animate)
+    }
+  })
+  onBeforeUnmount(() => cancelAnimationFrame(frame))
+
   let swallowClick = false
   const sample = (e: PointerEvent) => ({ pointerId: e.pointerId, x: e.clientX, y: e.clientY })
   const viewport = computed(() => host.viewport)
