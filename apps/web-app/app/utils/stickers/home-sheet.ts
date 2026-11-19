@@ -9,9 +9,9 @@ export type StickerId = typeof ids[number]
 
 export const homeSheet: StickerLayout<StickerId> = {
   ids,
-  defaults: [{ id: 'monkey-bright-idea', x: 0.36, y: 0.192 }, { id: 'monkey-pink-mug', x: 0.263, y: 0.49 }],
-  width: 116,
-  height: 116,
+  defaults: [{ id: 'monkey-bright-idea', x: 0.39, y: 0.192 }, { id: 'monkey-pink-mug', x: 0.263, y: 0.49 }],
+  width: 174,
+  height: 174,
   legacyIds: new Map([
     ['orbit', 'monkey-bright-idea'],
     ['caliper', 'monkey-pink-mug'],

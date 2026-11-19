@@ -253,13 +253,13 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 .sheet-toggle, .sheet-heading button, .sheet-actions button { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 32px; }
 .sheet-toggle { gap: 6px; padding: 0 8px; color: var(--ui-text-toned); border: 1px solid var(--ui-border); }
 .sheet-toggle[aria-expanded=true], .sheet-toggle:hover { border-color: var(--ui-primary); color: var(--ui-primary); }
-.sticker-sheet { position: absolute; left: 0; bottom: calc(100% + 12px); z-index: 5; width: 404px; padding: 12px; background: #171715; border: 1px solid #655b49; box-shadow: 0 10px 28px #0006; color: var(--ui-text-toned); }
+.sticker-sheet { position: absolute; left: 0; bottom: calc(100% + 12px); z-index: 5; width: 404px; max-height: calc(100dvh - 8rem); overflow-y: auto; padding: 12px; background: #171715; border: 1px solid #655b49; box-shadow: 0 10px 28px #0006; color: var(--ui-text-toned); }
 .sheet-heading, .sheet-actions { display: flex; justify-content: space-between; align-items: center; }
 .sheet-heading { margin-bottom: 8px; font: .85rem var(--font-mono); }
 .sheet-heading button { width: 32px; font-size: 16px; }
 .sheet-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-left: 1px solid #49453c; border-top: 1px solid #49453c; }
-.sheet-grid button { position: relative; display: grid; justify-items: center; align-content: center; gap: 3px; height: 76px; border: solid #49453c; border-width: 0 1px 1px 0; font-size: 11px; cursor: pointer; }
-.sheet-grid img { width: 48px; height: 48px; }
+.sheet-grid button { position: relative; display: grid; justify-items: center; align-content: center; gap: 3px; min-height: 100px; border: solid #49453c; border-width: 0 1px 1px 0; font-size: 11px; cursor: pointer; }
+.sheet-grid img { width: 72px; height: 72px; }
 .sheet-grid .on-board img { opacity: .78; }
 .sheet-grid .on-board::before { content: ''; position: absolute; top: 6px; right: 6px; width: 4px; height: 4px; background: var(--ui-primary); }
 .sheet-grid button:is(:hover, :focus-visible, .is-chosen) { background: #d9ad6717; color: var(--ui-primary); }
