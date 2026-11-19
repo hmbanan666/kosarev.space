@@ -139,7 +139,7 @@
   </template>
   <template v-else-if="id === 'live'">
     <p class="canvas-eyebrow">
-      Live
+      {{ t('activity.sharedBoard') }}
     </p>
     <h2>
       <NuxtLink :to="localePath('/cases/kosarev-live-cursors')">
@@ -147,7 +147,7 @@
       </NuxtLink>
     </h2>
     <p class="canvas-footnote">
-      WebSocket
+      WebSocket · PostgreSQL
     </p>
   </template>
   <template v-else-if="id === 'contributions'">

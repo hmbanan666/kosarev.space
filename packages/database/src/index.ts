@@ -1,3 +1,4 @@
+export type { BoardData, BoardPoint } from './board'
 export { CASE_ALLOWED_EMOJIS } from './constants'
 export { useCreateDatabase, useDatabase, useMigrateDatabase } from './database'
 export type { Database } from './database'

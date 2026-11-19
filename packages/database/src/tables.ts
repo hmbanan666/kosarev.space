@@ -1,4 +1,5 @@
 import type { ForeignKeyBuilder } from 'drizzle-orm/pg-core'
+import type { BoardData } from './board'
 import type { PublicationContent } from './publication'
 import { createId } from '@paralleldrive/cuid2'
 import { relations } from 'drizzle-orm'
@@ -104,3 +105,8 @@ export const agentMessages = pgTable('agent_messages', {
   index('agent_messages_created_at_idx').on(t.createdAt),
   index('agent_messages_session_created_at_idx').on(t.sessionId, t.createdAt),
 ])
+
+export const homeBoard = pgTable('home_board', {
+  id: integer('id').primaryKey(),
+  state: jsonb('state').$type<BoardData>().notNull(),
+})

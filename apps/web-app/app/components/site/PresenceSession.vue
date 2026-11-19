@@ -1,7 +1,6 @@
 <template>
   <LiveCursors
     :locale="locale"
-    position="bottom-center"
     coordinate-target="[data-canvas-world]"
   >
     <template #profile-actions="{ shuffle, cursorsHidden, toggleCursors, labels }">
@@ -33,8 +32,8 @@
 <script setup lang="ts">
 const { locale, t } = useI18n()
 const localePath = useLocalePath()
-// Read the library's shared session; LiveCursors keeps ownership of pointer rendering.
-const { onlineCount, isConnected } = useLiveCursors({ coordinateTarget: () => '[data-canvas-world]' })
+// The drawer and profile use the same presence session.
+const { onlineCount, isConnected } = useLiveCursors()
 const presenceCount = useState<number | null>('site-presence-count', () => null)
 watch([onlineCount, isConnected], ([count, connected]) => {
   presenceCount.value = connected && count > 0 ? count : null

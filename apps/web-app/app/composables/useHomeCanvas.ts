@@ -1,15 +1,17 @@
 import type { CanvasBlock } from '~/utils/canvas-layout'
-import { createCanvasLayout } from '~/utils/canvas-layout'
+import { placeCanvasBlock } from '~/utils/canvas-layout'
 import { homeCanvas } from '~/utils/home-canvas'
 
-export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: ComputedRef<CanvasBlock[]>) {
+export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: ComputedRef<CanvasBlock[]>, shared: ReturnType<typeof useSharedBoard>) {
   const mounted = useMounted()
   const desktop = useMediaQuery('(min-width: 768px)')
   const enabled = computed(() => mounted.value && desktop.value)
-  const storage = { getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value) }
-  let layout = createCanvasLayout(defaults.value, homeCanvas, storage)
-  const blocks = shallowRef(layout.blocks)
-  const canUndo = ref(false)
+  const committed = computed(() => shared.state.value?.blocks ?? defaults.value)
+  const blocks = computed(() => defaults.value.map((original) => {
+    const block = committed.value.find((item) => item.id === original.id) ?? original
+    const preview = shared.remote.value.find((item) => item.id === block.id)
+    return preview ? { ...block, x: preview.x, y: preview.y } : block
+  }))
   const feedback = ref('')
   const zoom = ref(1)
   const fitZoom = ref(1)
@@ -22,28 +24,9 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
   const cellWidth = computed(() => (width.value + homeCanvas.gap) / homeCanvas.columns)
   const cellHeight = computed(() => (height.value + homeCanvas.gap) / homeCanvas.rows)
   const target = ref<CanvasBlock | null>(null)
-  const targetFits = computed(() => !target.value || layout.preview(target.value.id, target.value.x, target.value.y) !== null)
+  const targetFits = computed(() => !target.value || placeCanvasBlock(committed.value, homeCanvas, target.value.id, target.value.x, target.value.y) !== null)
   const dragging = ref(false)
   let gesture: { id?: string, pointer: number, x: number, y: number, left: number, top: number, block?: CanvasBlock } | null = null
-  let deferredLayout = false
-  function updateDefaults() {
-    if (gesture) {
-      deferredLayout = true
-      return
-    }
-    deferredLayout = false
-    layout = createCanvasLayout(defaults.value, homeCanvas, storage)
-    if (mounted.value) {
-      layout.restore()
-    }
-    sync()
-  }
-  // Metadata refreshes must not interrupt a gesture on an unchanged grid.
-  watch(() => JSON.stringify(defaults.value), updateDefaults)
-  function sync() {
-    blocks.value = layout.blocks
-    canUndo.value = layout.canUndo
-  }
   function measure() {
     const el = viewport.value
     if (el) {
@@ -96,6 +79,9 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     }
     event.preventDefault()
     const block = blocks.value.find((block) => block.id === id)
+    if (block && !shared.begin(block)) {
+      return
+    }
     gesture = { id, pointer: event.pointerId, x: event.clientX, y: event.clientY, left: viewport.value.scrollLeft, top: viewport.value.scrollTop, block }
     viewport.value.setPointerCapture(event.pointerId)
     dragging.value = false
@@ -112,8 +98,9 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     dragging.value = true
     if (gesture.block) {
       const block = gesture.block
-      const candidate = { ...block, x: Math.max(0, Math.min(homeCanvas.columns - block.w, block.x + Math.round(dx / zoom.value / cellWidth.value))), y: Math.max(0, Math.min(homeCanvas.rows - block.h, block.y + Math.round(dy / zoom.value / cellHeight.value))) }
+      const candidate = { ...block, x: Math.max(0, Math.min(homeCanvas.columns - block.w, block.x + dx / zoom.value / cellWidth.value)), y: Math.max(0, Math.min(homeCanvas.rows - block.h, block.y + dy / zoom.value / cellHeight.value)) }
       if (target.value?.x !== candidate.x || target.value?.y !== candidate.y) {
+        shared.preview(candidate)
         target.value = candidate
       }
     } else {
@@ -127,9 +114,10 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     if (!gesture) {
       return
     }
-    if (!cancel && target.value && (target.value.x !== gesture.block?.x || target.value.y !== gesture.block?.y)) {
-      feedback.value = layout.move(target.value.id, target.value.x, target.value.y) ? 'updated' : 'blocked'
-      sync()
+    if (gesture.block) {
+      const drop = !cancel && target.value && targetFits.value
+      shared.finish(drop ? 'drop' : 'cancel', target.value ?? gesture.block)
+      feedback.value = !cancel && target.value ? (drop ? 'updated' : 'blocked') : ''
     }
     if (viewport.value?.hasPointerCapture(gesture.pointer)) {
       viewport.value.releasePointerCapture(gesture.pointer)
@@ -137,10 +125,12 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     gesture = null
     target.value = null
     dragging.value = false
-    if (deferredLayout) {
-      updateDefaults()
-    }
   }
+  watch(shared.active, (active) => {
+    if (gesture?.block && !active) {
+      end(true)
+    }
+  })
   function key(event: KeyboardEvent, id?: string) {
     if (!enabled.value) {
       return
@@ -161,8 +151,10 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     event.stopPropagation()
     if (id) {
       const block = blocks.value.find((block) => block.id === id)!
-      feedback.value = layout.move(id, block.x + direction[0], block.y + direction[1]) ? 'updated' : 'blocked'
-      sync()
+      if (shared.begin(block)) {
+        shared.finish('drop', { ...block, x: block.x + direction[0], y: block.y + direction[1] })
+        feedback.value = 'updated'
+      }
     } else {
       viewport.value?.scrollBy(direction[0] * homeCanvas.cell, direction[1] * homeCanvas.cell)
     }
@@ -205,10 +197,6 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
   function position(block: CanvasBlock) {
     return { left: `${block.x * cellWidth.value}px`, top: `${block.y * cellHeight.value}px`, width: `${block.w * cellWidth.value - homeCanvas.gap}px`, height: `${block.h * cellHeight.value - homeCanvas.gap}px` }
   }
-  onMounted(() => {
-    layout.restore()
-    sync()
-  })
   useResizeObserver(viewport, resize)
   watch(enabled, async () => {
     end(true)
@@ -220,15 +208,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
       end(true)
     }
   })
+  useEventListener('blur', () => end(true))
   onBeforeUnmount(() => end(true))
-  return { enabled, blocks, canUndo, feedback, zoom, fitZoom, initialZoom, minZoom, view, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position, reset: () => {
-    layout.reset()
-    feedback.value = 'updated'
-    sync()
-    recenter()
-  }, undo: () => {
-    layout.undo()
-    feedback.value = 'updated'
-    sync()
-  } }
+  return { enabled, blocks, feedback, zoom, fitZoom, initialZoom, minZoom, view, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, recenter, setZoom, start, move, end, key, wheel, locate, reveal, position }
 }

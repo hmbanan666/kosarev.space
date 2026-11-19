@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { StickerBoard } from '../app/utils/stickers/board'
-import { homeSheet } from '../app/utils/stickers/home-sheet'
 
 const space = { left: 100, top: 50, width: 1000, height: 800, scale: 0.5 }
-const layout = { ids: ['orbit', 'wave'] as const, defaults: [{ id: 'orbit' as const, x: 0.5, y: 0.5 }], width: 104, height: 78 }
+const layout = { ids: ['orbit', 'wave'] as const, defaults: [{ id: 'orbit', kind: 'orbit' as const, x: 0.5, y: 0.5 }], width: 104, height: 78 }
 const press = { pointerId: 1, x: 360, y: 250, editing: false, reserved: false, touch: false }
 
 describe('sticker board', () => {
@@ -21,39 +20,14 @@ describe('sticker board', () => {
     expect(board.placed[0]?.x).toBeCloseTo(0.6)
   })
 
-  it('restores a legacy layout, writes a version on commit and preserves an empty sheet', () => {
-    let saved = JSON.stringify([{ id: 'wave', x: 0.1, y: 0.9 }])
-    const store = { read: () => saved, write: (value: string) => {
-      saved = value
-    } }
-    const board = new StickerBoard(layout, store)
-    board.restore()
-    expect(board.placed.map((item) => item.id)).toEqual(['wave'])
-    board.pick('wave', press, space)
-    board.finish('remove')
-    expect(JSON.parse(saved)).toEqual({ version: 2, placed: [] })
-    const reopened = new StickerBoard(layout, store)
-    reopened.restore()
-    expect(reopened.placed).toEqual([])
-  })
-
-  it('saves an individual paper angle for old and newly placed stickers and keeps it on a move', () => {
-    let saved = JSON.stringify({ version: 2, placed: layout.defaults })
-    const store = { read: () => saved, write: (value: string) => {
-      saved = value
-    } }
-    const samples = [0.25, 0.875]
-    const board = new StickerBoard(layout, store, () => samples.shift()!)
-    board.restore()
-    board.pick('wave', press, space)
+  it('hands the final pose to the shared store and waits for authoritative placement', () => {
+    const events: unknown[] = []
+    const board = new StickerBoard(layout, (action, item) => events.push({ action, item }), () => 0.25)
+    board.pick('wave', 'wave', { x: 350, y: 250 }, space)
+    board.nudge(100, -80, space)
     board.finish('stick')
-    expect(board.placed.map((item) => item.rotation)).toEqual([-4, 6])
-    const reopened = new StickerBoard(layout, store, () => 1)
-    reopened.restore()
-    reopened.pick('wave', press, space)
-    reopened.nudge(10, 20, space)
-    reopened.finish('stick')
-    expect(reopened.placed.map((item) => item.rotation)).toEqual([-4, 6])
+    expect(events).toEqual([{ action: 'stick', item: { id: 'wave', kind: 'wave', x: 0.6, y: 0.4, rotation: -4 } }])
+    expect(board.placed).toMatchObject(layout.defaults)
   })
 
   it('lifts on press, trails a moving target, banks on reversal and lands at the release point', () => {
@@ -88,9 +62,9 @@ describe('sticker board', () => {
   })
 
   it('hits the uppermost sticker, holds the initiating pointer and cancels without saving', () => {
-    const defaults = [...layout.defaults, { id: 'wave' as const, x: 0.5, y: 0.5 }]
+    const defaults = [...layout.defaults, { id: 'wave', kind: 'wave' as const, x: 0.5, y: 0.5 }]
     const writes: string[] = []
-    const board = new StickerBoard({ ...layout, defaults }, { read: () => null, write: (s) => writes.push(s) })
+    const board = new StickerBoard({ ...layout, defaults }, (action) => writes.push(action))
     board.down(press, space)
     expect(board.move({ ...press, pointerId: 2, x: 420 }, space)).toBe(false)
     expect(board.up({ ...press, pointerId: 2 }, space)).toBe('host')
@@ -100,7 +74,7 @@ describe('sticker board', () => {
     expect(board.pointerId).toBeUndefined()
     expect(board.up(press, space)).toBe('host')
     expect(board.artwork).toMatchObject(defaults)
-    expect(writes).toEqual([])
+    expect(writes).toEqual(['cancel'])
   })
 
   it('clicks to lift in the sheet, follows a changed projection and clamps the paper at the edge', () => {
@@ -115,35 +89,4 @@ describe('sticker board', () => {
     board.up({ ...press, x: -1000, y: 2000 }, zoomed)
     expect(board.placed).toMatchObject([{ id: 'orbit', x: 0.052, y: 0.95125 }])
   })
-
-  it('picks at the viewport center and nudges in world units with storage unavailable', () => {
-    const denied = () => {
-      throw new Error('access denied')
-    }
-    const board = new StickerBoard(layout, { read: denied, write: denied })
-    board.restore()
-    board.pick('wave', { x: 350, y: 250 }, space)
-    board.nudge(100, -80, space)
-    board.finish('stick')
-    expect(board.placed).toMatchObject([...layout.defaults, { id: 'wave', x: 0.6, y: 0.4 }])
-  })
-
-  it.each(['{', '{"version":3,"placed":[]}', '[null]', '[{"id":"wave","x":-1,"y":1}]', '[{"id":"unknown","x":0,"y":1}]', JSON.stringify([...layout.defaults, ...layout.defaults])])('retains defaults for unsupported or invalid storage: %s', (saved) => {
-    const board = new StickerBoard(layout, { read: () => saved, write: () => {} })
-    board.restore()
-    expect(board.placed).toMatchObject(layout.defaults)
-  })
-})
-
-it.each([true, false])('restores the previous home artwork at its saved positions (raw array: %s)', (raw) => {
-  const previous = [{ id: 'caliper', x: 0.72, y: 0.13 }, { id: 'orbit', x: 0.21, y: 0.68 }]
-  let saved = JSON.stringify(raw ? previous : { version: 1, placed: previous })
-  const board = new StickerBoard(homeSheet, { read: () => saved, write: (value) => {
-    saved = value
-  } })
-  board.restore()
-  expect(board.placed).toMatchObject([{ id: 'monkey-pink-mug', x: 0.72, y: 0.13 }, { id: 'monkey-bright-idea', x: 0.21, y: 0.68 }])
-  board.pick('monkey-pink-mug', press, space)
-  board.finish('remove')
-  expect(JSON.parse(saved)).toMatchObject({ version: 2, placed: [{ id: 'monkey-bright-idea', x: 0.21, y: 0.68 }] })
 })

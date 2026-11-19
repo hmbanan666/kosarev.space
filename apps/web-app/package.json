@@ -16,6 +16,7 @@
   "dependencies": {
     "@kosarev/database": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:integrations",
+    "@nextorders/avatar": "catalog:integrations",
     "@nuxt/ui": "catalog:integrations",
     "@nuxtjs/i18n": "catalog:integrations",
     "@nuxtjs/robots": "catalog:integrations",
@@ -23,8 +24,7 @@
     "@resvg/resvg-js": "catalog:integrations",
     "@vueuse/core": "catalog:integrations",
     "@vueuse/nuxt": "catalog:integrations",
-    "markdown-it": "catalog:",
-    "nuxt-live-cursors": "catalog:integrations"
+    "markdown-it": "catalog:"
   },
   "devDependencies": {
     "@iconify-json/lucide": "catalog:dev",
