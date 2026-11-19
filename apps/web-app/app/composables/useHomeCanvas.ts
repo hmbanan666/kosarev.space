@@ -85,7 +85,7 @@ export function useHomeCanvas(viewport: Ref<HTMLElement | null>, defaults: Compu
     measure()
   }
   function start(event: PointerEvent, id?: string) {
-    if (gesture || !event.isPrimary || !enabled.value || event.button !== 0 || !viewport.value) {
+    if (event.defaultPrevented || gesture || !event.isPrimary || !enabled.value || event.button !== 0 || !viewport.value) {
       return
     }
     if (!id && (event.target as HTMLElement).closest('a, button, input, select, textarea, summary, article, [role="button"], [contenteditable="true"]')) {

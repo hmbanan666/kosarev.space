@@ -22,7 +22,7 @@
         :role="enabled ? 'region' : undefined"
         :aria-label="t('canvas.title')"
         :aria-describedby="enabled ? 'canvas-help' : undefined"
-        @scroll="measure"
+        @scroll="measure(); measureStickerOrigin()"
         @pointerdown="start($event)"
         @pointermove="move"
         @pointerup="end()"
@@ -34,6 +34,7 @@
       >
         <div class="canvas-size" :style="enabled ? { width: `${width * zoom}px`, height: `${height * zoom}px` } : undefined">
           <div
+            ref="world"
             class="canvas-world"
             :data-canvas-world="enabled ? '' : undefined"
             :style="enabled ? { 'width': `${width}px`, 'height': `${height}px`, 'transform': `scale(${zoom})`, '--canvas-cell-width': `${cellWidth}px`, '--canvas-cell-height': `${cellHeight}px` } : undefined"
@@ -95,6 +96,14 @@
                 />
               </BlueprintFrame>
             </template>
+            <HomeStickers
+              :enabled="enabled"
+              :dock="stickerDock"
+              :viewport="viewport"
+              :space="stickerSpace"
+              :reserves-drag="reservesDrag"
+              :suspended="!!selectedCard"
+            />
             <div
               v-if="target"
               class="canvas-target"
@@ -117,9 +126,12 @@
     </div>
     <footer v-if="enabled" class="canvas-chrome">
       <div class="canvas-tools">
-        <p class="canvas-copyright">
-          {{ t('footer.copyright', { year: new Date().getFullYear() }) }}
-        </p>
+        <div class="canvas-footer-start">
+          <p class="canvas-copyright">
+            {{ t('footer.copyright', { year: new Date().getFullYear() }) }}
+          </p>
+          <div ref="stickerDock" />
+        </div>
         <div ref="presenceDock" class="canvas-presence" />
         <div class="canvas-credits">
           <nav :aria-label="t('site.navigation')">
@@ -158,6 +170,20 @@ const { data } = await usePublications()
 const latest = computed(() => sortPublications(data.value ?? [])[0])
 const defaults = computed(() => activityLayout(projectScores(activity.value), !!latest.value))
 const { enabled, blocks, feedback, zoom, fitZoom, initialZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, start, move, end, key, wheel, reveal, position } = useHomeCanvas(viewport, defaults)
+const world = useTemplateRef<HTMLElement>('world')
+const stickerSpace = reactive({ left: 0, top: 0, width, height, scale: zoom, refresh: measureStickerOrigin })
+function measureStickerOrigin() {
+  if (enabled.value && world.value) {
+    const { left, top } = world.value.getBoundingClientRect()
+    stickerSpace.left = left
+    stickerSpace.top = top
+  }
+}
+watch([enabled, width, height, zoom], measureStickerOrigin, { flush: 'post' })
+function reservesDrag(target: Element) {
+  return !!target.closest('.canvas-grip, .canvas-edge, a, button, input, select, textarea, summary, [role="button"], [contenteditable="true"]')
+}
+const stickerDock = useTemplateRef<HTMLElement>('stickerDock')
 const presenceDock = useTemplateRef<HTMLElement>('presenceDock')
 const presenceDocked = useState('canvas-presence-docked', () => false)
 // Move the existing presence instance after its dock exists. Route changes
@@ -208,3 +234,7 @@ watch(selectedCard, (value) => {
   }
 })
 </script>
+
+<style scoped>
+.canvas-footer-start { display: flex; align-items: center; gap: clamp(8px, 1.8vw, 28px); }
+</style>
