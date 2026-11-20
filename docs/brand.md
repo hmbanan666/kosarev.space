@@ -210,8 +210,8 @@ colliding neighbours move to nearby free positions. If no placement is possible,
 the move is rejected. Escape cancels a drag. PostgreSQL seeds one board from the
 initial layout and stores committed blocks and stickers, including their angles.
 The first visitor to grab a piece holds it until release, cancellation or
-disconnect. Other visitors see the drag before the drop. Each pick from the
-sheet makes a new sticker, and the oldest placement is evicted at 300 stickers.
+disconnect. Other visitors see the drag before the drop. Each design can appear once. On desktop the sheet marks placed designs with
+a check. Click a checked design or drag its sticker back to the sheet to remove it.
 The home ignores earlier browser layouts.
 
 ### Public activity

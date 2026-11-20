@@ -439,6 +439,7 @@
   "stickers": {
     "title": "Stickers",
     "sheet": "Sticker sheet",
+    "returnPlaced": "{name} is on the board. Click to return it to the sheet.",
     "pick": "Pick up {name}",
     "move": "Move {name}",
     "placing": "Click to stick · Arrows + Enter",

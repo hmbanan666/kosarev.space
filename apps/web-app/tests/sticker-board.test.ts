@@ -77,11 +77,12 @@ describe('sticker board', () => {
     expect(writes).toEqual(['cancel'])
   })
 
-  it('clicks to lift in the sheet, follows a changed projection and clamps the paper at the edge', () => {
+  it('passes clicks through the open sheet, lifts from the keyboard, follows a changed projection and clamps the paper at the edge', () => {
     const board = new StickerBoard(layout)
     const editing = { ...press, editing: true }
-    expect(board.down(editing, space)).toBe('capture')
-    expect(board.up(editing, space)).toBe('lifted')
+    expect(board.down(editing, space)).toBe('pending')
+    expect(board.up(editing, space)).toBe('host')
+    board.pick('orbit', 'orbit', press, space)
     const zoomed = { ...space, left: -150, scale: 1 }
     board.move({ ...press, x: 100, y: 450 }, zoomed)
     expect(board.draft).toMatchObject({ id: 'orbit', x: 0.25, y: 0.5 })
@@ -89,4 +90,30 @@ describe('sticker board', () => {
     board.up({ ...press, x: -1000, y: 2000 }, zoomed)
     expect(board.placed).toMatchObject([{ id: 'orbit', x: 0.052, y: 0.95125 }])
   })
+})
+
+it('only picks available designs and returns a placed design to the sheet', () => {
+  const board = new StickerBoard(layout)
+  expect(board.placedKind('orbit')?.id).toBe('orbit')
+  board.pick('copy', 'orbit', press, space)
+  expect(board.draft).toBeNull()
+  board.removeKind('orbit')
+  expect(board.placedKind('orbit')).toBeUndefined()
+  board.pick('new', 'orbit', press, space)
+  board.finish('stick')
+  expect(board.placedKind('orbit')?.id).toBe('new')
+})
+
+it('highlights the sheet during a board drag and uses the release point for removal', () => {
+  const board = new StickerBoard(layout)
+  const sheet = { left: 100, right: 300, top: 400, bottom: 500 }
+  const inside = { ...press, x: 120, y: 420 }
+  board.down(press, space)
+  board.move(inside, space, sheet)
+  expect(board.overSheet).toBe(true)
+  board.move({ ...press, x: 370 }, space, sheet)
+  expect(board.overSheet).toBe(false)
+  board.up(inside, space, sheet)
+  expect(board.placed).toHaveLength(0)
+  expect(board.overSheet).toBe(false)
 })

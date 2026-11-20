@@ -46,6 +46,8 @@ test('stickers follow the world through zoom and pan, and release the card under
   const hero = page.locator('[data-block="hero"]')
   await expect(tray).toHaveAttribute('aria-expanded', 'false')
   const idea = page.locator('[data-sticker="monkey-bright-idea"]')
+  const travel = idea.locator('.paper-travel')
+  await expect(travel).toHaveCSS('transform', 'none')
   const original = await idea.getAttribute('style')
   const start = (await idea.boundingBox())!
   const card = (await hero.boundingBox())!
@@ -57,6 +59,7 @@ test('stickers follow the world through zoom and pan, and release the card under
   await page.mouse.move(destination.x, destination.y, { steps: 6 })
   await expect(idea).toHaveClass(/is-lifted/)
   await expect(idea.locator('.paper-corner')).not.toHaveCSS('transform', 'none')
+  await expect(travel).not.toHaveCSS('transform', 'none')
   await page.mouse.up()
   await expect(idea).toHaveClass(/is-landed/)
   expect(await idea.locator('.paper').evaluate((paper) => {
@@ -70,6 +73,7 @@ test('stickers follow the world through zoom and pan, and release the card under
     animation.play()
     return matrix.a < 1 && matrix.d < matrix.a
   })).toBe(true)
+  await expect(travel).toHaveCSS('transform', 'none')
   await expect(tray).toHaveAttribute('aria-expanded', 'false')
   await expect(idea).not.toHaveAttribute('style', original!)
   await expect(page.getByRole('dialog')).toHaveCount(0)
@@ -101,6 +105,12 @@ test('stickers follow the world through zoom and pan, and release the card under
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2)
   await expect(page).toHaveURL(/card=hero/)
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+
+  await tray.click()
+  await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2)
   await expect(page.getByRole('dialog')).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
@@ -140,7 +150,7 @@ test('placing by click and cancelling a lift preserve the sheet on mobile', { ta
   await expect(page.getByRole('dialog')).toHaveCount(0)
   const item = page.getByRole('group', { name: 'Stickers', exact: true }).getByRole('button', { name: 'Move Laptop panic' })
   const before = await item.getAttribute('style')
-  await item.click()
+  await item.press('Enter')
   await expect(item).toHaveClass(/is-lifted/)
   await expect(item.locator('.paper-corner')).toHaveCSS('transform', 'none')
   await expect(item.locator('.paper-travel')).toHaveCSS('transform', 'none')

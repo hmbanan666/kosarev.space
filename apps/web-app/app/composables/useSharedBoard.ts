@@ -22,7 +22,7 @@ export function useSharedBoard(initial: Ref<BoardData | undefined>) {
       if (landed.value === event.item.id) {
         landed.value = undefined
       }
-    } else if (active.value?.id === event.id) {
+    } else if (event.type === 'board-denied' && active.value?.id === event.id) {
       active.value = undefined
     }
   })
@@ -65,7 +65,8 @@ export function useSharedBoard(initial: Ref<BoardData | undefined>) {
 
 export const sharedBoardKey: InjectionKey<ReturnType<typeof useSharedBoard>> = Symbol('home-board')
 
-export function visibleStickers(placed: BoardData['stickers'], previews: HeldItem[]) {
+export function visibleStickers(placed: Readonly<BoardData['stickers']>, previews: HeldItem[]) {
   const moving = previews.flatMap((item) => item.rotation === undefined || !item.kind ? [] : [{ ...item, kind: item.kind, rotation: item.rotation }])
-  return [...placed.filter((s) => !moving.some((p) => p.id === s.id)), ...moving]
+  const visible = moving.filter((p) => !placed.some((s) => s.kind === p.kind && s.id !== p.id))
+  return [...placed.filter((s) => !visible.some((p) => p.id === s.id)), ...visible]
 }
