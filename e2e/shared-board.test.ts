@@ -53,3 +53,77 @@ test('visitors share live drags and durable drops across locales and mobile', { 
     await peer.close()
   }
 })
+
+test('two visitors race for one design, then return it by click and by dragging', { tag: '@board-write' }, async ({ page, browser }) => {
+  test.slow()
+  await page.setViewportSize({ width: 1440, height: 900 })
+  const peer = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+  const clients = [page, peer]
+  const choice = '[data-pick="monkey-love-lab"]'
+  const paper = '[data-sticker="monkey-love-lab"]'
+  try {
+    // Hold outbound gestures until both visitors have picked and dropped on their own canvas.
+    let racing = true
+    const pending: (() => void)[] = []
+    for (const client of clients) {
+      await client.routeWebSocket('**/_live-cursors-ws', (socket) => {
+        const server = socket.connectToServer()
+        socket.onMessage((message) => {
+          if (racing && typeof message === 'string' && JSON.parse(message).type === 'board-action') {
+            pending.push(() => server.send(message))
+          } else {
+            server.send(message)
+          }
+        })
+      })
+    }
+    await Promise.all(clients.map(async (client, index) => {
+      await client.goto('/en')
+      await expect(client.locator('[data-board-ready="true"]')).toBeVisible({ timeout: 30000 })
+      await client.locator('.sheet-toggle').click()
+      await client.locator(choice).click()
+      await expect(client.locator(paper)).toHaveClass(/is-lifted/)
+      await client.mouse.click(750 + 120 * index, 400)
+    }))
+    racing = false
+    for (const deliver of pending) {
+      deliver()
+    }
+    for (const client of clients) {
+      await expect(client.locator(choice)).toHaveAttribute('aria-pressed', 'true')
+      await expect(client.locator(paper)).toHaveCount(1)
+      await expect(client.locator(paper)).not.toHaveClass(/is-lifted/)
+    }
+    const winner = await peer.locator(paper).getAttribute('style')
+    await expect(page.locator(paper)).toHaveAttribute('style', winner!)
+    await page.reload()
+    await expect(page.locator(paper)).toHaveAttribute('style', winner!)
+    await expect(page.locator('[data-board-ready="true"]')).toBeVisible()
+    await page.locator('.sheet-toggle').click()
+    await page.getByRole('button', { name: 'Love chemistry is on the board. Click to return it to the sheet.' }).click()
+    for (const client of clients) {
+      await expect(client.locator(paper)).toHaveCount(0)
+      await expect(client.locator(choice)).toHaveAttribute('aria-pressed', 'false')
+    }
+    await page.locator(choice).click()
+    await page.mouse.click(750, 400)
+    await expect(peer.locator(choice)).toHaveAttribute('aria-pressed', 'true')
+    await page.mouse.move(750, 400)
+    await page.mouse.down()
+    await page.mouse.move(700, 450, { steps: 6 })
+    const tray = page.locator('#sticker-sheet')
+    const target = (await tray.boundingBox())!
+    await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 10 })
+    await expect(tray).toHaveClass(/is-drop-target/)
+    await page.mouse.up()
+    for (const client of clients) {
+      await expect(client.locator(choice)).toHaveAttribute('aria-pressed', 'false')
+      await expect(client.locator(paper)).toHaveCount(0)
+      await client.reload()
+      await expect(client.locator('[data-board-ready="true"]')).toBeVisible()
+      await expect(client.locator(paper)).toHaveCount(0)
+    }
+  } finally {
+    await peer.close()
+  }
+})

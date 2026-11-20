@@ -11,11 +11,13 @@ export interface StickerHost {
   reservesDrag: (target: Element) => boolean
 }
 
-export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Ref<HTMLElement | null>) {
+export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Ref<HTMLElement | null>, tray: Ref<HTMLElement | null>) {
   const shared = inject(sharedBoardKey)!
   const board = shallowReactive(new StickerBoard(homeSheet, (action, item) => {
     shared.finish(action === 'stick' ? 'drop' : action, item)
   }))
+  const artwork = computed(() => visibleStickers(board.artwork, shared.remote.value)
+    .filter((s): s is PlacedSticker<StickerId> => isStickerKind(s.kind)))
   const remotePapers = shallowReactive(new Map<string, Paper>())
   const reducedMotion = usePreferredReducedMotion()
   let frame = 0
@@ -24,7 +26,7 @@ export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Re
     const elapsed = Math.max(0, now - last)
     let moving = board.frame(elapsed, host.space)
     for (const [id, paper] of remotePapers) {
-      const item = board.placed.find((s) => s.id === id)
+      const item = artwork.value.find((s) => s.id === id)
       const next = item && advancePaper(paper, item, host.space, elapsed)
       if (next) {
         remotePapers.set(id, next)
@@ -49,32 +51,49 @@ export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Re
     }
   }
   watch([() => board.draft, () => board.landed, reducedMotion], schedule)
-  watch([shared.state, shared.remote], ([state, remote]) => {
-    if (!state) {
-      return
-    }
-    const items = visibleStickers(state.stickers, remote)
-    for (const item of remote) {
-      const previous = board.placed.find((s) => s.id === item.id)
-      if (previous && !remotePapers.has(item.id) && (previous.x !== item.x || previous.y !== item.y)) {
-        remotePapers.set(item.id, { ...previous, vx: 0, vy: 0 })
-      }
-    }
-    board.placed = items.filter((s): s is PlacedSticker<StickerId> => isStickerKind(s.kind))
-    if (import.meta.client) {
-      schedule()
+  watch(shared.state, (state) => {
+    if (state) {
+      board.placed = state.stickers.filter((s): s is PlacedSticker<StickerId> => isStickerKind(s.kind))
     }
   }, { immediate: true })
+  watch(artwork, (_, previous) => {
+    for (const item of shared.remote.value) {
+      const prior = previous.find((s) => s.id === item.id)
+      if (prior && !remotePapers.has(item.id) && (prior.x !== item.x || prior.y !== item.y)) {
+        remotePapers.set(item.id, { ...prior, vx: 0, vy: 0 })
+      }
+    }
+    schedule()
+  })
   onBeforeUnmount(() => cancelAnimationFrame(frame))
   function pose(item: PlacedSticker<StickerId>) {
     return board.pose(item, host.space) ?? paperPose(remotePapers.get(item.id) ?? null, item, host.space)
   }
-  function pick(id: string, kind: StickerId, point: { x: number, y: number }) {
-    board.pick(id, kind, point, host.space)
-    if (!shared.begin(board.draft!)) {
+  function lift(id: string, kind: StickerId) {
+    if (!host.viewport) {
+      return
+    }
+    host.space.refresh()
+    const view = host.viewport.getBoundingClientRect()
+    const draft = board.pick(id, kind, { x: view.left + view.width / 2, y: view.top + view.height / 2 }, host.space)
+    if (draft && !shared.begin(draft)) {
       board.finish('cancel')
+    } else if (draft) {
+      layer.value?.focus({ preventScroll: true })
     }
   }
+
+  function selectKind(kind: StickerId) {
+    const item = board.placedKind(kind)
+    if (item) {
+      if (shared.begin(item)) {
+        board.removeKind(kind)
+      }
+    } else {
+      lift(crypto.randomUUID(), kind)
+    }
+  }
+  const sheetBounds = () => tray.value?.getClientRects()[0]
 
   let swallowClick = false
   const sample = (e: PointerEvent) => ({ pointerId: e.pointerId, x: e.clientX, y: e.clientY })
@@ -122,7 +141,7 @@ export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Re
     if (!e.isPrimary || (board.pointerId === undefined && !following)) {
       return
     }
-    if (board.move(sample(e), host.space) && board.pointerId === e.pointerId) {
+    if (board.move(sample(e), host.space, sheetBounds()) && board.pointerId === e.pointerId) {
       swallowClick = true
       if (!viewport.value?.hasPointerCapture(e.pointerId)) {
         viewport.value?.setPointerCapture(e.pointerId)
@@ -133,11 +152,8 @@ export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Re
     if (board.pointerId === e.pointerId) {
       // Native scroll can take effect before its scroll event reaches the host.
       host.space.refresh()
-      const result = board.up(sample(e), host.space)
+      const result = board.up(sample(e), host.space, sheetBounds())
       swallowClick = result !== 'host'
-      if (result === 'lifted') {
-        layer.value?.focus({ preventScroll: true })
-      }
     }
   }, capture)
   useEventListener(viewport, 'click', (e) => {
@@ -171,5 +187,5 @@ export function useStickerSheet(host: StickerHost, open: Ref<boolean>, layer: Re
   })
   useEventListener('blur', cancel)
   onBeforeUnmount(cancel)
-  return { board, cancel, pick, pose, remote: shared.remote, landed: shared.landed }
+  return { board, artwork, cancel, lift, selectKind, pose, remote: shared.remote, landed: shared.landed }
 }

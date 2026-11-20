@@ -105,6 +105,12 @@ test('stickers follow the world through zoom and pan, and release the card under
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
 
+  await tray.click()
+  await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2)
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+
   const grip = hero.locator('.canvas-grip')
   await grip.scrollIntoViewIfNeeded()
   const handle = (await grip.boundingBox())!
@@ -140,7 +146,7 @@ test('placing by click and cancelling a lift preserve the sheet on mobile', { ta
   await expect(page.getByRole('dialog')).toHaveCount(0)
   const item = page.getByRole('group', { name: 'Stickers', exact: true }).getByRole('button', { name: 'Move Laptop panic' })
   const before = await item.getAttribute('style')
-  await item.click()
+  await item.press('Enter')
   await expect(item).toHaveClass(/is-lifted/)
   await expect(item.locator('.paper-corner')).toHaveCSS('transform', 'none')
   await expect(item.locator('.paper-travel')).toHaveCSS('transform', 'none')

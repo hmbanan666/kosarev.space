@@ -39,7 +39,7 @@
     ref="layer"
     class="sticker-layer"
     :style="{ ...timings, '--paper-width': `${homeSheet.width}px`, '--paper-height': `${homeSheet.height}px` }"
-    :class="{ 'is-editing': open, 'is-carrying': draft }"
+    :class="{ 'is-carrying': draft }"
     :inert="!open"
     role="group"
     :aria-label="t('stickers.title')"
@@ -48,44 +48,46 @@
     @keydown="keys"
     @click.stop
   >
-    <button
-      v-for="item in board.artwork"
-      :key="item.id"
-      type="button"
-      class="sticker"
-      :class="{ 'is-lifted': draft?.id === item.id, 'is-peeling': board.lifted === item.id || remote.some((h) => h.id === item.id), 'is-landed': (board.landed === item.id || landed === item.id) }"
-      :data-sticker="item.kind"
-      :data-held-by="remote.find((h) => h.id === item.id)?.owner"
-      :style="{ 'transform': `translate3d(${item.x * space.width}px, ${item.y * space.height}px, 0) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.kind}.webp)`, '--angle': `${item.rotation}deg` }"
-      :tabindex="open && !draft ? 0 : -1"
-      :aria-label="t('stickers.move', { name: name(item.kind) })"
-      @click.stop="!draft && lift(item.id, item.kind)"
-    >
-      <span
-        class="paper-travel"
-        :style="paperStyle(item)"
-        aria-hidden="true"
+    <TransitionGroup name="sticker-return">
+      <button
+        v-for="item in artwork"
+        :key="item.id"
+        type="button"
+        class="sticker"
+        :class="{ 'is-lifted': draft?.id === item.id, 'is-peeling': board.lifted === item.id || remote.some((h) => h.id === item.id), 'is-landed': (board.landed === item.id || landed === item.id) }"
+        :data-sticker="item.kind"
+        :data-held-by="remote.find((h) => h.id === item.id)?.owner"
+        :style="{ 'transform': `translate3d(${item.x * space.width}px, ${item.y * space.height}px, 0) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.kind}.webp)`, '--angle': `${item.rotation}deg` }"
+        :tabindex="open && !draft ? 0 : -1"
+        :aria-label="t('stickers.move', { name: name(item.kind) })"
+        @click.stop="!draft && lift(item.id, item.kind)"
       >
-        <span class="paper-angle">
-          <span class="paper">
-            <span class="paper-face" />
-            <span class="paper-corner">
-              <span class="paper-fold" />
-              <span class="paper-tip" />
+        <span
+          class="paper-travel"
+          :style="paperStyle(item)"
+          aria-hidden="true"
+        >
+          <span class="paper-angle">
+            <span class="paper">
+              <span class="paper-face" />
+              <span class="paper-corner">
+                <span class="paper-fold" />
+                <span class="paper-tip" />
+              </span>
             </span>
           </span>
         </span>
-      </span>
-    </button>
+      </button>
+    </TransitionGroup>
   </div>
   <div
-    v-else-if="placed.length"
+    v-else-if="artwork.length"
     class="sticker-strip"
     role="group"
     :aria-label="t('stickers.title')"
   >
     <img
-      v-for="item in placed"
+      v-for="item in artwork"
       :key="item.id"
       :src="`/stickers/${item.kind}.webp`"
       :alt="name(item.kind)"
@@ -100,22 +102,23 @@
         ref="toggle"
         type="button"
         class="sheet-toggle"
-        :aria-expanded="open"
+        :aria-expanded="open || board.draggingPlaced"
         aria-controls="sticker-sheet"
         @click="open ? close() : open = true"
       >
         <UIcon name="i-lucide-sticker" aria-hidden="true" />{{ t('stickers.title') }}
       </button>
       <div
-        v-show="open"
+        v-show="open || board.draggingPlaced"
         id="sticker-sheet"
         ref="tray"
         class="sticker-sheet"
+        :class="{ 'is-drop-target': board.overSheet }"
         role="group"
         :aria-label="t('stickers.sheet')"
       >
         <div class="sheet-heading">
-          <strong>{{ draft ? t('stickers.placing') : t('stickers.sheet') }}</strong>
+          <strong>{{ draft && !board.draggingPlaced ? t('stickers.placing') : t('stickers.sheet') }}</strong>
           <button
             type="button"
             :aria-label="t('stickers.close')"
@@ -124,16 +127,27 @@
             <UIcon name="i-lucide-x" aria-hidden="true" />
           </button>
         </div>
-        <div v-show="!draft" class="sheet-grid">
+        <div
+          v-show="!draft || board.draggingPlaced"
+          :inert="!!draft"
+          class="sheet-grid"
+        >
           <button
             v-for="id in ids"
             :key="id"
             type="button"
             :data-pick="id"
-            :class="{ 'on-board': placed.some((item) => item.kind === id) }"
-            :aria-label="t('stickers.pick', { name: name(id) })"
-            @click="add(id)"
+            :aria-pressed="!!board.placedKind(id)"
+            :disabled="remote.some((item) => item.kind === id)"
+            :aria-label="t(board.placedKind(id) ? 'stickers.returnPlaced' : 'stickers.pick', { name: name(id) })"
+            @click="selectKind(id)"
           >
+            <UIcon
+              v-if="board.placedKind(id)"
+              name="i-lucide-check"
+              class="placed-check"
+              aria-hidden="true"
+            />
             <img
               :src="`/stickers/${id}.webp`"
               alt=""
@@ -148,7 +162,7 @@
         >
           {{ t('stickers.keyboard') }}
         </p>
-        <div v-if="draft" class="sheet-actions">
+        <div v-if="draft && !board.draggingPlaced" class="sheet-actions">
           <button
             v-if="isPlaced(draft.id)"
             type="button"
@@ -180,7 +194,7 @@ const open = ref(false)
 const layer = useTemplateRef<HTMLElement>('layer')
 const toggle = useTemplateRef<HTMLButtonElement>('toggle')
 const tray = useTemplateRef<HTMLElement>('tray')
-const { board, cancel, pick, pose: stickerPose, remote, landed } = useStickerSheet(props, open, layer)
+const { board, artwork, cancel, lift, selectKind, pose: stickerPose, remote, landed } = useStickerSheet(props, open, layer, tray)
 const placed = computed(() => board.placed)
 const draft = computed(() => board.draft)
 const name = (id: StickerId) => t(`stickers.${id}`)
@@ -230,15 +244,6 @@ watch(() => props.enabled && !props.suspended, (available) => {
     close()
   }
 })
-function add(kind: StickerId) {
-  lift(crypto.randomUUID(), kind)
-}
-function lift(id: string, kind: StickerId) {
-  const view = props.viewport!.getBoundingClientRect()
-  props.space.refresh()
-  pick(id, kind, { x: view.left + view.width / 2, y: view.top + view.height / 2 })
-  layer.value?.focus({ preventScroll: true })
-}
 function finish(action: 'stick' | 'remove' | 'cancel') {
   const item = draft.value
   if (!item) {
@@ -278,7 +283,7 @@ function keys(event: KeyboardEvent) {
 }
 useEventListener('pointerdown', (event: PointerEvent) => {
   const path = event.composedPath()
-  if (open.value && ![tray.value, toggle.value, layer.value].some((el) => el && path.includes(el))) {
+  if (open.value && ![tray.value, toggle.value, props.viewport].some((el) => el && path.includes(el))) {
     close()
   }
 }, { capture: true })
@@ -323,7 +328,6 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 }
 .paper-face, .paper-fold, .paper-tip { background: var(--paper-image) center / contain no-repeat; }
 .paper-corner { display: none; }
-.is-editing .sticker { pointer-events: auto; cursor: grab; }
 .is-carrying .sticker { pointer-events: none; }
 .sticker:is(.is-peeling, .is-landed) { z-index: 1; }
 .is-peeling .paper-angle { filter: var(--lift-shadow); }
@@ -338,8 +342,11 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 .sheet-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-left: 1px solid #49453c; border-top: 1px solid #49453c; }
 .sheet-grid button { position: relative; display: grid; justify-items: center; align-content: center; min-height: 84px; border: solid #49453c; border-width: 0 1px 1px 0; cursor: pointer; }
 .sheet-grid img { width: 72px; height: 72px; }
-.sheet-grid .on-board img { opacity: .78; }
-.sheet-grid .on-board::before { content: ''; position: absolute; top: 6px; right: 6px; width: 4px; height: 4px; background: var(--ui-primary); }
+.sheet-grid [aria-pressed=true] img { opacity: .48; }
+.placed-check { position: absolute; top: 5px; right: 5px; color: var(--sticker-outline); font-size: 15px; }
+.sticker-sheet.is-drop-target { outline: 2px solid var(--sticker-outline); background: #29241b; }
+.sticker-return-leave-active { transition: opacity var(--lift-time) ease-out; }
+.sticker-return-leave-to { opacity: 0; }
 .sheet-grid button:is(:hover, :focus-visible) { background: #d9ad6717; color: var(--ui-primary); }
 .sheet-actions { margin-top: 8px; justify-content: flex-start; gap: 16px; }
 .sheet-actions button { color: var(--ui-primary); text-decoration: underline; text-underline-offset: 3px; }
@@ -358,7 +365,7 @@ useEventListener('keydown', (event: KeyboardEvent) => {
     --lift-pose: perspective(450px) translateY(-4px) rotateX(6deg) rotateY(calc(-4deg * var(--side))) rotate(calc(-2deg * var(--side)));
     transition: transform var(--lift-time) ease-out;
   }
-  .is-peeling .paper { transform: var(--lift-pose); }
+  .sticker-return-leave-to .paper, .is-peeling .paper { transform: var(--lift-pose); }
   /* Two shallow bends share their hinge lines with the adjacent print. */
   .paper-face { clip-path: polygon(var(--far) 0, var(--hinge) 0, var(--near) 56%, var(--near) 100%, var(--far) 100%); }
   .paper-corner { display: block; transform-origin: var(--hinge) 0; }
