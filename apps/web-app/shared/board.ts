@@ -38,21 +38,39 @@ export function normalizeMove(board: BoardData, input: unknown): BoardMove | nul
   return { id, kind, ...clampStickerCenter({ x, y }, rotation, homeSheet, world), rotation }
 }
 
-export function commitMove(board: BoardData, item: BoardMove, remove: boolean): BoardData {
+// Array order is creation order. Keep the first valid sticker of each design.
+export function normalizeStickers(board: BoardData): BoardData {
+  const seen = new Set<string>()
+  const saved = Array.isArray(board.stickers) ? board.stickers : []
+  const stickers = saved.filter((s) => {
+    if (!isStickerKind(s?.kind) || seen.has(s.kind) || typeof s.id !== 'string'
+      || !Number.isFinite(s.x) || !Number.isFinite(s.y) || !Number.isFinite(s.rotation)) {
+      return false
+    }
+    seen.add(s.kind)
+    return true
+  })
+  return saved === board.stickers && stickers.length === saved.length ? board : { ...board, stickers }
+}
+
+export function commitMove(current: BoardData, item: BoardMove, remove: boolean): BoardData {
+  const board = normalizeStickers(current)
   if (item.rotation !== undefined && item.kind) {
     const sticker = { id: item.id, kind: item.kind, x: item.x, y: item.y, rotation: item.rotation }
+    if (remove) {
+      return { ...board, stickers: board.stickers.filter((s) => s.id !== item.id) }
+    }
+    if (!isStickerKind(item.kind) || board.stickers.some((s) => s.kind === item.kind && s.id !== item.id)) {
+      return board
+    }
     const index = board.stickers.findIndex((s) => s.id === item.id)
     const stickers = [...board.stickers]
-    if (remove) {
-      return { ...board, stickers: stickers.filter((s) => s.id !== item.id) }
-    }
     if (index === -1) {
       stickers.push(sticker)
     } else {
       stickers[index] = sticker
     }
-    // Array order records creation, so moving a sticker does not renew its age.
-    return { ...board, stickers: stickers.slice(-300) }
+    return { ...board, stickers }
   }
   const blocks = placeCanvasBlock(board.blocks, homeCanvas, item.id, item.x, item.y)
   return blocks && !remove ? { ...board, blocks } : board

@@ -38,14 +38,10 @@ it('streams a held item to peers, refuses a competing drop and releases it on di
   expect(messages.at(-1)).toMatchObject({ type: 'board-state', state: saved, held: [] })
 })
 
-it('allows repeated designs and drops the oldest of 301 stickers even after it moved', () => {
-  let board = seedBoard(activityLayout())
+it('ignores another placement of a kind while allowing its original sticker to move', () => {
+  const board = seedBoard(activityLayout())
   const first = board.stickers[0]!
-  for (let i = 0; i < 298; i++) {
-    board = commitMove(board, { ...first, id: crypto.randomUUID() }, false)
-  }
-  board = commitMove(board, { ...first, x: 0.7 }, false)
-  board = commitMove(board, { ...first, id: crypto.randomUUID() }, false)
-  expect(board.stickers).toHaveLength(300)
-  expect(board.stickers.some((s) => s.id === first.id)).toBe(false)
+  const moved = commitMove(board, { ...first, x: 0.7 }, false)
+  expect(moved.stickers[0]).toEqual({ ...first, x: 0.7 })
+  expect(commitMove(moved, { ...first, id: crypto.randomUUID() }, false)).toEqual(moved)
 })
