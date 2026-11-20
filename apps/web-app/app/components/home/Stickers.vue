@@ -57,7 +57,7 @@
         :class="{ 'is-lifted': draft?.id === item.id, 'is-peeling': board.lifted === item.id || remote.some((h) => h.id === item.id), 'is-landed': (board.landed === item.id || landed === item.id) }"
         :data-sticker="item.kind"
         :data-held-by="remote.find((h) => h.id === item.id)?.owner"
-        :style="{ 'transform': `translate3d(${item.x * space.width}px, ${item.y * space.height}px, 0) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.kind}.webp)`, '--angle': `${item.rotation}deg` }"
+        :style="{ 'transform': `translate(${item.x * space.width}px, ${item.y * space.height}px) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.kind}.webp)`, '--angle': `${item.rotation}deg` }"
         :tabindex="open && !draft ? 0 : -1"
         :aria-label="t('stickers.move', { name: name(item.kind) })"
         @click.stop="!draft && lift(item.id, item.kind)"
@@ -203,8 +203,7 @@ function paperStyle(item: PlacedSticker<StickerId>) {
   const pose = stickerPose(item)
   if (pose) {
     return {
-      '--lag-x': `${pose.x}px`,
-      '--lag-y': `${pose.y}px`,
+      '--travel': `translate(${pose.x}px, ${pose.y}px) perspective(450px) rotateX(var(--pitch)) rotateY(var(--roll)) rotate(calc(var(--roll) * .65))`,
       '--roll': `${pose.roll}deg`,
       '--pitch': `${pose.pitch}deg`,
       '--side': board.corner,
@@ -353,8 +352,8 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 .sticker-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-block: 12px; }
 @media (prefers-reduced-motion: no-preference) {
   .paper-travel {
-    transform: translate3d(var(--lag-x, 0px), var(--lag-y, 0px), 0) perspective(450px)
-      rotateX(var(--pitch, 0deg)) rotateY(var(--roll, 0deg)) rotate(calc(var(--roll, 0deg) * .65));
+    /* Resting paper paints at canvas resolution once the drag spring settles. */
+    transform: var(--travel, none);
     --side: 1;
     --near: calc(50% + var(--side) * 50%);
     --far: calc(100% - var(--near));
@@ -381,7 +380,7 @@ useEventListener('keydown', (event: KeyboardEvent) => {
     transition: opacity var(--lift-time) ease-out;
   }
   .is-peeling :is(.paper-fold, .paper-tip)::after { opacity: 1; }
-  .is-landed .paper { animation: press-paper var(--press-time) both; }
+  .is-landed .paper { animation: press-paper var(--press-time); }
   @keyframes press-paper {
     from { transform: var(--lift-pose); animation-timing-function: ease-in; }
     35% { transform: scale(.97, .935); animation-timing-function: ease-out; }

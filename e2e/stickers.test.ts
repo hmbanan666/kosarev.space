@@ -46,6 +46,8 @@ test('stickers follow the world through zoom and pan, and release the card under
   const hero = page.locator('[data-block="hero"]')
   await expect(tray).toHaveAttribute('aria-expanded', 'false')
   const idea = page.locator('[data-sticker="monkey-bright-idea"]')
+  const travel = idea.locator('.paper-travel')
+  await expect(travel).toHaveCSS('transform', 'none')
   const original = await idea.getAttribute('style')
   const start = (await idea.boundingBox())!
   const card = (await hero.boundingBox())!
@@ -57,6 +59,7 @@ test('stickers follow the world through zoom and pan, and release the card under
   await page.mouse.move(destination.x, destination.y, { steps: 6 })
   await expect(idea).toHaveClass(/is-lifted/)
   await expect(idea.locator('.paper-corner')).not.toHaveCSS('transform', 'none')
+  await expect(travel).not.toHaveCSS('transform', 'none')
   await page.mouse.up()
   await expect(idea).toHaveClass(/is-landed/)
   expect(await idea.locator('.paper').evaluate((paper) => {
@@ -70,6 +73,7 @@ test('stickers follow the world through zoom and pan, and release the card under
     animation.play()
     return matrix.a < 1 && matrix.d < matrix.a
   })).toBe(true)
+  await expect(travel).toHaveCSS('transform', 'none')
   await expect(tray).toHaveAttribute('aria-expanded', 'false')
   await expect(idea).not.toHaveAttribute('style', original!)
   await expect(page.getByRole('dialog')).toHaveCount(0)
