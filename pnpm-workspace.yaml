@@ -36,7 +36,7 @@ catalogs:
     eslint: ^10.13.0
     husky: ^9.1.7
     nano-staged: ^1.0.2
-    nuxt: ^4.6.2
+    nuxt: ^4.6.4
     tailwindcss: ^4.3.3
     tailwindcss-motion: ^1.1.1
     typescript: ^6.0.3
