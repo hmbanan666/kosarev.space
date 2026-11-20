@@ -263,12 +263,13 @@ test('live presence reconnects and disposes when reduced motion becomes active',
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(pill).toHaveCount(0)
   await expect(page.locator('[data-live-cursors]')).toHaveCount(0)
-  await expect.poll(() => sockets[1]?.closed).toBe(true)
+  await expect(page.locator('[data-board-ready="true"]')).toBeVisible()
+  expect(sockets[1]?.closed).toBe(false)
   await page.clock.fastForward(10000)
   expect(sockets).toHaveLength(2)
 })
 
-test('touch and reduced-motion visitors never open a live cursor connection', async ({ browser }) => {
+test('touch and reduced-motion visitors receive the board without the cursor overlay', async ({ browser }) => {
   for (const settings of [{ hasTouch: true, isMobile: true }, { reducedMotion: 'reduce' as const }]) {
     const context = await browser.newContext(settings)
     try {
@@ -279,7 +280,8 @@ test('touch and reduced-motion visitors never open a live cursor connection', as
       await expect(page.locator('.site-footer .contact-email-row button')).toBeEnabled()
       await expect(page.locator('[data-live-cursors-bar]')).toHaveCount(0)
       await expect(page.locator('[data-live-cursors]')).toHaveCount(0)
-      expect(sockets.filter((url) => url.includes('/_live-cursors-ws'))).toHaveLength(0)
+      await expect(page.locator('[data-board-ready="true"]')).toBeVisible()
+      expect(sockets.filter((url) => url.includes('/_live-cursors-ws'))).toHaveLength(1)
     } finally {
       await context.close()
     }

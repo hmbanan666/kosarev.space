@@ -1,6 +1,7 @@
 <template>
   <section
     class="home-canvas site-wrap"
+    :data-board-ready="shared.ready.value"
     :style="{ '--grid-gap': `${homeCanvas.gap}px`, '--canvas-type-scale': enabled ? Math.max(1, .78 / Math.max(zoom, initialZoom)) : 1 }"
     :class="{ 'canvas-enabled': enabled }"
     :aria-label="t('canvas.title')"
@@ -52,7 +53,8 @@
                 :class="[`canvas-block-${block.id}`, { 'canvas-moving': target?.id === block.id }]"
                 :accent="block.id === 'hero'"
                 :part="parts[block.id]"
-                :style="enabled ? position(block) : undefined"
+                :data-held-by="shared.remote.value.find((h) => h.id === block.id)?.owner"
+                :style="enabled ? position(target?.id === block.id ? target : block) : undefined"
                 @pointerdown="rememberPointer"
                 @click="openCard($event, block.id)"
               >
@@ -89,6 +91,7 @@
                 >
                   <UIcon name="i-lucide-maximize-2" aria-hidden="true" />
                 </button>
+                <HomeBoardOverview v-if="!enabled && block.id === 'live'" :blocks="blocks" />
                 <HomeBlockContent
                   :id="block.id"
                   :latest="latest"
@@ -108,10 +111,10 @@
               v-if="target"
               class="canvas-target"
               :class="{ 'canvas-target-blocked': !targetFits }"
-              :style="position(target)"
+              :style="position({ ...target, x: Math.round(target.x), y: Math.round(target.y) })"
               aria-hidden="true"
             >
-              <span>{{ target.x + 1 }} : {{ target.y + 1 }}</span>
+              <span>{{ Math.round(target.x) + 1 }} : {{ Math.round(target.y) + 1 }}</span>
             </div>
           </div>
         </div>
@@ -169,7 +172,10 @@ const { data: activity } = await useActivity()
 const { data } = await usePublications()
 const latest = computed(() => sortPublications(data.value ?? [])[0])
 const defaults = computed(() => activityLayout(projectScores(activity.value), !!latest.value))
-const { enabled, blocks, feedback, zoom, fitZoom, initialZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, start, move, end, key, wheel, reveal, position } = useHomeCanvas(viewport, defaults)
+const { data: initialBoard } = await useFetch('/api/board')
+const shared = useSharedBoard(initialBoard)
+provide(sharedBoardKey, shared)
+const { enabled, blocks, feedback, zoom, fitZoom, initialZoom, width, height, cellWidth, cellHeight, target, targetFits, dragging, measure, start, move, end, key, wheel, reveal, position } = useHomeCanvas(viewport, defaults, shared)
 const world = useTemplateRef<HTMLElement>('world')
 const stickerSpace = reactive({ left: 0, top: 0, width, height, scale: zoom, refresh: measureStickerOrigin })
 function measureStickerOrigin() {
@@ -237,4 +243,8 @@ watch(selectedCard, (value) => {
 
 <style scoped>
 .canvas-footer-start { display: flex; align-items: center; gap: clamp(8px, 1.8vw, 28px); }
+@media (prefers-reduced-motion: no-preference) {
+  .canvas-enabled .blueprint-frame:is(.canvas-moving, [data-held-by]) { transition: left 65ms linear, top 65ms linear; }
+}
+.canvas-enabled .blueprint-frame[data-held-by] { border-color: var(--ui-primary); z-index: 2; }
 </style>

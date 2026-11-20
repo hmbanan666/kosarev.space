@@ -147,8 +147,8 @@
 .canvas-block-skills .canvas-footnote { margin-top: 8px !important; }
 .canvas-enabled .canvas-block-writing .canvas-latest { display: none; }
 .canvas-enabled :is(.canvas-block-live, .canvas-block-contacts) h2 { font-size: 1.35rem; }
-.canvas-enabled .canvas-block-live .canvas-eyebrow { margin-bottom: 8px !important; }
-.canvas-enabled .canvas-block-live .canvas-footnote { display: none; }
+.canvas-block-live .board-summary { margin-top: 6px; font-size: calc(.85rem * var(--canvas-type-scale)); line-height: 1.3; }
+.canvas-block-live .canvas-footnote { margin-top: 6px !important; }
 .canvas-enabled .canvas-block-contacts .canvas-eyebrow { display: none; }
 .canvas-enabled .canvas-description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .activity-graph { width: min(100%, calc(var(--weeks) * 12px)); display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); grid-auto-columns: minmax(0, 1fr); gap: 3px; margin-top: 16px; }

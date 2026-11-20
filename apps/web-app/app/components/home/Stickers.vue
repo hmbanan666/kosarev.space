@@ -53,12 +53,13 @@
       :key="item.id"
       type="button"
       class="sticker"
-      :class="{ 'is-lifted': draft?.id === item.id, 'is-peeling': board.lifted === item.id, 'is-landed': board.landed === item.id }"
-      :data-sticker="item.id"
-      :style="{ 'transform': `translate3d(${item.x * space.width}px, ${item.y * space.height}px, 0) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.id}.webp)`, '--angle': `${item.rotation}deg` }"
+      :class="{ 'is-lifted': draft?.id === item.id, 'is-peeling': board.lifted === item.id || remote.some((h) => h.id === item.id), 'is-landed': (board.landed === item.id || landed === item.id) }"
+      :data-sticker="item.kind"
+      :data-held-by="remote.find((h) => h.id === item.id)?.owner"
+      :style="{ 'transform': `translate3d(${item.x * space.width}px, ${item.y * space.height}px, 0) translate(-50%, -50%)`, '--paper-image': `url(/stickers/${item.kind}.webp)`, '--angle': `${item.rotation}deg` }"
       :tabindex="open && !draft ? 0 : -1"
-      :aria-label="t('stickers.move', { name: name(item.id) })"
-      @click.stop="!draft && lift(item.id)"
+      :aria-label="t('stickers.move', { name: name(item.kind) })"
+      @click.stop="!draft && lift(item.id, item.kind)"
     >
       <span
         class="paper-travel"
@@ -86,8 +87,8 @@
     <img
       v-for="item in placed"
       :key="item.id"
-      :src="`/stickers/${item.id}.webp`"
-      :alt="name(item.id)"
+      :src="`/stickers/${item.kind}.webp`"
+      :alt="name(item.kind)"
       :style="{ rotate: `${item.rotation}deg` }"
       width="62"
       height="62"
@@ -129,9 +130,9 @@
             :key="id"
             type="button"
             :data-pick="id"
-            :class="{ 'on-board': isPlaced(id) }"
-            :aria-label="t(isPlaced(id) ? 'stickers.move' : 'stickers.pick', { name: name(id) })"
-            @click="lift(id)"
+            :class="{ 'on-board': placed.some((item) => item.kind === id) }"
+            :aria-label="t('stickers.pick', { name: name(id) })"
+            @click="add(id)"
           >
             <img
               :src="`/stickers/${id}.webp`"
@@ -179,13 +180,13 @@ const open = ref(false)
 const layer = useTemplateRef<HTMLElement>('layer')
 const toggle = useTemplateRef<HTMLButtonElement>('toggle')
 const tray = useTemplateRef<HTMLElement>('tray')
-const { board, cancel } = useStickerSheet(props, open, layer)
+const { board, cancel, pick, pose: stickerPose, remote, landed } = useStickerSheet(props, open, layer)
 const placed = computed(() => board.placed)
 const draft = computed(() => board.draft)
 const name = (id: StickerId) => t(`stickers.${id}`)
-const isPlaced = (id: StickerId) => placed.value.some((s) => s.id === id)
+const isPlaced = (id: string) => placed.value.some((s) => s.id === id)
 function paperStyle(item: PlacedSticker<StickerId>) {
-  const pose = board.pose(item, props.space)
+  const pose = stickerPose(item)
   if (pose) {
     return {
       '--lag-x': `${pose.x}px`,
@@ -201,7 +202,7 @@ function paperStyle(item: PlacedSticker<StickerId>) {
 }
 const message = ref('')
 
-watch(() => board.draft?.id, (id, previous) => {
+watch(() => board.draft?.kind, (id, previous) => {
   if (id) {
     message.value = t('stickers.lifted', { name: name(id) })
   } else if (previous && open.value) {
@@ -213,9 +214,9 @@ watch(() => board.draft?.id, (id, previous) => {
   }
 }, { flush: 'sync' })
 watch(placed, () => {
-  const id = draft.value?.id
-  if (id && isPlaced(id)) {
-    message.value = t('stickers.placed', { name: name(id) })
+  const item = draft.value
+  if (item && isPlaced(item.id)) {
+    message.value = t('stickers.placed', { name: name(item.kind) })
   }
 }, { flush: 'sync' })
 
@@ -229,10 +230,13 @@ watch(() => props.enabled && !props.suspended, (available) => {
     close()
   }
 })
-function lift(id: StickerId) {
+function add(kind: StickerId) {
+  lift(crypto.randomUUID(), kind)
+}
+function lift(id: string, kind: StickerId) {
   const view = props.viewport!.getBoundingClientRect()
   props.space.refresh()
-  board.pick(id, { x: view.left + view.width / 2, y: view.top + view.height / 2 }, props.space)
+  pick(id, kind, { x: view.left + view.width / 2, y: view.top + view.height / 2 })
   layer.value?.focus({ preventScroll: true })
 }
 function finish(action: 'stick' | 'remove' | 'cancel') {
@@ -246,7 +250,7 @@ function finish(action: 'stick' | 'remove' | 'cancel') {
   } else {
     board.finish(action)
     if (action === 'remove') {
-      message.value = t('stickers.removed', { name: name(item.id) })
+      message.value = t('stickers.removed', { name: name(item.kind) })
     }
   }
 }

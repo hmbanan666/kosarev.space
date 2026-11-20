@@ -7,7 +7,6 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
-    'nuxt-live-cursors',
   ],
 
   hooks: {
@@ -16,11 +15,8 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    experimental: { websocket: true },
     serverAssets: [{ baseName: 'agent-knowledge', dir: './.nuxt/agent-knowledge' }],
-  },
-
-  liveCursors: {
-    stripLocalePrefixes: ['en'],
   },
 
   runtimeConfig: {

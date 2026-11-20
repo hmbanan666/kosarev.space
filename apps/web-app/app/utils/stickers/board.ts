@@ -2,17 +2,17 @@ import { bank, clampLag, follow, paperMotion } from './motion'
 
 export interface Point { x: number, y: number }
 /** Normalized world coordinates, with the sticker anchored at its center. */
-export interface PlacedSticker<Id> extends Point { id: Id, rotation: number }
+export interface PlacedSticker<Id> extends Point { id: string, kind: Id, rotation: number }
 export interface StickerLayout<Id> {
   ids: readonly Id[]
-  legacyIds?: ReadonlyMap<string, Id>
   defaults: readonly Omit<PlacedSticker<Id>, 'rotation'>[]
   width: number
   height: number
 }
 /** Screen origin of the world, its unscaled size, and CSS pixels per world unit. */
 export interface StickerSpace { left: number, top: number, width: number, height: number, scale: number }
-export interface StickerStore { read: () => string | null, write: (value: string) => void }
+export type StickerAction = 'stick' | 'remove' | 'cancel'
+type StickerFinish<Id> = (action: StickerAction, item: PlacedSticker<Id>) => void
 interface Pointer extends Point { pointerId: number }
 interface Press extends Pointer { editing: boolean, reserved: boolean, touch: boolean }
 
@@ -20,62 +20,51 @@ function fromScreen(point: Point, space: StickerSpace): Point {
   return { x: (point.x - space.left) / (space.width * space.scale), y: (point.y - space.top) / (space.height * space.scale) }
 }
 
+export function clampStickerCenter(point: Point, rotation: number, paper: { width: number, height: number }, world: { width: number, height: number }): Point {
+  const radians = rotation * Math.PI / 180
+  const cos = Math.abs(Math.cos(radians))
+  const sin = Math.abs(Math.sin(radians))
+  const insetX = Math.min(0.5, (paper.width * cos + paper.height * sin) / (2 * world.width))
+  const insetY = Math.min(0.5, (paper.width * sin + paper.height * cos) / (2 * world.height))
+  return { x: Math.max(insetX, Math.min(1 - insetX, point.x)), y: Math.max(insetY, Math.min(1 - insetY, point.y)) }
+}
+
+export type Paper = Point & { id: string, vx: number, vy: number }
+
+export function advancePaper<Id>(paper: Paper, target: PlacedSticker<Id>, space: StickerSpace, elapsedMs: number) {
+  const x = follow(paper.x, paper.vx, target.x, space.width, elapsedMs / 1000)
+  const y = follow(paper.y, paper.vy, target.y, space.height, elapsedMs / 1000)
+  const moving = Math.hypot((x.position - target.x) * space.width, (y.position - target.y) * space.height) > 0.05
+    || Math.hypot(x.velocity * space.width, y.velocity * space.height) > 1
+  return moving ? { id: target.id, x: x.position, y: y.position, vx: x.velocity, vy: y.velocity } : null
+}
+
+export function paperPose<Id>(paper: Paper | null, item: PlacedSticker<Id>, space: StickerSpace) {
+  if (paper?.id !== item.id) {
+    return
+  }
+  return {
+    x: clampLag((paper.x - item.x) * space.width),
+    y: clampLag((paper.y - item.y) * space.height),
+    roll: bank(paper.vx * space.width),
+    pitch: -bank(paper.vy * space.height),
+  }
+}
+
 export class StickerBoard<Id extends string> {
   placed: readonly PlacedSticker<Id>[]
   draft: PlacedSticker<Id> | null = null
-  landed: Id | null = null
-  paper: (Point & { id: Id, vx: number, vy: number }) | null = null
+  landed: string | null = null
+  paper: Paper | null = null
   corner = 1
   private gesture: { start: Press, item: PlacedSticker<Id>, offset: Point } | null = null
 
-  constructor(readonly layout: StickerLayout<Id>, private readonly store?: StickerStore, private readonly random = Math.random) {
+  constructor(readonly layout: StickerLayout<Id>, private readonly onFinish?: StickerFinish<Id>, private readonly random = Math.random) {
     this.placed = layout.defaults.map((item) => ({ ...item, rotation: 0 }))
   }
 
   private angle() {
     return Math.round((this.random() * 2 - 1) * paperMotion.rotationRange * 10) / 10
-  }
-
-  private save() {
-    try {
-      this.store?.write(JSON.stringify({ version: 2, placed: this.placed }))
-    } catch { /* The layout remains usable in memory. */ }
-  }
-
-  restore() {
-    try {
-      const data = JSON.parse(this.store?.read() ?? 'null')
-      if (data === null) {
-        this.placed = this.layout.defaults.map((item) => ({ ...item, rotation: this.angle() }))
-        this.save()
-        return
-      }
-      // The original sheet stored its array directly under the same key.
-      const legacy = Array.isArray(data) || data?.version === 1
-      const saved = Array.isArray(data) ? data : data?.placed
-      if (!Array.isArray(saved) || (!legacy && data?.version !== 2)) {
-        return
-      }
-      const aliases = this.layout.legacyIds
-      const items = legacy && aliases
-        ? saved.map((s) => ({ ...s, id: aliases.get(s?.id) ?? s?.id }))
-        : saved
-      const fraction = (n: number) => Number.isFinite(n) && n >= 0 && n <= 1
-      if (items.every((s) => s && this.layout.ids.includes(s.id) && fraction(s.x) && fraction(s.y))
-        && new Set(items.map((s) => s.id)).size === items.length) {
-        let assigned = false
-        this.placed = items.map(({ id, x, y, rotation }) => {
-          if (Number.isFinite(rotation) && Math.abs(rotation) <= paperMotion.rotationRange) {
-            return { id, x, y, rotation }
-          }
-          assigned = true
-          return { id, x, y, rotation: this.angle() }
-        })
-        if (assigned) {
-          this.save()
-        }
-      }
-    } catch { /* Storage is optional, including browsers that deny access. */ }
   }
 
   get pointerId() {
@@ -103,29 +92,17 @@ export class StickerBoard<Id extends string> {
     if (!paper || !target) {
       return false
     }
-    const x = follow(paper.x, paper.vx, target.x, space.width, elapsedMs / 1000)
-    const y = follow(paper.y, paper.vy, target.y, space.height, elapsedMs / 1000)
-    const moving = Math.hypot((x.position - target.x) * space.width, (y.position - target.y) * space.height) > 0.05
-      || Math.hypot(x.velocity * space.width, y.velocity * space.height) > 1
-    if (moving) {
-      this.paper = { id: target.id, x: x.position, y: y.position, vx: x.velocity, vy: y.velocity }
+    const next = advancePaper(paper, target, space, elapsedMs)
+    if (next) {
+      this.paper = next
     } else {
       this.settlePaper()
     }
-    return moving
+    return !!next
   }
 
   pose(item: PlacedSticker<Id>, space: StickerSpace) {
-    const paper = this.paper
-    if (paper?.id !== item.id) {
-      return
-    }
-    return {
-      x: clampLag((paper.x - item.x) * space.width),
-      y: clampLag((paper.y - item.y) * space.height),
-      roll: bank(paper.vx * space.width),
-      pitch: -bank(paper.vy * space.height),
-    }
+    return paperPose(this.paper, item, space)
   }
 
   get artwork() {
@@ -133,10 +110,10 @@ export class StickerBoard<Id extends string> {
     return draft ? [...this.placed.filter((s) => s.id !== draft.id), draft] : this.placed
   }
 
-  pick(id: Id, screenCenter: Point, space: StickerSpace) {
+  pick(id: string, kind: Id, screenCenter: Point, space: StickerSpace) {
     this.gesture = null
     const existing = this.placed.find((s) => s.id === id)
-    this.draft = existing ?? { id, ...fromScreen(screenCenter, space), rotation: this.angle() }
+    this.draft = existing ?? { id, kind, ...fromScreen(screenCenter, space), rotation: this.angle() }
     this.position(this.draft, space)
     this.liftPaper(this.draft, 1)
   }
@@ -201,29 +178,28 @@ export class StickerBoard<Id extends string> {
       return 'lifted'
     }
     this.paper = null
+    this.onFinish?.('cancel', gesture.item)
     return 'host'
   }
 
   private position(point: Point, space: StickerSpace) {
     if (this.draft) {
-      const clamp = (value: number, inset: number) => {
-        const edge = Math.min(0.5, inset)
-        return Math.max(edge, Math.min(1 - edge, value))
-      }
-      this.draft = { ...this.draft, x: clamp(point.x, this.layout.width / 2 / space.width), y: clamp(point.y, this.layout.height / 2 / space.height) }
+      this.draft = { ...this.draft, ...clampStickerCenter(point, this.draft.rotation, this.layout, space) }
     }
   }
 
-  finish(action: 'stick' | 'remove' | 'cancel') {
+  finish(action: StickerAction) {
+    const item = this.draft ?? this.gesture?.item
     this.gesture = null
     this.landed = action === 'stick' && this.draft ? this.draft.id : null
     if (!this.landed) {
       this.paper = null
     }
-    if (this.draft && action !== 'cancel') {
+    if (item && this.onFinish) {
+      this.onFinish(action, item)
+    } else if (this.draft && action !== 'cancel') {
       const others = this.placed.filter((item) => item.id !== this.draft!.id)
       this.placed = action === 'stick' ? [...others, this.draft] : others
-      this.save()
     }
     this.draft = null
   }

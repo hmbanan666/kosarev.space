@@ -1,8 +1,8 @@
 import process from 'node:process'
-import { expect, test } from '@playwright/test'
 import en from '../apps/web-app/i18n/locales/en.json' with { type: 'json' }
 import ru from '../apps/web-app/i18n/locales/ru.json' with { type: 'json' }
 import snapshot from '../apps/web-app/tests/fixtures/activity-snapshot.json' with { type: 'json' }
+import { expect, test } from './board-fixture'
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/activity', (route) => route.fulfill({ json: snapshot }))
@@ -82,7 +82,7 @@ for (const locale of ['ru', 'en']) {
   }
 }
 
-test('deep links, outside dismissal, inner links and drag gestures remain distinct', async ({ page }) => {
+test('deep links, outside dismissal, inner links and drag gestures remain distinct', { tag: '@board-write' }, async ({ page }) => {
   await page.goto('/en?card=context')
   const panel = page.getByRole('dialog')
   await expect(panel).toBeVisible()
@@ -108,7 +108,7 @@ test('deep links, outside dismissal, inner links and drag gestures remain distin
 })
 
 for (const changed of [false, true]) {
-  test(`an activity response preserves an in-progress drag (${changed ? 'new ranking' : 'same ranking'})`, async ({ page }) => {
+  test(`an activity response preserves an in-progress drag (${changed ? 'new ranking' : 'same ranking'})`, { tag: '@board-write' }, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await page.clock.install()
     await page.unroute('**/api/activity')
@@ -200,7 +200,9 @@ for (const locale of ['ru', 'en']) {
     await expect(panel).toBeVisible()
     await expect(panel.locator('h2')).toHaveCount(1)
     await expect(panel.locator('.canvas-eyebrow')).toHaveCount(0)
-    await expect(panel).not.toContainText(/Подробнее:|Open details:|WebSocket/)
+    await expect(panel).not.toContainText(/Подробнее:|Open details:/)
+    await expect(panel).toContainText(locale === 'en' ? 'Everyone shares this board.' : 'Это общая доска.')
+    await expect(panel.locator('.drawer-facts')).toContainText(/WebSocket.*PostgreSQL/)
   })
 }
 

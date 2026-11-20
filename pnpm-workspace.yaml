@@ -14,8 +14,6 @@ packages:
   - apps/*
   - packages/*
 
-patchedDependencies:
-  nuxt-live-cursors@0.3.2: patches/nuxt-live-cursors@0.3.2.patch
 # Native esbuild binaries and Vue version selection used by transitive tooling.
 allowBuilds:
   '@resvg/resvg-js': true
@@ -46,6 +44,7 @@ catalogs:
     vue-tsc: ^3.3.13
   integrations:
     '@modelcontextprotocol/sdk': 1.32.2
+    '@nextorders/avatar': 1.0.3
     '@nuxt/ui': ^4.12.0
     '@nuxtjs/i18n': ^10.6.0
     '@nuxtjs/robots': ^7.0.2
@@ -55,7 +54,6 @@ catalogs:
     '@vueuse/core': ^15.0.0
     '@vueuse/nuxt': ^15.0.0
     drizzle-orm: ^0.45.4
-    nuxt-live-cursors: ^0.3.2
     pg: ^8.23.1
   test:
     '@playwright/test': ^1.64.1

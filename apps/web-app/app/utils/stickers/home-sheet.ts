@@ -7,22 +7,14 @@ export const ids = [
 ] as const
 export type StickerId = typeof ids[number]
 
-export const homeSheet: StickerLayout<StickerId> = {
-  ids,
-  defaults: [{ id: 'monkey-bright-idea', x: 0.39, y: 0.192 }, { id: 'monkey-pink-mug', x: 0.263, y: 0.49 }],
-  width: 174,
-  height: 174,
-  legacyIds: new Map([
-    ['orbit', 'monkey-bright-idea'],
-    ['caliper', 'monkey-pink-mug'],
-    ['contours', 'monkey-love-lab'],
-    ['prism', 'monkey-skull-laptop'],
-    ['wave', 'monkey-laptop-panic'],
-    ['compass', 'monkey-heart-eyes'],
-    ['spool', 'monkey-grumpy-reader'],
-    ['section', 'monkey-money-hat'],
-  ]),
+const kinds = new Set<string>(ids)
+export function isStickerKind(value: unknown): value is StickerId {
+  return typeof value === 'string' && kinds.has(value)
 }
 
-// Keep the original key so returning visitors can migrate their placements.
-export const storageKey = 'portfolio-stickers-v1'
+export const homeSheet: StickerLayout<StickerId> = {
+  ids,
+  defaults: [{ id: 'monkey-bright-idea', kind: 'monkey-bright-idea', x: 0.39, y: 0.192 }, { id: 'monkey-pink-mug', kind: 'monkey-pink-mug', x: 0.263, y: 0.49 }],
+  width: 174,
+  height: 174,
+}

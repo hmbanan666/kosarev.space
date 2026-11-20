@@ -406,6 +406,6 @@ UTF-8 SSE tests remain.
 
 [RU/EN desktop and mobile screenshots](images/site-agent/) are local review
 captures with synthetic answers, not live provider or deployment evidence. The
-Dockerfile already copies `patches`, packages and the complete web app before
+Dockerfile already copies the packages and the complete web app before
 install/build; generated knowledge ships inside `.output`. No Docker execution,
 merge or deployment is part of this task.

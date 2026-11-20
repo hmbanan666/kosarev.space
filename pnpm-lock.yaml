@@ -223,6 +223,9 @@ catalogs:
     '@modelcontextprotocol/sdk':
       specifier: 1.32.2
       version: 1.32.2
+    '@nextorders/avatar':
+      specifier: 1.0.3
+      version: 1.0.3
     '@nuxt/ui':
       specifier: ^4.12.0
       version: 4.12.0
@@ -250,9 +253,6 @@ catalogs:
     drizzle-orm:
       specifier: ^0.45.4
       version: 0.45.4
-    nuxt-live-cursors:
-      specifier: ^0.3.2
-      version: 0.3.2
     pg:
       specifier: ^8.23.1
       version: 8.23.1
@@ -273,9 +273,6 @@ catalogs:
     '@types/pg':
       specifier: ^8.23.1
       version: 8.23.1
-
-patchedDependencies:
-  nuxt-live-cursors@0.3.2: d222850c704faadd069c1f349d7f8b301f30c7c62ca9bd1808770f12760af68b
 
 importers:
 
@@ -329,6 +326,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: catalog:integrations
         version: 1.32.2(supports-color@10.2.2)(zod@4.6.7)
+      '@nextorders/avatar':
+        specifier: catalog:integrations
+        version: 1.0.3
       '@nuxt/ui':
         specifier: catalog:integrations
         version: 4.12.0(25f3c703d38934f80df163162021d17f)
@@ -353,9 +353,6 @@ importers:
       markdown-it:
         specifier: 'catalog:'
         version: 15.0.3
-      nuxt-live-cursors:
-        specifier: catalog:integrations
-        version: 0.3.2(patch_hash=d222850c704faadd069c1f349d7f8b301f30c7c62ca9bd1808770f12760af68b)(@nuxt/schema@4.6.2)(confbox@0.2.4)(dotenv@18.0.9)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(oxc-parser@0.153.0)(rolldown@1.2.15)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.15)(rollup@4.65.0)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))
     devDependencies:
       '@iconify-json/lucide':
         specifier: catalog:dev
@@ -5765,9 +5762,6 @@ packages:
 
   nuxt-define@1.0.0:
     resolution: {integrity: sha512-CYZ2WjU+KCyCDVzjYUM4eEpMF0rkPmkpiFrybTqqQCRpUbPt2h3snswWIpFPXTi+osRCY6Og0W/XLAQgDL4FfQ==}
-
-  nuxt-live-cursors@0.3.2:
-    resolution: {integrity: sha512-dXmUQDANrT5kPFaJLLbERVHhIw11+Rbu9o9XdqBznNqasuXzN6JyttWoERASXKpk+J0P20CTWwtGfGNE12Zhmg==}
 
   nuxt-site-config-kit@5.0.3:
     resolution: {integrity: sha512-vM7i0ZxNegKO4ibrHagtAlK+8ZWJsQ/bzG4bzdasMK/afjdcwZSBQy63C7Q6SP2TZrc4KGM61tHtbW21K5De8Q==}
@@ -13006,22 +13000,6 @@ snapshots:
       boolbase: 1.0.0
 
   nuxt-define@1.0.0: {}
-
-  nuxt-live-cursors@0.3.2(patch_hash=d222850c704faadd069c1f349d7f8b301f30c7c62ca9bd1808770f12760af68b)(@nuxt/schema@4.6.2)(confbox@0.2.4)(dotenv@18.0.9)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(oxc-parser@0.153.0)(rolldown@1.2.15)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.15)(rollup@4.65.0)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))):
-    dependencies:
-      '@nextorders/avatar': 1.0.3
-      '@nuxt/kit': 4.6.2(@nuxt/schema@4.6.2)(confbox@0.2.4)(dotenv@18.0.9)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(oxc-parser@0.153.0)(rolldown@1.2.15)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.15)(rollup@4.65.0)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))
-    transitivePeerDependencies:
-      - '@nuxt/schema'
-      - confbox
-      - dotenv
-      - giget
-      - jiti
-      - magic-string
-      - mlly
-      - oxc-parser
-      - rolldown
-      - unplugin
 
   nuxt-site-config-kit@5.0.3(@nuxt/schema@4.6.2)(confbox@0.2.4)(dotenv@18.0.9)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(oxc-parser@0.153.0)(rolldown@1.2.15)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.15)(rollup@4.65.0)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))(vue@3.5.44(typescript@6.0.3)):
     dependencies:
