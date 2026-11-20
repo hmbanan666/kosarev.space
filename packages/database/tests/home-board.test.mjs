@@ -33,7 +33,7 @@ afterAll(async () => {
   await db.end()
 })
 
-it('keeps the first placement of each design on read and in the migrated row', async () => {
+it('filters duplicates on read and clears all saved stickers in the migration', async () => {
   const first = sticker()
   const second = sticker('monkey-pink-mug')
   const saved = { blocks: [{ id: 'cv', x: 1, y: 2, w: 4, h: 3 }], stickers: [first, second, sticker(), sticker(second.kind)] }
@@ -41,7 +41,7 @@ it('keeps the first placement of each design on read and in the migrated row', a
   await db.query('INSERT INTO home_board VALUES (1, $1)', [saved])
   expect(await loadSharedBoard()).toEqual(expected)
   await db.query(await migration('0005_unique_board_stickers'))
-  expect((await db.query('SELECT state FROM home_board')).rows[0].state).toEqual(expected)
+  expect((await db.query('SELECT state FROM home_board')).rows[0].state).toEqual({ ...saved, stickers: [] })
 })
 
 it('serializes competing drops under independent room locks and returns the winner to both clients', async () => {
